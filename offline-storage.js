@@ -526,6 +526,48 @@ async function saveInvoiceReservationRequestId(requestId) {
     });
   }
 
+async function claimPendingOperation(operationId) {
+  const database = await openDatabase();
+
+  return new Promise(function (resolve, reject) {
+    const transaction = database.transaction("outbox", "readwrite");
+    const store = transaction.objectStore("outbox");
+    const request = store.get(operationId);
+
+    let claimedOperation = null;
+
+    request.onsuccess = function () {
+      const operation = request.result;
+
+      if (!operation || operation.status !== "pending") {
+        return;
+      }
+
+      operation.status = "syncing";
+      operation.syncing_at = new Date().toISOString();
+      operation.last_error = null;
+
+      store.put(operation);
+      claimedOperation = operation;
+    };
+
+    request.onerror = function () {
+      reject(request.error);
+    };
+
+    transaction.oncomplete = function () {
+      resolve(claimedOperation);
+    };
+
+    transaction.onerror = function () {
+      reject(transaction.error);
+    };
+
+    transaction.onabort = function () {
+      reject(transaction.error || new Error("تعذر حجز العملية للمزامنة."));
+    };
+  });
+}
   async function markSyncing(operationId) {
   return updateOperation(operationId, {
     status: "syncing",
