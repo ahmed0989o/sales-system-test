@@ -6957,7 +6957,7 @@ function openSalesInvoice() {
   }
 
   $("salesInvoiceForm").classList.remove("hidden");
-
+  prepareNextInvoiceNumber();
   document.querySelectorAll(
     '#appCustomizeToolsLayer .appCustomizeToolWindow[data-tool-name="بحث عن زبون"][data-section-id="salesPanel"]'
   ).forEach(function (toolWindow) {
