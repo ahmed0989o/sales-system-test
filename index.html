@@ -3956,15 +3956,51 @@ async function prepareNextInvoiceNumber() {
 
   if (!input || input.value.trim()) return;
 
-  const { data, error } = await db.rpc("generate_invoice_number");
+  try {
+    await OfflineStore.open();
 
-  if (error || !data) {
-    console.error("Next invoice number error:", error);
-    setMessage("status", "تعذر تجهيز رقم الفاتورة تلقائياً.");
-    return;
+    let reservation =
+      await OfflineStore.getInvoiceNumberReservation();
+
+    const currentYear = Number(
+      new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Baghdad",
+        year: "numeric"
+      }).format(new Date())
+    );
+
+    if (
+      !reservation ||
+      reservation.invoice_year !== currentYear ||
+      reservation.next_number > reservation.range_end
+    ) {
+      await requestInvoiceNumberReservation();
+
+      reservation =
+        await OfflineStore.getInvoiceNumberReservation();
+    }
+
+    if (
+      !reservation ||
+      reservation.invoice_year !== currentYear ||
+      reservation.next_number > reservation.range_end
+    ) {
+      throw new Error("لا يوجد حجز صالح لأرقام الفواتير.");
+    }
+
+    const number = await OfflineStore.takeNextInvoiceNumber();
+
+    input.value =
+      `INV-${currentYear}-${String(number).padStart(6, "0")}`;
+
+  } catch (error) {
+    console.error("Invoice number preparation error:", error);
+
+    setMessage(
+      "status",
+      "تعذر تجهيز رقم الفاتورة. تحقق من الاتصال أو حجز الأرقام."
+    );
   }
-
-  input.value = data;
 }
 async function showApp() {
   if (!currentUser || appLoading) return;
