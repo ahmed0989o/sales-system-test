@@ -527,11 +527,12 @@ async function saveInvoiceReservationRequestId(requestId) {
   }
 
   async function markSyncing(operationId) {
-    return updateOperation(operationId, {
-      status: "syncing",
-      last_error: null
-    });
-  }
+  return updateOperation(operationId, {
+    status: "syncing",
+    syncing_at: new Date().toISOString(),
+    last_error: null
+  });
+}
 
   async function markPending(operationId, errorMessage) {
     return changeAttempt(operationId, "pending", errorMessage);
