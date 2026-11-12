@@ -145,6 +145,7 @@ async function saveInvoiceNumberReservation(reservation) {
   async function completeInvoiceNumberReservation(reservation) {
   if (
     !reservation ||
+    typeof reservation.reservation_id !== "string" ||
     !Number.isInteger(reservation.invoice_year) ||
     !Number.isSafeInteger(reservation.range_start) ||
     !Number.isSafeInteger(reservation.range_end) ||
@@ -160,28 +161,65 @@ async function saveInvoiceNumberReservation(reservation) {
     const tx = db.transaction("meta", "readwrite");
     const store = tx.objectStore("meta");
 
-    store.put({
-      key: "invoice_number_reservation",
-      value: {
-        ...reservation,
-        next_number: reservation.range_start
-      }
-    });
+    let localError = null;
 
-    store.delete("invoice_reservation_request_id");
+    const request = store.get("invoice_number_reservation");
+
+    request.onsuccess = () => {
+      const current = request.result?.value;
+
+      // الحجز نفسه موجود: لا نعيد العداد إلى البداية
+      if (
+        current &&
+        current.reservation_id === reservation.reservation_id
+      ) {
+        store.delete("invoice_reservation_request_id");
+        return;
+      }
+
+      // لا نستبدل حجزاً ما زالت فيه أرقام غير مستخدمة
+      if (
+        current &&
+        Number.isSafeInteger(current.next_number) &&
+        current.next_number <= current.range_end
+      ) {
+        localError = new Error(
+          "لا يمكن استبدال حجز ما زالت فيه أرقام غير مستخدمة."
+        );
+        tx.abort();
+        return;
+      }
+
+      store.put({
+        key: "invoice_number_reservation",
+        value: {
+          ...reservation,
+          next_number: reservation.range_start
+        }
+      });
+
+      store.delete("invoice_reservation_request_id");
+    };
 
     tx.oncomplete = () => resolve(true);
 
     tx.onerror = () => {
-      reject(tx.error || new Error("تعذر حفظ حجز أرقام الفواتير."));
+      reject(
+        localError ||
+        tx.error ||
+        new Error("تعذر حفظ حجز أرقام الفواتير.")
+      );
     };
 
     tx.onabort = () => {
-      reject(tx.error || new Error("تم إلغاء حفظ الحجز."));
+      reject(
+        localError ||
+        tx.error ||
+        new Error("تم إلغاء حفظ الحجز.")
+      );
     };
   });
 }
-
 async function getInvoiceNumberReservation() {
   return await getMeta("invoice_number_reservation");
 }
