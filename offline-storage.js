@@ -146,6 +146,22 @@ async function saveInvoiceNumberReservation(reservation) {
 async function getInvoiceNumberReservation() {
   return await getMeta("invoice_number_reservation");
 }
+  async function getInvoiceReservationRequestId() {
+  return await getMeta("invoice_reservation_request_id");
+}
+
+async function saveInvoiceReservationRequestId(requestId) {
+  if (
+    typeof requestId !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId)
+  ) {
+    throw new Error("معرف طلب الحجز غير صحيح.");
+  }
+
+  await setMeta("invoice_reservation_request_id", requestId);
+
+  return requestId;
+}
   async function takeNextInvoiceNumber() {
   const db = await openDatabase();
 
