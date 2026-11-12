@@ -635,6 +635,7 @@ window.OfflineStore = Object.freeze({
   markPending: markPending,
   markFailed: markFailed,
   markCompleted: markCompleted,
-  countPending: countPending
+recoverSyncingOperations: recoverSyncingOperations,
+countPending: countPending
 });
 })();
