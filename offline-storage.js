@@ -555,6 +555,56 @@ async function saveInvoiceReservationRequestId(requestId) {
     });
   }
 
+async function recoverSyncingOperations() {
+  const database = await openDatabase();
+
+  return new Promise(function (resolve, reject) {
+    const transaction = database.transaction("outbox", "readwrite");
+    const store = transaction.objectStore("outbox");
+    const index = store.index("status");
+    const request = index.openCursor("syncing");
+
+    const cutoff = Date.now() - 5 * 60 * 1000;
+    let recoveredCount = 0;
+
+    request.onsuccess = function () {
+      const cursor = request.result;
+
+      if (!cursor) return;
+
+      const operation = cursor.value;
+      const syncingTime = Date.parse(operation.syncing_at);
+
+      if (!Number.isFinite(syncingTime) || syncingTime <= cutoff) {
+        operation.status = "pending";
+        operation.last_error = null;
+        delete operation.syncing_at;
+
+        cursor.update(operation);
+        recoveredCount++;
+      }
+
+      cursor.continue();
+    };
+
+    request.onerror = function () {
+      reject(request.error);
+    };
+
+    transaction.oncomplete = function () {
+      resolve(recoveredCount);
+    };
+
+    transaction.onerror = function () {
+      reject(transaction.error);
+    };
+
+    transaction.onabort = function () {
+      reject(transaction.error || new Error("تعذر استرداد العمليات العالقة."));
+    };
+  });
+}
+
   async function countPending() {
     const pending = await listOperations("pending");
     const syncing = await listOperations("syncing");
