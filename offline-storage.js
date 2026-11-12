@@ -142,6 +142,45 @@ async function saveInvoiceNumberReservation(reservation) {
 
   return reservation;
 }
+  async function completeInvoiceNumberReservation(reservation) {
+  if (
+    !reservation ||
+    !Number.isInteger(reservation.invoice_year) ||
+    !Number.isSafeInteger(reservation.range_start) ||
+    !Number.isSafeInteger(reservation.range_end) ||
+    reservation.range_start <= 0 ||
+    reservation.range_end < reservation.range_start
+  ) {
+    throw new Error("بيانات حجز أرقام الفواتير غير صحيحة.");
+  }
+
+  const db = await openDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("meta", "readwrite");
+    const store = tx.objectStore("meta");
+
+    store.put({
+      key: "invoice_number_reservation",
+      value: {
+        ...reservation,
+        next_number: reservation.range_start
+      }
+    });
+
+    store.delete("invoice_reservation_request_id");
+
+    tx.oncomplete = () => resolve(true);
+
+    tx.onerror = () => {
+      reject(tx.error || new Error("تعذر حفظ حجز أرقام الفواتير."));
+    };
+
+    tx.onabort = () => {
+      reject(tx.error || new Error("تم إلغاء حفظ الحجز."));
+    };
+  });
+}
 
 async function getInvoiceNumberReservation() {
   return await getMeta("invoice_number_reservation");
