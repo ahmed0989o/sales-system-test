@@ -378,11 +378,13 @@ async function getInvoiceNumberReservation() {
   }
 
   window.OfflineStore = Object.freeze({
-    open: openDatabase,
-    getDeviceId: getDeviceId,
-    cacheRows: cacheRows,
-    getCachedRows: getCachedRows,
-    enqueueOperation: enqueueOperation,
+  open: openDatabase,
+  getDeviceId,
+  saveInvoiceNumberReservation,
+  getInvoiceNumberReservation,
+  cacheRows,
+  getCachedRows,
+  enqueueOperation,
     listOperations: listOperations,
     markSyncing: markSyncing,
     markPending: markPending,
