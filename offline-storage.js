@@ -162,6 +162,46 @@ async function saveInvoiceReservationRequestId(requestId) {
 
   return requestId;
 }
+  async function getOrCreateInvoiceReservationRequestId() {
+  const db = await openDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("meta", "readwrite");
+    const store = tx.objectStore("meta");
+
+    let requestId = null;
+
+    const request = store.get("invoice_reservation_request_id");
+
+    request.onsuccess = () => {
+      const existing = request.result?.value;
+
+      if (
+        typeof existing === "string" &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(existing)
+      ) {
+        requestId = existing;
+      } else {
+        requestId = makeId();
+
+        store.put({
+          key: "invoice_reservation_request_id",
+          value: requestId
+        });
+      }
+    };
+
+    tx.oncomplete = () => resolve(requestId);
+
+    tx.onerror = () => {
+      reject(tx.error || new Error("تعذر إنشاء معرف طلب الحجز."));
+    };
+
+    tx.onabort = () => {
+      reject(tx.error || new Error("تم إلغاء إنشاء معرف طلب الحجز."));
+    };
+  });
+}
   async function takeNextInvoiceNumber() {
   const db = await openDatabase();
 
