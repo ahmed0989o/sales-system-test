@@ -489,20 +489,22 @@ async function saveInvoiceReservationRequestId(requestId) {
     };
   }
 
-  window.OfflineStore = Object.freeze({
+window.OfflineStore = Object.freeze({
   open: openDatabase,
   getDeviceId,
   saveInvoiceNumberReservation,
   getInvoiceNumberReservation,
-    takeNextInvoiceNumber,
+  getInvoiceReservationRequestId,
+  getOrCreateInvoiceReservationRequestId,
+  takeNextInvoiceNumber,
   cacheRows,
   getCachedRows,
   enqueueOperation,
-    listOperations: listOperations,
-    markSyncing: markSyncing,
-    markPending: markPending,
-    markFailed: markFailed,
-    markCompleted: markCompleted,
-    countPending: countPending
-  });
+  listOperations: listOperations,
+  markSyncing: markSyncing,
+  markPending: markPending,
+  markFailed: markFailed,
+  markCompleted: markCompleted,
+  countPending: countPending
+});
 })();
