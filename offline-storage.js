@@ -438,6 +438,7 @@ async function getInvoiceNumberReservation() {
   getDeviceId,
   saveInvoiceNumberReservation,
   getInvoiceNumberReservation,
+    takeNextInvoiceNumber,
   cacheRows,
   getCachedRows,
   enqueueOperation,
