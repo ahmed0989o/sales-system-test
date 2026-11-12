@@ -179,10 +179,11 @@ async function saveInvoiceNumberReservation(reservation) {
 
       // لا نستبدل حجزاً ما زالت فيه أرقام غير مستخدمة
       if (
-        current &&
-        Number.isSafeInteger(current.next_number) &&
-        current.next_number <= current.range_end
-      ) {
+  current &&
+  current.invoice_year === reservation.invoice_year &&
+  Number.isSafeInteger(current.next_number) &&
+  current.next_number <= current.range_end
+) {
         localError = new Error(
           "لا يمكن استبدال حجز ما زالت فيه أرقام غير مستخدمة."
         );
