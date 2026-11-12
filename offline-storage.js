@@ -123,7 +123,29 @@
       };
     });
   }
+async function saveInvoiceNumberReservation(reservation) {
+  if (
+    !reservation ||
+    !Number.isInteger(reservation.invoice_year) ||
+    !Number.isSafeInteger(reservation.range_start) ||
+    !Number.isSafeInteger(reservation.range_end) ||
+    !Number.isSafeInteger(reservation.next_number) ||
+    reservation.range_start <= 0 ||
+    reservation.range_end < reservation.range_start ||
+    reservation.next_number < reservation.range_start ||
+    reservation.next_number > reservation.range_end
+  ) {
+    throw new Error("بيانات حجز أرقام الفواتير غير صحيحة.");
+  }
 
+  await setMeta("invoice_number_reservation", reservation);
+
+  return reservation;
+}
+
+async function getInvoiceNumberReservation() {
+  return await getMeta("invoice_number_reservation");
+}
   async function getDeviceId() {
     let id = await getMeta("device_id");
 
