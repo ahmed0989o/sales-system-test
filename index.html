@@ -3912,7 +3912,45 @@ async function logout() {
     alert("تعذر تسجيل الخروج: " + error.message);
   }
 }
+async function requestInvoiceNumberReservation() {
+  if (!currentUser) {
+    throw new Error("يجب تسجيل الدخول أولاً.");
+  }
 
+  const deviceId = await OfflineStore.getDeviceId();
+
+  const requestId =
+    await OfflineStore.getOrCreateInvoiceReservationRequestId();
+
+  const { data, error } = await db.rpc(
+    "reserve_invoice_number_block",
+    {
+      p_device_id: deviceId,
+      p_request_id: requestId
+    }
+  );
+
+  if (error) throw error;
+
+  const reservation = Array.isArray(data) ? data[0] : data;
+
+  if (!reservation) {
+    throw new Error("لم يرجع الخادم بيانات حجز أرقام الفواتير.");
+  }
+
+  const localReservation = {
+    reservation_id: reservation.reservation_id,
+    invoice_year: Number(reservation.invoice_year),
+    range_start: Number(reservation.range_start),
+    range_end: Number(reservation.range_end)
+  };
+
+  await OfflineStore.completeInvoiceNumberReservation(
+    localReservation
+  );
+
+  return localReservation;
+}
 async function prepareNextInvoiceNumber() {
   const input = $("invoiceNumber");
 
