@@ -4045,7 +4045,6 @@ $("returnsPanel").classList.add("hidden");
   $("reportDate").value = todayInBaghdad();
 
   try {await Promise.all([loadProducts(), loadCustomers()]);
-await prepareNextInvoiceNumber();
     
 const { data: canManagePurchases, error: purchasesPermissionError } =
   await db.rpc("has_app_permission", {
