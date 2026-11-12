@@ -4608,20 +4608,88 @@ if (!invoiceNumber) {
 
 
     
-const { data, error } = await db.rpc(
-  "create_multi_sale_with_stock",
-  {
-    p_invoice_number: invoiceNumber,
-   p_customer_name: isCashCustomer ? cashCustomerName : (customer ? customer.name : null),
-    p_payment_method: paymentMethod,
-    p_customer_id: customer ? Number(customer.id) : null,
-    p_items: items,
-    p_amount_received: Number($("amountReceived").value) || 0,
-p_customer_phone: customerPhone
-  }
+const savedInvoiceNumber = invoiceNumber;
+
+const salePayload = {
+  p_invoice_number: savedInvoiceNumber,
+  p_customer_name: isCashCustomer
+    ? cashCustomerName
+    : (customer ? customer.name : null),
+  p_payment_method: paymentMethod,
+  p_customer_id: customer ? Number(customer.id) : null,
+  p_items: items,
+  p_amount_received: Number($("amountReceived").value) || 0,
+  p_customer_phone: customerPhone
+};
+
+if (!window.OfflineStore) {
+  throw new Error("التخزين المحلي غير جاهز؛ لم يتم إرسال الفاتورة.");
+}
+
+await OfflineStore.open();
+
+const previousSaleOperations = (
+  await OfflineStore.listOperations()
+).filter(operation =>
+  operation.type === "sale.create" &&
+  operation.payload?.p_invoice_number === savedInvoiceNumber
 );
 
-    if (error) throw error;
+if (previousSaleOperations.length > 1) {
+  throw new Error("توجد أكثر من محاولة محفوظة لهذا الرقم. أوقفنا الإرسال للحماية.");
+}
+
+let saleOperation;
+
+if (previousSaleOperations.length === 1) {
+  const previousOperation = previousSaleOperations[0];
+
+  if (previousOperation.user_id !== currentUser.id) {
+    throw new Error("هذه الفاتورة مرتبطة بمحاولة لمستخدم آخر.");
+  }
+
+  if (
+    JSON.stringify(previousOperation.payload) !==
+    JSON.stringify(salePayload)
+  ) {
+    throw new Error("بيانات الفاتورة تختلف عن المحاولة المحفوظة سابقاً.");
+  }
+
+  saleOperation = previousOperation;
+} else {
+  saleOperation = await OfflineStore.enqueueOperation({
+    type: "sale.create",
+    userId: currentUser.id,
+    payload: salePayload
+  });
+}
+
+let data;
+
+if (saleOperation.status === "completed") {
+  data = saleOperation.server_result;
+
+  if (!data) {
+    throw new Error("نتيجة العملية المكتملة غير متاحة؛ أوقفنا إعادة الإرسال.");
+  }
+} else {
+  const response = await db.rpc(
+    "create_multi_sale_with_stock_idempotent",
+    {
+      ...salePayload,
+      p_operation_id: saleOperation.operation_id
+    }
+  );
+
+  if (response.error) throw response.error;
+
+  data = response.data;
+
+  await OfflineStore.markCompleted(
+    saleOperation.operation_id,
+    data
+  );
+}
 
     setMessage(
       "status",
