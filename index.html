@@ -4668,21 +4668,15 @@ if (isCashCustomer && paymentMethod !== "نقدي") {
 let invoiceNumber = $("invoiceNumber").value.trim();
 
 if (!invoiceNumber) {
-  const { data: generatedInvoiceNumber, error: invoiceError } =
-    await db.rpc("generate_invoice_number");
+  await prepareNextInvoiceNumber();
 
-  if (invoiceError || !generatedInvoiceNumber) {
-    console.error("Invoice number generation error:", invoiceError);
-    return setMessage("status", "تعذر إنشاء رقم الفاتورة تلقائياً.");
+  invoiceNumber = $("invoiceNumber").value.trim();
+
+  if (!invoiceNumber) {
+    return setMessage("status", "تعذر تجهيز رقم الفاتورة.");
   }
-
-  invoiceNumber = generatedInvoiceNumber;
-  $("invoiceNumber").value = invoiceNumber;
 }
-
-
-
-    
+   
 const savedInvoiceNumber = invoiceNumber;
 
 const salePayload = {
