@@ -570,6 +570,7 @@ window.OfflineStore = Object.freeze({
   open: openDatabase,
   getDeviceId,
   saveInvoiceNumberReservation,
+  completeInvoiceNumberReservation,
   getInvoiceNumberReservation,
   getInvoiceReservationRequestId,
   getOrCreateInvoiceReservationRequestId,
