@@ -146,6 +146,62 @@ async function saveInvoiceNumberReservation(reservation) {
 async function getInvoiceNumberReservation() {
   return await getMeta("invoice_number_reservation");
 }
+  async function takeNextInvoiceNumber() {
+  const db = await openDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("meta", "readwrite");
+    const store = tx.objectStore("meta");
+
+    let allocatedNumber = null;
+    let allocationError = null;
+
+    const request = store.get("invoice_number_reservation");
+
+    request.onsuccess = () => {
+      const reservation = request.result?.value;
+
+      if (!reservation) {
+        allocationError = new Error(
+          "لا يوجد نطاق أرقام فواتير محجوز لهذا الجهاز."
+        );
+        return;
+      }
+
+      if (reservation.next_number > reservation.range_end) {
+        allocationError = new Error(
+          "انتهت الأرقام المحجوزة لهذا الجهاز."
+        );
+        return;
+      }
+
+      allocatedNumber = reservation.next_number;
+
+      reservation.next_number += 1;
+
+      store.put({
+        key: "invoice_number_reservation",
+        value: reservation
+      });
+    };
+
+    tx.oncomplete = () => {
+      if (allocationError) {
+        reject(allocationError);
+      } else {
+        resolve(allocatedNumber);
+      }
+    };
+
+    tx.onerror = () => {
+      reject(tx.error || new Error("تعذر تخصيص رقم الفاتورة."));
+    };
+
+    tx.onabort = () => {
+      reject(tx.error || allocationError || new Error("تم إلغاء تخصيص الرقم."));
+    };
+  });
+}
   async function getDeviceId() {
     let id = await getMeta("device_id");
 
