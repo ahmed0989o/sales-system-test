@@ -4715,7 +4715,6 @@ if (!window.OfflineStore) {
 }
 
 await OfflineStore.open();
-await OfflineStore.recoverSyncingOperations();
 const previousSaleOperations = (
   await OfflineStore.listOperations()
 ).filter(operation =>
