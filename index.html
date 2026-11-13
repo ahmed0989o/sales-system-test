@@ -4171,8 +4171,10 @@ async function loadProducts() {
     setMessage("status", "خطأ تحميل المنتجات: " + error.message);
   }
 }
+
 async function loadCustomers() {
   const selectedCustomerId = $("customerSelect").value;
+  let loadedFromCache = false;
 
   $("customerSelect").innerHTML =
     '<option value="">جارٍ تحميل الزبائن...</option>';
@@ -4180,123 +4182,156 @@ async function loadCustomers() {
     '<option value="">جارٍ تحميل الزبائن...</option>';
 
   try {
-    let result = await db
-      .from("customers")
-      .select("id,name,phone")
-      .order("name", { ascending: true });
+    await OfflineStore.open();
 
-    if (
-      result.error &&
-      /phone|column|schema cache|42703/i.test(result.error.message || "")
-    ) {
-      result = await db
+    try {
+      let result = await db
         .from("customers")
-        .select("id,name")
+        .select("id,name,phone")
         .order("name", { ascending: true });
+
+      if (
+        result.error &&
+        /phone|column|schema cache|42703/i.test(result.error.message || "")
+      ) {
+        result = await db
+          .from("customers")
+          .select("id,name")
+          .order("name", { ascending: true });
+      }
+
+      if (result.error) throw result.error;
+
+      customers = result.data || [];
+
+      try {
+        await OfflineStore.cacheRows("customers", customers);
+      } catch (cacheError) {
+        console.error("تعذر حفظ الزبائن محلياً:", cacheError);
+      }
+
+    } catch (onlineError) {
+      console.warn("تعذر تحميل الزبائن من الإنترنت:", onlineError);
+
+      customers = await OfflineStore.getCachedRows("customers");
+      loadedFromCache = true;
+
+      if (!customers.length) {
+        throw new Error(
+          "لا يوجد اتصال بالإنترنت ولا توجد زبائن محفوظة محلياً."
+        );
+      }
     }
 
-    if (result.error) throw result.error;
+    window.balancesByCustomer = new Map();
 
+    if (!loadedFromCache) {
+      const balanceResult = await db.rpc("get_customer_balances");
 
-customers = result.data || [];
-
-    // تحميل أرصدة الزبائن من دالة Supabase
-   window.balancesByCustomer = new Map();
-
-    const balanceResult = await db.rpc("get_customer_balances");
-
-    if (!balanceResult.error) {
-      (balanceResult.data || []).forEach(row => {
-       window.balancesByCustomer.set(
-          String(row.customer_id),
-          Number(row.remaining_debt || 0)
-        );
-      });
-    } else {
-      console.error("Customer balances:", balanceResult.error);
+      if (!balanceResult.error) {
+        (balanceResult.data || []).forEach(row => {
+          window.balancesByCustomer.set(
+            String(row.customer_id),
+            Number(row.remaining_debt || 0)
+          );
+        });
+      } else {
+        console.error("Customer balances:", balanceResult.error);
+      }
     }
 
     $("customerSelect").innerHTML =
       '<option value="">بدون تحديد زبون</option>';
+
     $("paymentCustomer").innerHTML =
       '<option value="">اختر الزبون</option>';
-$("customerSearchList").innerHTML = "";
+
+    $("customerSearchList").innerHTML = "";
+
     customers.forEach(c => {
       const label = c.phone
         ? `${c.name} — ${c.phone}`
         : c.name;
 
-      // قائمة الزبائن بالفواتير تبقى بدون تغيير
       const customerOption = document.createElement("option");
       customerOption.value = c.id;
       customerOption.textContent = label;
       $("customerSelect").appendChild(customerOption);
-const searchOption = document.createElement("option");
-searchOption.value = label;
-$("customerSearchList").appendChild(searchOption);
-      // قائمة التسديد تعرض الدين المتبقي
+
+      const searchOption = document.createElement("option");
+      searchOption.value = label;
+      $("customerSearchList").appendChild(searchOption);
+
       const paymentOption = document.createElement("option");
       paymentOption.value = c.id;
 
-      if (balancesByCustomer.has(String(c.id))) {
-        const debt = balancesByCustomer.get(String(c.id));
+      if (window.balancesByCustomer.has(String(c.id))) {
+        const debt = window.balancesByCustomer.get(String(c.id));
         const formattedDebt = debt.toLocaleString("de-DE", {
-  maximumFractionDigits: 0
-});
+          maximumFractionDigits: 0
+        });
 
         paymentOption.textContent =
           `${label} — الدين المتبقي: ${formattedDebt} د.ع`;
       } else {
-        paymentOption.textContent = `${label} — الرصيد غير متاح`;
+        paymentOption.textContent =
+          `${label} — الرصيد غير متاح`;
       }
 
       $("paymentCustomer").appendChild(paymentOption);
-});
+    });
 
-$("customerSelect").value = selectedCustomerId;
+    $("customerSelect").value = selectedCustomerId;
 
     setMessage(
       "customerStatus",
-      `تم تحميل ${customers.length} زبون.`
+      loadedFromCache
+        ? `تم تحميل ${customers.length} زبون من التخزين المحلي.`
+        : `تم تحميل ${customers.length} زبون.`
     );
+
     if (selectedCustomerId) {
-  $("customerSelect").value = selectedCustomerId;
-  updateCreditCustomerDetails();
-}
+      $("customerSelect").value = selectedCustomerId;
+      updateCreditCustomerDetails();
+    }
+
     $("customerSearchInput").oninput = function () {
-  const typedName = this.value.trim();
+      const typedName = this.value.trim();
 
-  const matchedOption = Array.from(
-    $("customerSelect").options
-  ).find(option =>
-    option.textContent.trim() === typedName
-  );
+      const matchedOption = Array.from(
+        $("customerSelect").options
+      ).find(option =>
+        option.textContent.trim() === typedName
+      );
 
-  const previousId = $("customerSelect").value;
+      const previousId = $("customerSelect").value;
 
-  $("customerSelect").value = matchedOption
-    ? matchedOption.value
-    : "";
+      $("customerSelect").value = matchedOption
+        ? matchedOption.value
+        : "";
 
-  if (matchedOption && previousId !== matchedOption.value) {
-    $("customerSelect").dispatchEvent(
-      new Event("change", { bubbles: true })
-    );
-  }
-};
+      if (matchedOption && previousId !== matchedOption.value) {
+        $("customerSelect").dispatchEvent(
+          new Event("change", { bubbles: true })
+        );
+      }
+    };
 
-const selectedOption = $("customerSelect").selectedOptions[0];
+    const selectedOption =
+      $("customerSelect").selectedOptions[0];
 
-$("customerSearchInput").value =
-  selectedOption && selectedOption.value
-    ? selectedOption.textContent
-    : "";
+    $("customerSearchInput").value =
+      selectedOption && selectedOption.value
+        ? selectedOption.textContent
+        : "";
+
   } catch (error) {
     console.error("Customers:", error);
     customers = [];
 
     $("customerSelect").innerHTML =
       '<option value="">تعذر تحميل الزبائن</option>';
+
     $("paymentCustomer").innerHTML =
       '<option value="">تعذر تحميل الزبائن</option>';
 
@@ -4306,8 +4341,6 @@ $("customerSearchInput").value =
     );
   }
 }
-
-
 function updateUnitPrice() {
   const productId = $("product").value;
   const product = products.find(
