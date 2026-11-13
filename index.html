@@ -5999,6 +5999,9 @@ async function init() {
   }
 }
 window.addEventListener("online", function () {
+  setInterval(function () {
+  syncPendingSales();
+}, 30000);
   console.log("عاد الاتصال بالإنترنت؛ بدء مزامنة المبيعات.");
 
   syncPendingSales();
