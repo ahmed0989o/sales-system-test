@@ -6025,7 +6025,18 @@ async function syncPendingSales() {
   try {
     await OfflineStore.open();
 
-    console.log("بدأ فحص فواتير المزامنة المعلقة.");
+    const pendingOperations =
+  await OfflineStore.listOperations("pending");
+
+const myPendingSales = pendingOperations.filter(operation =>
+  operation.type === "sale.create" &&
+  operation.user_id === currentUser.id
+);
+
+console.log(
+  "عدد فواتير المبيعات المعلقة:",
+  myPendingSales.length
+);
 
   } catch (error) {
     console.error("Sale sync:", error);
