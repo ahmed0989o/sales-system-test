@@ -4044,7 +4044,10 @@ $("userManagementPanel").classList.add("hidden");
 $("returnsPanel").classList.add("hidden");
   $("reportDate").value = todayInBaghdad();
 
-  try {await Promise.all([loadProducts(), loadCustomers()]);
+  try {
+  await OfflineStore.open();
+
+  await Promise.all([loadProducts(), loadCustomers()]);
     
 const { data: canManagePurchases, error: purchasesPermissionError } =
   await db.rpc("has_app_permission", {
