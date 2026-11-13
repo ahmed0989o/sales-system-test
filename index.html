@@ -4046,7 +4046,7 @@ $("returnsPanel").classList.add("hidden");
 
   try {
   await OfflineStore.open();
-
+  await OfflineStore.recoverSyncingOperations();
   await Promise.all([loadProducts(), loadCustomers()]);
     
 const { data: canManagePurchases, error: purchasesPermissionError } =
