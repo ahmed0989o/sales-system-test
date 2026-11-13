@@ -4093,45 +4093,84 @@ if (isOwner(currentUser)) {
 }
 
 
+
 async function loadProducts() {
-  $("product").innerHTML = '<option value="">جارٍ تحميل المنتجات...</option>';
+  $("product").innerHTML =
+    '<option value="">جارٍ تحميل المنتجات...</option>';
 
   try {
-    const { data, error } = await db
-      .from("products")
-      .select('id,name,price,quantity,purchase_price,barcode')
-      .order("name", { ascending: true });
+    await OfflineStore.open();
 
-    if (error) throw error;
-    products = data || [];
+    try {
+      const { data, error } = await db
+        .from("products")
+        .select("id,name,price,quantity,purchase_price,barcode")
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+
+      products = data || [];
+
+      try {
+        await OfflineStore.cacheRows("products", products);
+      } catch (cacheError) {
+        console.error("تعذر تحديث نسخة المنتجات المحلية:", cacheError);
+      }
+
+      setMessage(
+        "status",
+        products.length
+          ? `تم تحميل ${products.length} منتج.`
+          : "جدول المنتجات فارغ."
+      );
+
+    } catch (onlineError) {
+      console.warn("تعذر تحميل المنتجات من الإنترنت:", onlineError);
+
+      products = await OfflineStore.getCachedRows("products");
+
+      if (products.length) {
+        products.sort((a, b) =>
+          String(a.name || "").localeCompare(String(b.name || ""))
+        );
+
+        setMessage(
+          "status",
+          `تم تحميل ${products.length} منتج من التخزين المحلي.`
+        );
+      } else {
+        throw new Error("لا يوجد اتصال بالإنترنت ولا توجد منتجات محفوظة محلياً.");
+      }
+    }
 
     ["product", "purchaseProduct"].forEach(id => {
       const select = $(id);
       if (!select) return;
 
-      select.innerHTML = '<option value="">اختر المنتج</option>';
+      select.innerHTML =
+        '<option value="">اختر المنتج</option>';
 
       products.forEach(p => {
         const option = document.createElement("option");
         option.value = p.id;
-        option.textContent = `${p.name} — السعر: ${money(p.price)} — المتبقي: ${p.quantity}`;
+        option.textContent =
+          `${p.name} — السعر: ${money(p.price)} — المتبقي: ${p.quantity}`;
         select.appendChild(option);
       });
     });
 
-    setMessage("status", products.length
-      ? `تم تحميل ${products.length} منتج.`
-      : "جدول المنتجات فارغ.");
   } catch (error) {
     console.error("Products:", error);
-    alert("خطأ تحميل المنتجات: " + error.message);
-    $("product").innerHTML = '<option value="">تعذر تحميل المنتجات</option>';
-    $("purchaseProduct").innerHTML = '<option value="">تعذر تحميل المنتجات</option>';
+
+    $("product").innerHTML =
+      '<option value="">تعذر تحميل المنتجات</option>';
+
+    $("purchaseProduct").innerHTML =
+      '<option value="">تعذر تحميل المنتجات</option>';
+
     setMessage("status", "خطأ تحميل المنتجات: " + error.message);
   }
 }
-
-
 async function loadCustomers() {
   const selectedCustomerId = $("customerSelect").value;
 
