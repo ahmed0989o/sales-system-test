@@ -6037,7 +6037,12 @@ console.log(
   "عدد فواتير المبيعات المعلقة:",
   myPendingSales.length
 );
-
+for (const operation of myPendingSales) {
+  console.log(
+    "فاتورة بانتظار المزامنة:",
+    operation.payload.p_invoice_number
+  );
+}
   } catch (error) {
     console.error("Sale sync:", error);
   } finally {
