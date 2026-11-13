@@ -507,25 +507,56 @@ async function saveInvoiceReservationRequestId(requestId) {
         reject(transaction.error || new Error("فشل تحديث العملية."));
       };
     });
-  }
+  } 
+async function changeAttempt(operationId, status, errorMessage) {
+  const database = await openDatabase();
 
-  async function changeAttempt(operationId, status, errorMessage) {
-    const rows = await listOperations();
-    const current = rows.find(function (row) {
-      return row.operation_id === operationId;
-    });
+  return new Promise(function (resolve, reject) {
+    const transaction = database.transaction("outbox", "readwrite");
+    const store = transaction.objectStore("outbox");
+    const request = store.get(operationId);
 
-    if (!current) {
-      throw new Error("العملية غير موجودة.");
-    }
+    request.onsuccess = function () {
+      const current = request.result;
 
-    return updateOperation(operationId, {
-      status: status,
-      attempt_count: current.attempt_count + 1,
-      last_error: errorMessage || null
-    });
-  }
+      if (!current) {
+        transaction.abort();
+        reject(new Error("العملية غير موجودة."));
+        return;
+      }
 
+      current.status = status;
+      current.attempt_count =
+        (Number(current.attempt_count) || 0) + 1;
+      current.last_error = errorMessage || null;
+
+      if (status !== "syncing") {
+        delete current.syncing_at;
+      }
+
+      store.put(current);
+    };
+
+    request.onerror = function () {
+      reject(request.error);
+    };
+
+    transaction.oncomplete = function () {
+      resolve(true);
+    };
+
+    transaction.onerror = function () {
+      reject(transaction.error);
+    };
+
+    transaction.onabort = function () {
+      reject(
+        transaction.error ||
+        new Error("فشل تحديث محاولة العملية.")
+      );
+    };
+  });
+}
 async function claimPendingOperation(operationId) {
   const database = await openDatabase();
 
