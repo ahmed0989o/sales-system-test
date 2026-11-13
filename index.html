@@ -4046,6 +4046,9 @@ $("returnsPanel").classList.add("hidden");
 
   try {
   await OfflineStore.open();
+    setTimeout(() => {
+  syncPendingSales();
+}, 1000);
   await OfflineStore.recoverSyncingOperations();
   await Promise.all([loadProducts(), loadCustomers()]);
     
