@@ -5998,7 +5998,11 @@ async function init() {
     showLogin("تعذر تشغيل النظام: " + error.message);
   }
 }
+window.addEventListener("online", function () {
+  console.log("عاد الاتصال بالإنترنت؛ بدء مزامنة المبيعات.");
 
+  syncPendingSales();
+});
 window.addEventListener("error", function (event) {
   const status = document.getElementById("loginStatus");
   if (status) {
