@@ -5999,13 +5999,13 @@ async function init() {
   }
 }
 window.addEventListener("online", function () {
-  setInterval(function () {
-  syncPendingSales();
-}, 30000);
   console.log("عاد الاتصال بالإنترنت؛ بدء مزامنة المبيعات.");
-
   syncPendingSales();
 });
+
+setInterval(function () {
+  syncPendingSales();
+}, 30000);
 window.addEventListener("error", function (event) {
   const status = document.getElementById("loginStatus");
   if (status) {
