@@ -606,11 +606,9 @@ async function claimPendingOperation(operationId) {
     last_error: null
   });
 }
-
   async function markPending(operationId, errorMessage) {
     return changeAttempt(operationId, "pending", errorMessage);
   }
-
   async function markFailed(operationId, errorMessage) {
     return changeAttempt(
       operationId,
@@ -618,16 +616,20 @@ async function claimPendingOperation(operationId) {
       errorMessage || "فشلت المزامنة."
     );
   }
+async function markCompleted(operationId, serverResult) {
+  const updated = await updateOperation(operationId, {
+    status: "completed",
+    completed_at: new Date().toISOString(),
+    server_result: serverResult == null ? null : serverResult,
+    last_error: null
+  });
 
-  async function markCompleted(operationId, serverResult) {
-    return updateOperation(operationId, {
-      status: "completed",
-      completed_at: new Date().toISOString(),
-      server_result: serverResult == null ? null : serverResult,
-      last_error: null
-    });
-  }
+  await updateOperation(operationId, {
+    syncing_at: undefined
+  });
 
+  return updated;
+}
 async function recoverSyncingOperations() {
   const database = await openDatabase();
 
