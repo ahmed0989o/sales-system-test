@@ -6038,10 +6038,59 @@ console.log(
   myPendingSales.length
 );
 for (const operation of myPendingSales) {
-  console.log(
-    "فاتورة بانتظار المزامنة:",
-    operation.payload.p_invoice_number
-  );
+  if (!currentUser || operation.user_id !== currentUser.id) {
+    continue;
+  }
+
+  const claimedOperation =
+    await OfflineStore.claimPendingOperation(
+      operation.operation_id
+    );
+
+  if (!claimedOperation) continue;
+
+  try {
+    const response = await db.rpc(
+      "create_multi_sale_with_stock_idempotent",
+      {
+        ...claimedOperation.payload,
+        p_operation_id: claimedOperation.operation_id
+      }
+    );
+
+    if (response.error) {
+      await OfflineStore.markPending(
+        claimedOperation.operation_id,
+        response.error.message
+      );
+
+      console.error(
+        "تعذرت مزامنة الفاتورة:",
+        claimedOperation.payload.p_invoice_number,
+        response.error
+      );
+
+      continue;
+    }
+
+    await OfflineStore.markCompleted(
+      claimedOperation.operation_id,
+      response.data
+    );
+
+    console.log(
+      "تمت مزامنة الفاتورة:",
+      claimedOperation.payload.p_invoice_number
+    );
+
+  } catch (error) {
+    await OfflineStore.markPending(
+      claimedOperation.operation_id,
+      error.message
+    );
+
+    console.error("خطأ مزامنة الفاتورة:", error);
+  }
 }
   } catch (error) {
     console.error("Sale sync:", error);
