@@ -6013,7 +6013,26 @@ window.addEventListener("unhandledrejection", function (event) {
       (event.reason?.message || String(event.reason));
   }
 });
+let saleSyncRunning = false;
 
+async function syncPendingSales() {
+  if (saleSyncRunning) return;
+  if (!navigator.onLine) return;
+  if (!currentUser || !db || !window.OfflineStore) return;
+
+  saleSyncRunning = true;
+
+  try {
+    await OfflineStore.open();
+
+    console.log("بدأ فحص فواتير المزامنة المعلقة.");
+
+  } catch (error) {
+    console.error("Sale sync:", error);
+  } finally {
+    saleSyncRunning = false;
+  }
+}
 init();
   
 async function loadCashbox() {
