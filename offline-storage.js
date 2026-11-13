@@ -241,7 +241,18 @@ async function getInvoiceNumberDraft(userId) {
 
   return await getMeta(`invoice_number_draft_${userId}`);
 }
+async function saveCustomerBalances(rows) {
+  if (!Array.isArray(rows)) {
+    throw new Error("بيانات أرصدة الزبائن غير صحيحة.");
+  }
 
+  return await setMeta("customer_balances", rows);
+}
+
+async function getCustomerBalances() {
+  const rows = await getMeta("customer_balances");
+  return Array.isArray(rows) ? rows : [];
+}
 async function clearInvoiceNumberDraft(userId) {
   if (!userId) return false;
 
