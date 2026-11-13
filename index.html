@@ -6092,14 +6092,14 @@ for (const operation of myPendingSales) {
     console.error("خطأ مزامنة الفاتورة:", error);
   }
 }
+      if (syncedAny && currentUser) {
+      await Promise.all([
+        loadProducts(),
+        loadDailyReport()
+      ]);
+    }
   } catch (error) {
     console.error("Sale sync:", error);
-    if (syncedAny && currentUser) {
-  await Promise.all([
-    loadProducts(),
-    loadDailyReport()
-  ]);
-}
   } finally {
     saleSyncRunning = false;
   }
