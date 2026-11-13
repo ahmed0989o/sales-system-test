@@ -3974,7 +3974,16 @@ async function prepareNextInvoiceNumber() {
           year: "numeric"
         }).format(new Date())
       );
+const savedDraft =
+  await OfflineStore.getInvoiceNumberDraft(currentUser.id);
 
+if (
+  savedDraft &&
+  savedDraft.startsWith(`INV-${currentYear}-`)
+) {
+  input.value = savedDraft;
+  return;
+}
       let reservation =
         await OfflineStore.getInvoiceNumberReservation();
 
