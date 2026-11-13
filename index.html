@@ -6104,10 +6104,25 @@ for (const operation of myPendingSales) {
       continue;
     }
 
-    await OfflineStore.markCompleted(
+        await OfflineStore.markCompleted(
       claimedOperation.operation_id,
       response.data
     );
+
+    try {
+      const currentDraft =
+        await OfflineStore.getInvoiceNumberDraft(currentUser.id);
+
+      if (
+        currentDraft ===
+        claimedOperation.payload.p_invoice_number
+      ) {
+        await OfflineStore.clearInvoiceNumberDraft(currentUser.id);
+      }
+    } catch (draftError) {
+      console.error("تعذر حذف مسودة الفاتورة:", draftError);
+    }
+
     syncedAny = true;
     console.log(
       "تمت مزامنة الفاتورة:",
