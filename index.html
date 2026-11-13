@@ -6032,7 +6032,7 @@ const myPendingSales = pendingOperations.filter(operation =>
   operation.type === "sale.create" &&
   operation.user_id === currentUser.id
 );
-
+let syncedAny = false;
 console.log(
   "عدد فواتير المبيعات المعلقة:",
   myPendingSales.length
