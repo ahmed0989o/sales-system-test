@@ -4871,7 +4871,10 @@ customerName: isCashCustomer ? cashCustomerName : (customer ? customer.name : "Ø
     quantity: Number(item.quantity || 0)
   }))
 };
-
+sessionStorage.removeItem(
+  `sales_invoice_draft_${currentUser.id}`
+);
+$("invoiceNumber").value = "";
 invoiceCart = [];
 renderInvoiceItems();
 $("cashCustomerBox").classList.add("hidden");
