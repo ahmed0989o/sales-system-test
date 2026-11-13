@@ -4757,25 +4757,42 @@ if (saleOperation.status === "completed") {
   if (!data) {
     throw new Error("نتيجة العملية المكتملة غير متاحة؛ أوقفنا إعادة الإرسال.");
   }
+
 } else {
+  const claimedOperation =
+    await OfflineStore.claimPendingOperation(
+      saleOperation.operation_id
+    );
+
+  if (!claimedOperation) {
+    throw new Error(
+      "هذه الفاتورة قيد المعالجة حالياً في تبويب آخر أو ليست معلّقة."
+    );
+  }
+
   const response = await db.rpc(
     "create_multi_sale_with_stock_idempotent",
     {
-      ...salePayload,
-      p_operation_id: saleOperation.operation_id
+      ...claimedOperation.payload,
+      p_operation_id: claimedOperation.operation_id
     }
   );
 
-  if (response.error) throw response.error;
+  if (response.error) {
+    await OfflineStore.markPending(
+      claimedOperation.operation_id,
+      response.error.message
+    );
+    throw response.error;
+  }
 
   data = response.data;
 
   await OfflineStore.markCompleted(
-    saleOperation.operation_id,
+    claimedOperation.operation_id,
     data
   );
 }
-
     setMessage(
       "status",
       `تم حفظ الفاتورة بنجاح. الإجمالي: ${Number(data.total_amount).toLocaleString()} د.ع`
