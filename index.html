@@ -6094,6 +6094,12 @@ for (const operation of myPendingSales) {
 }
   } catch (error) {
     console.error("Sale sync:", error);
+    if (syncedAny && currentUser) {
+  await Promise.all([
+    loadProducts(),
+    loadDailyReport()
+  ]);
+}
   } finally {
     saleSyncRunning = false;
   }
