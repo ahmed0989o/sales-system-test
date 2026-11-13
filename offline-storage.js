@@ -224,6 +224,50 @@ async function saveInvoiceNumberReservation(reservation) {
 async function getInvoiceNumberReservation() {
   return await getMeta("invoice_number_reservation");
 }
+  
+async function saveInvoiceNumberDraft(userId, invoiceNumber) {
+  if (!userId || typeof invoiceNumber !== "string" || !invoiceNumber.trim()) {
+    throw new Error("بيانات مسودة الفاتورة غير صحيحة.");
+  }
+
+  return await setMeta(
+    `invoice_number_draft_${userId}`,
+    invoiceNumber.trim()
+  );
+}
+
+async function getInvoiceNumberDraft(userId) {
+  if (!userId) return null;
+
+  return await getMeta(`invoice_number_draft_${userId}`);
+}
+
+async function clearInvoiceNumberDraft(userId) {
+  if (!userId) return false;
+
+  const database = await openDatabase();
+
+  return new Promise(function (resolve, reject) {
+    const transaction = database.transaction("meta", "readwrite");
+
+    transaction.objectStore("meta").delete(
+      `invoice_number_draft_${userId}`
+    );
+
+    transaction.oncomplete = function () {
+      resolve(true);
+    };
+
+    transaction.onerror = function () {
+      reject(transaction.error);
+    };
+
+    transaction.onabort = function () {
+      reject(transaction.error || new Error("تعذر حذف مسودة الفاتورة."));
+    };
+  });
+}
+
   async function getInvoiceReservationRequestId() {
   return await getMeta("invoice_reservation_request_id");
 }
