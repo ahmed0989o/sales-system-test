@@ -3952,12 +3952,12 @@ async function requestInvoiceNumberReservation() {
   return localReservation;
 }
 
+
 async function prepareNextInvoiceNumber() {
   const input = $("invoiceNumber");
 
   if (!input || input.value.trim()) return;
 
-  // منع تشغيل تجهيز الرقم مرتين بالتزامن في نفس التبويب
   if (window.invoiceNumberPreparationPromise) {
     await window.invoiceNumberPreparationPromise;
     return;
@@ -3967,15 +3967,30 @@ async function prepareNextInvoiceNumber() {
     try {
       await OfflineStore.open();
 
-      let reservation =
-        await OfflineStore.getInvoiceNumberReservation();
-
       const currentYear = Number(
         new Intl.DateTimeFormat("en-US", {
           timeZone: "Asia/Baghdad",
           year: "numeric"
         }).format(new Date())
       );
+
+      const draftKey =
+        `sales_invoice_draft_${currentUser.id}`;
+
+      // استعادة رقم الفاتورة السابق بعد تحديث الصفحة
+      let savedDraft = sessionStorage.getItem(draftKey);
+
+      if (savedDraft && savedDraft.startsWith(`INV-${currentYear}-`)) {
+        input.value = savedDraft;
+        return;
+      }
+
+      if (savedDraft) {
+        sessionStorage.removeItem(draftKey);
+      }
+
+      let reservation =
+        await OfflineStore.getInvoiceNumberReservation();
 
       if (
         !reservation ||
@@ -3996,11 +4011,17 @@ async function prepareNextInvoiceNumber() {
         throw new Error("لا يوجد حجز صالح لأرقام الفواتير.");
       }
 
-      const number = await OfflineStore.takeNextInvoiceNumber();
+      const number =
+        await OfflineStore.takeNextInvoiceNumber();
+
+      const newInvoiceNumber =
+        `INV-${currentYear}-${String(number).padStart(6, "0")}`;
+
+      // حفظ رقم المسودة حتى لا يتغير عند تحديث الصفحة
+      sessionStorage.setItem(draftKey, newInvoiceNumber);
 
       if (!input.value.trim()) {
-        input.value =
-          `INV-${currentYear}-${String(number).padStart(6, "0")}`;
+        input.value = newInvoiceNumber;
       }
 
     } catch (error) {
