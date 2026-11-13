@@ -4784,12 +4784,20 @@ if (saleOperation.status === "completed") {
   );
 
   if (response.error) {
-    await OfflineStore.markPending(
-      claimedOperation.operation_id,
-      response.error.message
+  await OfflineStore.markPending(
+    claimedOperation.operation_id,
+    response.error.message
+  );
+
+  if (!navigator.onLine) {
+    setMessage(
+      "status",
+      "تم حفظ الفاتورة محلياً، وستتم مزامنتها تلقائياً عند عودة الإنترنت."
     );
-    throw response.error;
   }
+
+  throw response.error;
+}
 
   data = response.data;
 
