@@ -674,6 +674,7 @@ window.OfflineStore = Object.freeze({
   enqueueOperation,
   listOperations: listOperations,
   markSyncing: markSyncing,
+  claimPendingOperation: claimPendingOperation,
   markPending: markPending,
   markFailed: markFailed,
   markCompleted: markCompleted,
