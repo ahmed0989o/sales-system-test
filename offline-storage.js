@@ -616,20 +616,56 @@ async function claimPendingOperation(operationId) {
       errorMessage || "فشلت المزامنة."
     );
   }
+
 async function markCompleted(operationId, serverResult) {
-  const updated = await updateOperation(operationId, {
-    status: "completed",
-    completed_at: new Date().toISOString(),
-    server_result: serverResult == null ? null : serverResult,
-    last_error: null
-  });
+  const database = await openDatabase();
 
-  await updateOperation(operationId, {
-    syncing_at: undefined
-  });
+  return new Promise(function (resolve, reject) {
+    const transaction = database.transaction("outbox", "readwrite");
+    const store = transaction.objectStore("outbox");
+    const request = store.get(operationId);
 
-  return updated;
+    request.onsuccess = function () {
+      const operation = request.result;
+
+      if (!operation) {
+        transaction.abort();
+        reject(new Error("العملية غير موجودة."));
+        return;
+      }
+
+      operation.status = "completed";
+      operation.completed_at = new Date().toISOString();
+      operation.server_result =
+        serverResult == null ? null : serverResult;
+      operation.last_error = null;
+
+      delete operation.syncing_at;
+
+      store.put(operation);
+    };
+
+    request.onerror = function () {
+      reject(request.error);
+    };
+
+    transaction.oncomplete = function () {
+      resolve(true);
+    };
+
+    transaction.onerror = function () {
+      reject(transaction.error);
+    };
+
+    transaction.onabort = function () {
+      reject(
+        transaction.error ||
+        new Error("تعذر إكمال العملية.")
+      );
+    };
+  });
 }
+
 async function recoverSyncingOperations() {
   const database = await openDatabase();
 
