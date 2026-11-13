@@ -268,6 +268,113 @@ async function clearInvoiceNumberDraft(userId) {
   });
 }
 
+async function getOrCreateInvoiceNumberDraft(userId, currentYear) {
+  if (!userId || !Number.isInteger(currentYear)) {
+    throw new Error("بيانات مسودة الفاتورة غير صحيحة.");
+  }
+
+  const database = await openDatabase();
+  const draftKey = `invoice_number_draft_${userId}`;
+
+  return new Promise(function (resolve, reject) {
+    const transaction = database.transaction("meta", "readwrite");
+    const store = transaction.objectStore("meta");
+
+    let result = null;
+    let allocationError = null;
+    let draftReady = false;
+    let reservationReady = false;
+    let savedDraft = null;
+    let reservation = null;
+
+    function processRecords() {
+      if (!draftReady || !reservationReady) return;
+
+      if (
+        typeof savedDraft === "string" &&
+        savedDraft.startsWith(`INV-${currentYear}-`)
+      ) {
+        result = savedDraft;
+        return;
+      }
+
+      if (
+        !reservation ||
+        reservation.invoice_year !== currentYear ||
+        reservation.next_number > reservation.range_end
+      ) {
+        allocationError = new Error("لا يوجد حجز صالح لأرقام الفواتير.");
+        transaction.abort();
+        return;
+      }
+
+      const number = reservation.next_number;
+
+      reservation.next_number += 1;
+
+      result =
+        `INV-${currentYear}-${String(number).padStart(6, "0")}`;
+
+      store.put({
+        key: "invoice_number_reservation",
+        value: reservation
+      });
+
+      store.put({
+        key: draftKey,
+        value: result
+      });
+    }
+
+    const draftRequest = store.get(draftKey);
+    const reservationRequest = store.get("invoice_number_reservation");
+
+    draftRequest.onsuccess = function () {
+      savedDraft = draftRequest.result
+        ? draftRequest.result.value
+        : null;
+
+      draftReady = true;
+      processRecords();
+    };
+
+    reservationRequest.onsuccess = function () {
+      reservation = reservationRequest.result
+        ? reservationRequest.result.value
+        : null;
+
+      reservationReady = true;
+      processRecords();
+    };
+
+    draftRequest.onerror = function () {
+      allocationError = draftRequest.error;
+      transaction.abort();
+    };
+
+    reservationRequest.onerror = function () {
+      allocationError = reservationRequest.error;
+      transaction.abort();
+    };
+
+    transaction.oncomplete = function () {
+      resolve(result);
+    };
+
+    transaction.onerror = function () {
+      reject(transaction.error || allocationError);
+    };
+
+    transaction.onabort = function () {
+      reject(
+        allocationError ||
+        transaction.error ||
+        new Error("تعذر تجهيز رقم الفاتورة.")
+      );
+    };
+  });
+}
+
   async function getInvoiceReservationRequestId() {
   return await getMeta("invoice_reservation_request_id");
 }
