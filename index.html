@@ -3953,6 +3953,7 @@ async function requestInvoiceNumberReservation() {
 }
 
 
+
 async function prepareNextInvoiceNumber() {
   const input = $("invoiceNumber");
 
@@ -3973,21 +3974,6 @@ async function prepareNextInvoiceNumber() {
           year: "numeric"
         }).format(new Date())
       );
-
-      const draftKey =
-        `sales_invoice_draft_${currentUser.id}`;
-
-      // استعادة رقم الفاتورة السابق بعد تحديث الصفحة
-      let savedDraft = sessionStorage.getItem(draftKey);
-
-      if (savedDraft && savedDraft.startsWith(`INV-${currentYear}-`)) {
-        input.value = savedDraft;
-        return;
-      }
-
-      if (savedDraft) {
-        sessionStorage.removeItem(draftKey);
-      }
 
       let reservation =
         await OfflineStore.getInvoiceNumberReservation();
@@ -4011,17 +3997,14 @@ async function prepareNextInvoiceNumber() {
         throw new Error("لا يوجد حجز صالح لأرقام الفواتير.");
       }
 
-      const number =
-        await OfflineStore.takeNextInvoiceNumber();
-
-      const newInvoiceNumber =
-        `INV-${currentYear}-${String(number).padStart(6, "0")}`;
-
-      // حفظ رقم المسودة حتى لا يتغير عند تحديث الصفحة
-      sessionStorage.setItem(draftKey, newInvoiceNumber);
+      const draftNumber =
+        await OfflineStore.getOrCreateInvoiceNumberDraft(
+          currentUser.id,
+          currentYear
+        );
 
       if (!input.value.trim()) {
-        input.value = newInvoiceNumber;
+        input.value = draftNumber;
       }
 
     } catch (error) {
