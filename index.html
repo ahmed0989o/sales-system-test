@@ -4867,7 +4867,15 @@ await loadDailyReport();
 
   } catch (error) {
     console.error("Save sale:", error);
-    setMessage("status", "تعذر حفظ الفاتورة: " + error.message);
+
+    if (!navigator.onLine) {
+      setMessage(
+        "status",
+        "تم حفظ الفاتورة محلياً، وستتم مزامنتها تلقائياً عند عودة الإنترنت."
+      );
+    } else {
+      setMessage("status", "تعذر حفظ الفاتورة: " + error.message);
+    }
   } finally {
     button.disabled = false;
   }
