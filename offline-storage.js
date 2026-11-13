@@ -906,6 +906,8 @@ window.OfflineStore = Object.freeze({
   takeNextInvoiceNumber,
   cacheRows,
   getCachedRows,
+  saveCustomerBalances,
+  getCustomerBalances,
   enqueueOperation,
   listOperations: listOperations,
   markSyncing: markSyncing,
