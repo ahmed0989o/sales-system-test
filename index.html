@@ -4225,21 +4225,45 @@ async function loadCustomers() {
 
     window.balancesByCustomer = new Map();
 
-    if (!loadedFromCache) {
-      const balanceResult = await db.rpc("get_customer_balances");
+let balanceRows = [];
 
-      if (!balanceResult.error) {
-        (balanceResult.data || []).forEach(row => {
-          window.balancesByCustomer.set(
-            String(row.customer_id),
-            Number(row.remaining_debt || 0)
-          );
-        });
-      } else {
-        console.error("Customer balances:", balanceResult.error);
-      }
+if (!loadedFromCache) {
+  try {
+    const balanceResult =
+      await db.rpc("get_customer_balances");
+
+    if (balanceResult.error) {
+      throw balanceResult.error;
     }
 
+    balanceRows = balanceResult.data || [];
+
+    try {
+      await OfflineStore.saveCustomerBalances(balanceRows);
+    } catch (cacheError) {
+      console.error(
+        "تعذر حفظ أرصدة الزبائن محلياً:",
+        cacheError
+      );
+    }
+
+  } catch (balanceError) {
+    console.error("Customer balances:", balanceError);
+
+    balanceRows =
+      await OfflineStore.getCustomerBalances();
+  }
+} else {
+  balanceRows =
+    await OfflineStore.getCustomerBalances();
+}
+
+balanceRows.forEach(row => {
+  window.balancesByCustomer.set(
+    String(row.customer_id),
+    Number(row.remaining_debt || 0)
+  );
+});
     $("customerSelect").innerHTML =
       '<option value="">بدون تحديد زبون</option>';
 
