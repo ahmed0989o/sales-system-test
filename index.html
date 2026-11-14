@@ -4071,7 +4071,10 @@ const { data: canManagePurchases, error: purchasesPermissionError } =
   });
 
 if (purchasesPermissionError) throw purchasesPermissionError;
-
+await OfflineStore.savePurchasePermission(
+  currentUser.id,
+  canManagePurchases === true
+);
 $("purchasePanel").classList.add("hidden");
 if (canManagePurchases === true) {
   await loadPurchases();
