@@ -6229,7 +6229,10 @@ window.addEventListener("online", async function () {
   if (!currentUser || !db || !window.OfflineStore) return;
 
   try {
-    await syncPendingSales();
+    await Promise.all([
+  syncPendingSales(),
+  syncPendingPurchases()
+]);
 
     await Promise.all([
       loadProducts(),
