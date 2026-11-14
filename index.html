@@ -7314,14 +7314,12 @@ function openDailyReport() {
 }
   // فتح حركة الصندوق
  async function openPurchases() {
-  const { data: allowed, error } = await db.rpc("has_app_permission", {
-    p_permission_key: "purchases.manage"
-  });
+  const allowed = await checkPurchasePermission();
 
-  if (error || allowed !== true) {
-    alert("ليس لديك صلاحية إدارة المشتريات");
-    return;
-  }
+if (!allowed) {
+  alert("ليس لديك صلاحية إدارة المشتريات أو تعذر التحقق منها.");
+  return;
+}
 
   $("mainMenu").classList.remove("hidden");
   $("purchasePanel").classList.remove("hidden");
