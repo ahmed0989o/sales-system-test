@@ -6015,7 +6015,18 @@ if (!navigator.onLine) {
     setMessage("purchaseStatus", "تعذر تحميل المشتريات: " + error.message);
   }
 }
+  
+function calculatePurchaseTotal() {
+  const quantity = Number($("purchaseQuantity").value);
+  const unitCost = Number($("purchaseUnitCost").value);
 
+  const total =
+    quantity > 0 && unitCost >= 0
+      ? quantity * unitCost
+      : 0;
+
+  $("purchaseTotalCost").value = total.toFixed(2);
+}
 
 async function loadRentHistory() {
   if (!isOwner(currentUser)) return;
