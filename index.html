@@ -4174,7 +4174,44 @@ async function loadProducts() {
         throw new Error("لا يوجد اتصال بالإنترنت ولا توجد منتجات محفوظة محلياً.");
       }
     }
+        const localOperations = await OfflineStore.listOperations();
 
+    const pendingOperations = localOperations.filter(op =>
+      op.user_id === currentUser.id &&
+      (op.status === "pending" || op.status === "syncing")
+    );
+
+    pendingOperations.forEach(op => {
+      if (op.type === "purchase.create") {
+        const product = products.find(
+          p => String(p.id) === String(op.payload.p_product_id)
+        );
+
+        if (product) {
+          product.quantity =
+            Number(product.quantity || 0) +
+            Number(op.payload.p_quantity || 0);
+        }
+      }
+
+      if (op.type === "sale.create") {
+        const items = op.payload?.p_items;
+
+        if (!Array.isArray(items)) return;
+
+        items.forEach(item => {
+          const product = products.find(
+            p => String(p.id) === String(item.product_id)
+          );
+
+          if (product) {
+            product.quantity =
+              Number(product.quantity || 0) -
+              Number(item.quantity || 0);
+          }
+        });
+      }
+    });
     ["product", "purchaseProduct"].forEach(id => {
       const select = $(id);
       if (!select) return;
