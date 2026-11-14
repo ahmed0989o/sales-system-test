@@ -927,6 +927,8 @@ window.OfflineStore = Object.freeze({
   getCachedRows,
   saveCustomerBalances,
   getCustomerBalances,
+  savePurchasePermission,
+  getPurchasePermission,
   enqueueOperation,
   listOperations: listOperations,
   markSyncing: markSyncing,
