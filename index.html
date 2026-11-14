@@ -4160,48 +4160,7 @@ async function loadProducts() {
       console.warn("تعذر تحميل المنتجات من الإنترنت:", onlineError);
 
       products = await OfflineStore.getCachedRows("products");
-      const localOperations = await OfflineStore.listOperations();
-
-const pendingPurchases = localOperations.filter(op =>
-  op.type === "purchase.create" &&
-  op.user_id === currentUser.id &&
-  (op.status === "pending" || op.status === "syncing")
-);
-
-pendingPurchases.forEach(op => {
-  const product = products.find(
-    p => String(p.id) === String(op.payload.p_product_id)
-  );
-
-  if (product) {
-    product.quantity =
-      Number(product.quantity || 0) +
-      Number(op.payload.p_quantity || 0);
-  }
-});
-      const pendingSales = localOperations.filter(op =>
-  op.type === "sale.create" &&
-  op.user_id === currentUser.id &&
-  (op.status === "pending" || op.status === "syncing")
-);
-
-pendingSales.forEach(op => {
-  const items = op.payload?.p_items;
-
-  if (!Array.isArray(items)) return;
-
-  items.forEach(item => {
-    const product = products.find(
-      p => String(p.id) === String(item.product_id)
-    );
-
-    if (product) {
-      product.quantity =
-        Number(product.quantity || 0) -
-        Number(item.quantity || 0);
-    }
-  });
-});
+      
       if (products.length) {
         products.sort((a, b) =>
           String(a.name || "").localeCompare(String(b.name || ""))
