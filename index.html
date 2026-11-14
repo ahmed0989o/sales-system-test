@@ -5884,30 +5884,71 @@ try {
 }
 
   try {
-    const { error } = await db.rpc("record_stock_purchase", {
-      p_product_id: Number(productId),
-      p_quantity: quantity,
-      p_unit_cost: unitCost
-    });
-
-    if (error) throw error;
-
-    setMessage("purchaseStatus", "تم حفظ المشتريات وتحديث المخزون بنجاح.");
+  if (!navigator.onLine) {
+    setMessage(
+      "purchaseStatus",
+      "تم حفظ المشتريات محلياً. ستتم مزامنتها عند عودة الإنترنت."
+    );
 
     $("purchaseQuantity").value = "1";
     $("purchaseUnitCost").value = "";
     calculatePurchaseTotal();
 
-    await loadProducts();
-    await loadPurchases();
-  } catch (error) {
-    console.error("Save purchase:", error);
-    setMessage("purchaseStatus", "تعذر حفظ المشتريات: " + error.message);
-  } finally {
-    button.disabled = false;
+    return;
   }
-}
 
+  const operation = await OfflineStore.claimPendingOperation(
+    purchaseOperation.operation_id
+  );
+
+  if (!operation) {
+    throw new Error("تعذر حجز عملية الشراء للمزامنة.");
+  }
+
+  const { data, error } = await db.rpc(
+    "record_stock_purchase_idempotent",
+    {
+      ...operation.payload,
+      p_operation_id: operation.operation_id
+    }
+  );
+
+  if (error) throw error;
+
+  await OfflineStore.markCompleted(
+    operation.operation_id,
+    data
+  );
+
+  setMessage(
+    "purchaseStatus",
+    "تمت مزامنة المشتريات وتحديث المخزون بنجاح."
+  );
+
+  $("purchaseQuantity").value = "1";
+  $("purchaseUnitCost").value = "";
+  calculatePurchaseTotal();
+
+  await loadProducts();
+  await loadPurchases();
+
+} catch (error) {
+  console.error("Save purchase:", error);
+
+  await OfflineStore.markPending(
+    purchaseOperation.operation_id,
+    error.message
+  );
+
+  setMessage(
+    "purchaseStatus",
+    "المشتريات محفوظة محلياً، وتعذرت مزامنتها حالياً: " +
+    error.message
+  );
+
+} finally {
+  button.disabled = false;
+}
 
 async function loadPurchases() {
  if (!currentUser) return;
