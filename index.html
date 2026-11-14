@@ -1105,7 +1105,7 @@ font-size:16px;
 <option value="">اختر المنتج</option>
 </select>
 <label for="purchaseQuantity">الكمية المشتراة</label>
-<input id="purchaseQuantity" type="number" min="1" step="1" value="1">
+<input id="purchaseQuantity" type="number" min="1" step="1" value="1" oninput="calculatePurchaseTotal()">
 <label for="purchaseUnitCost">تكلفة الوحدة</label>
 <input id="purchaseUnitCost" type="number" min="0" step="0.01">
 <label for="purchaseTotalCost">إجمالي التكلفة</label>
