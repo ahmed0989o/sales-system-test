@@ -4097,8 +4097,12 @@ $("returnsPanel").classList.add("hidden");
 const canManagePurchases =
   await checkPurchasePermission();
 
-$("purchasePanel").classList.add("hidden");
+const lastActiveSection = localStorage.getItem("lastActiveSection");
 
+$("purchasePanel").classList.toggle(
+  "hidden",
+  lastActiveSection !== "purchasePanel"
+);
 if (canManagePurchases === true) {
   await loadPurchases();
   
