@@ -5855,7 +5855,33 @@ if (!allowed) {
   }
 
   button.disabled = true;
-  setMessage("purchaseStatus", "جارٍ حفظ المشتريات وتحديث المخزون...");
+
+let purchaseOperation = null;
+
+try {
+  purchaseOperation = await OfflineStore.enqueueOperation({
+    type: "purchase.create",
+    payload: {
+      p_product_id: Number(productId),
+      p_quantity: quantity,
+      p_unit_cost: unitCost
+    },
+    userId: currentUser.id
+  });
+
+  setMessage(
+    "purchaseStatus",
+    "تم حفظ عملية الشراء محلياً، جارٍ تجهيز المزامنة..."
+  );
+} catch (error) {
+  console.error("Local purchase save:", error);
+  setMessage(
+    "purchaseStatus",
+    "تعذر حفظ عملية الشراء محلياً: " + error.message
+  );
+  button.disabled = false;
+  return;
+}
 
   try {
     const { error } = await db.rpc("record_stock_purchase", {
