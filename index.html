@@ -4699,11 +4699,6 @@ function addProductToInvoice() {
 
   const newQuantity = (existing ? existing.quantity : 0) + quantity;
 
-  if (newQuantity > Number(product.quantity)) {
-    alert(`الكمية المطلوبة أكبر من المخزون المتوفر (${product.quantity})`);
-    return;
-  }
-
   if (existing) {
     existing.quantity = newQuantity;
   } else {
