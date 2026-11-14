@@ -4832,13 +4832,7 @@ if (isCashCustomer && paymentMethod !== "نقدي") {
       return setMessage("status", "تأكد من المنتجات والكميات في الفاتورة.");
     }
 
-    if (item.quantity > Number(product.quantity)) {
-      return setMessage(
-        "status",
-        `المتوفر من ${product.name} هو ${product.quantity} فقط.`
-      );
-    }
-  }
+     }
 
   button.disabled = true;
   setMessage("status", "جارٍ حفظ الفاتورة...");
