@@ -4093,21 +4093,16 @@ $("returnsPanel").classList.add("hidden");
   await OfflineStore.recoverSyncingOperations();
   await Promise.all([loadProducts(), loadCustomers()]);
     
-const { data: canManagePurchases, error: purchasesPermissionError } =
-  await db.rpc("has_app_permission", {
-    p_permission_key: "purchases.manage"
-  });
+const canManagePurchases =
+  await checkPurchasePermission();
 
-if (purchasesPermissionError) throw purchasesPermissionError;
-await OfflineStore.savePurchasePermission(
-  currentUser.id,
-  canManagePurchases === true
-);
 $("purchasePanel").classList.add("hidden");
+
 if (canManagePurchases === true) {
   await loadPurchases();
+  $("purchasePanel").classList.remove("hidden");
 }
-if (isOwner(currentUser)) await loadCashbox();
+    if (isOwner(currentUser)) await loadCashbox();
 if (isOwner(currentUser)) {
   await loadRentHistory();
   await loadRentPaymentContracts();
