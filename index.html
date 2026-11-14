@@ -5899,6 +5899,12 @@ try {
 
   try {
   if (!navigator.onLine) {
+  await loadProducts();
+
+  setMessage(
+    "purchaseStatus",
+    "تم حفظ المشتريات محلياً. ستتم مزامنتها عند عودة الإنترنت."
+  );
     setMessage(
       "purchaseStatus",
       "تم حفظ المشتريات محلياً. ستتم مزامنتها عند عودة الإنترنت."
