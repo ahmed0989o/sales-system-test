@@ -6124,9 +6124,23 @@ async function init() {
     showLogin("تعذر تشغيل النظام: " + error.message);
   }
 }
-window.addEventListener("online", function () {
-  console.log("عاد الاتصال بالإنترنت؛ بدء مزامنة المبيعات.");
-  syncPendingSales();
+window.addEventListener("online", async function () {
+  console.log("عاد الاتصال بالإنترنت؛ بدء تحديث البيانات والمزامنة.");
+
+  if (!currentUser || !db || !window.OfflineStore) return;
+
+  try {
+    await syncPendingSales();
+
+    await Promise.all([
+      loadProducts(),
+      loadCustomers()
+    ]);
+
+    console.log("تم تحديث المنتجات والزبائن والأرصدة.");
+  } catch (error) {
+    console.error("خطأ تحديث البيانات بعد عودة الإنترنت:", error);
+  }
 });
 
 setInterval(function () {
