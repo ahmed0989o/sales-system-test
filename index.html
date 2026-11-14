@@ -4032,6 +4032,34 @@ if (
     window.invoiceNumberPreparationPromise = null;
   }
 }
+  async function checkPurchasePermission() {
+  if (!currentUser || !window.OfflineStore) {
+    return false;
+  }
+
+  if (navigator.onLine) {
+    const { data, error } = await db.rpc(
+      "has_app_permission",
+      {
+        p_permission_key: "purchases.manage"
+      }
+    );
+
+    if (error) throw error;
+
+    await OfflineStore.savePurchasePermission(
+      currentUser.id,
+      data === true
+    );
+
+    return data === true;
+  }
+
+  const cachedPermission =
+    await OfflineStore.getPurchasePermission(currentUser.id);
+
+  return cachedPermission?.allowed === true;
+}
 async function showApp() {
   if (!currentUser || appLoading) return;
   appLoading = true;
