@@ -7534,7 +7534,7 @@ if (!allowed) {
 
   $("mainMenu").classList.remove("hidden");
   $("purchasePanel").classList.remove("hidden");
-
+localStorage.setItem("lastActiveSection", "purchasePanel");
   await loadPurchases();
 }
 function openCashbox() {
