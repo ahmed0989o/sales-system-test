@@ -4087,8 +4087,9 @@ $("returnsPanel").classList.add("hidden");
 
   try {
   await OfflineStore.open();
-    setTimeout(() => {
+   setTimeout(() => {
   syncPendingSales();
+  syncPendingPurchases();
 }, 1000);
   await OfflineStore.recoverSyncingOperations();
   await Promise.all([loadProducts(), loadCustomers()]);
