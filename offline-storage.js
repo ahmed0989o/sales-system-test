@@ -253,6 +253,25 @@ async function getCustomerBalances() {
   const rows = await getMeta("customer_balances");
   return Array.isArray(rows) ? rows : [];
 }
+  async function savePurchasePermission(userId, allowed) {
+  if (!userId || typeof allowed !== "boolean") {
+    throw new Error("بيانات صلاحية المشتريات غير صحيحة.");
+  }
+
+  return await setMeta(
+    `purchase_permission_${userId}`,
+    {
+      allowed: allowed,
+      checked_at: new Date().toISOString()
+    }
+  );
+}
+
+async function getPurchasePermission(userId) {
+  if (!userId) return null;
+
+  return await getMeta(`purchase_permission_${userId}`);
+}
 async function clearInvoiceNumberDraft(userId) {
   if (!userId) return false;
 
