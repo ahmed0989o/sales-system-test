@@ -5882,22 +5882,19 @@ if (canManagePurchases !== true) {
 async function loadPurchases() {
  if (!currentUser) return;
 
-const { data: canManagePurchases, error: permissionError } =
-  await db.rpc("has_app_permission", {
-    p_permission_key: "purchases.manage"
-  });
+const allowed = await checkPurchasePermission();
 
-if (permissionError) {
-  console.error("Purchase permission:", permissionError);
-  setMessage("purchaseStatus", "تعذر التحقق من صلاحية المشتريات.");
-  return;
-}
-
-if (canManagePurchases !== true) {
+if (!allowed) {
   setMessage("purchaseStatus", "غير مصرح لك بإدارة المشتريات.");
   return;
 }
 
+if (!navigator.onLine) {
+  $("purchaseDetails").textContent =
+    "أنت تعمل دون إنترنت. سجل المشتريات السابق غير متاح حالياً.";
+  setMessage("purchaseStatus", "يمكنك تجهيز مشتريات جديدة للحفظ المحلي.");
+  return;
+}
   setMessage("purchaseStatus", "جارٍ تحميل سجل المشتريات...");
 
   try {
