@@ -5828,6 +5828,8 @@ if (canViewReport !== true) {
   }
 }
 async function savePurchase() {
+  console.log("تم استدعاء savePurchase");
+
   const button = $("savePurchaseButton");
 
   if (!currentUser) {
