@@ -6418,19 +6418,31 @@ async function syncPendingPurchases() {
         );
 
         if (response.error) {
-          await OfflineStore.markPending(
-            claimedOperation.operation_id,
-            response.error.message
-          );
+  const errorMessage = response.error.message || "";
 
-          console.error(
-            "تعذرت مزامنة المشتريات:",
-            response.error
-          );
+  const permanentError =
+    /غير مصرح|صلاحية|الحساب غير نشط|بيانات المشتريات غير صحيحة|المنتج غير موجود/i
+      .test(errorMessage);
 
-          continue;
-        }
+  if (permanentError) {
+    await OfflineStore.markFailed(
+      claimedOperation.operation_id,
+      errorMessage
+    );
+  } else {
+    await OfflineStore.markPending(
+      claimedOperation.operation_id,
+      errorMessage
+    );
+  }
 
+  console.error(
+    "تعذرت مزامنة المشتريات:",
+    response.error
+  );
+
+  continue;
+}
         await OfflineStore.markCompleted(
           claimedOperation.operation_id,
           response.data
