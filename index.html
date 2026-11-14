@@ -6370,7 +6370,101 @@ for (const operation of myPendingSales) {
 }
 
 let purchaseSyncRunning = false;
+async function syncPendingPurchases() {
+  if (purchaseSyncRunning) return;
+  if (!navigator.onLine) return;
+  if (!currentUser || !db || !window.OfflineStore) return;
 
+  purchaseSyncRunning = true;
+  let syncedAny = false;
+
+  try {
+    await OfflineStore.open();
+
+    const pendingOperations =
+      await OfflineStore.listOperations("pending");
+
+    const myPendingPurchases = pendingOperations.filter(
+      operation =>
+        operation.type === "purchase.create" &&
+        operation.user_id === currentUser.id
+    );
+
+    console.log(
+      "عدد المشتريات المعلقة:",
+      myPendingPurchases.length
+    );
+
+    for (const operation of myPendingPurchases) {
+      if (!currentUser || operation.user_id !== currentUser.id) {
+        continue;
+      }
+
+      const claimedOperation =
+        await OfflineStore.claimPendingOperation(
+          operation.operation_id
+        );
+
+      if (!claimedOperation) continue;
+
+      try {
+        const response = await db.rpc(
+          "record_stock_purchase_idempotent",
+          {
+            ...claimedOperation.payload,
+            p_operation_id: claimedOperation.operation_id
+          }
+        );
+
+        if (response.error) {
+          await OfflineStore.markPending(
+            claimedOperation.operation_id,
+            response.error.message
+          );
+
+          console.error(
+            "تعذرت مزامنة المشتريات:",
+            response.error
+          );
+
+          continue;
+        }
+
+        await OfflineStore.markCompleted(
+          claimedOperation.operation_id,
+          response.data
+        );
+
+        syncedAny = true;
+
+        console.log(
+          "تمت مزامنة عملية شراء:",
+          claimedOperation.operation_id
+        );
+
+      } catch (error) {
+        await OfflineStore.markPending(
+          claimedOperation.operation_id,
+          error.message
+        );
+
+        console.error("خطأ مزامنة المشتريات:", error);
+      }
+    }
+
+    if (syncedAny && currentUser) {
+      await Promise.all([
+        loadProducts(),
+        loadPurchases()
+      ]);
+    }
+
+  } catch (error) {
+    console.error("Purchase sync:", error);
+  } finally {
+    purchaseSyncRunning = false;
+  }
+}
 init();
   
 async function loadCashbox() {
