@@ -1107,7 +1107,7 @@ font-size:16px;
 <label for="purchaseQuantity">الكمية المشتراة</label>
 <input id="purchaseQuantity" type="number" min="1" step="1" value="1" oninput="calculatePurchaseTotal()">
 <label for="purchaseUnitCost">تكلفة الوحدة</label>
-<input id="purchaseUnitCost" type="number" min="0" step="0.01">
+<input id="purchaseUnitCost" type="number" min="0" step="0.01" oninput="calculatePurchaseTotal()">
 <label for="purchaseTotalCost">إجمالي التكلفة</label>
 <input id="purchaseTotalCost" type="number" readonly>
 <button id="savePurchaseButton" type="button" onclick="savePurchase()">حفظ المشتريات</button>
