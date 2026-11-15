@@ -258,11 +258,11 @@ async function saveInvoiceNumberDraft(userId, invoiceNumber) {
   );
 }
 
-async function getInvoiceNumberDraft(userId) {
+async function getInvoiceNumberDraft(userId, tabId) {
   if (!userId) return null;
 
   const draftKey =
-    `invoice_number_draft_${userId}_${getTabId()}`;
+    `invoice_number_draft_${userId}_${tabId || getTabId()}`;
 
   return await getMeta(draftKey);
 }
