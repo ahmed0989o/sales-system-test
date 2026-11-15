@@ -20,7 +20,29 @@
       return (c === "x" ? r : (r & 3 | 8)).toString(16);
     });
   }
+  let currentTabId = null;
 
+function getTabId() {
+  if (currentTabId) return currentTabId;
+
+  const key = "sales_system_tab_id";
+
+  try {
+    let id = window.sessionStorage.getItem(key);
+
+    if (!id) {
+      id = makeId();
+      window.sessionStorage.setItem(key, id);
+    }
+
+    currentTabId = id;
+    return currentTabId;
+
+  } catch (error) {
+    currentTabId = makeId();
+    return currentTabId;
+  }
+}
   function openDatabase() {
     if (databasePromise) return databasePromise;
 
