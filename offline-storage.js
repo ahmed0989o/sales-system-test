@@ -623,6 +623,7 @@ async function saveInvoiceReservationRequestId(requestId) {
       payload: input.payload == null ? {} : input.payload,
       user_id: input.userId || null,
       device_id: deviceId,
+      tab_id: getTabId(),
       status: "pending",
       created_at: new Date().toISOString(),
       attempt_count: 0,
