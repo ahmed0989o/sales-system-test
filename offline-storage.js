@@ -261,7 +261,10 @@ async function saveInvoiceNumberDraft(userId, invoiceNumber) {
 async function getInvoiceNumberDraft(userId) {
   if (!userId) return null;
 
-  return await getMeta(`invoice_number_draft_${userId}`);
+  const draftKey =
+    `invoice_number_draft_${userId}_${getTabId()}`;
+
+  return await getMeta(draftKey);
 }
 async function saveCustomerBalances(rows) {
   if (!Array.isArray(rows)) {
