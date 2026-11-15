@@ -253,7 +253,7 @@ async function saveInvoiceNumberDraft(userId, invoiceNumber) {
   }
 
   return await setMeta(
-    `invoice_number_draft_${userId}`,
+    `invoice_number_draft_${userId}_${getTabId()}`,
     invoiceNumber.trim()
   );
 }
