@@ -6407,7 +6407,10 @@ for (const operation of myPendingSales) {
         currentDraft ===
         claimedOperation.payload.p_invoice_number
       ) {
-        await OfflineStore.clearInvoiceNumberDraft(currentUser.id);
+        await OfflineStore.clearInvoiceNumberDraft(
+  currentUser.id,
+  claimedOperation.tab_id
+);
       }
     } catch (draftError) {
       console.error("تعذر حذف مسودة الفاتورة:", draftError);
