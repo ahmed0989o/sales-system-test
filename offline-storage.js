@@ -306,7 +306,7 @@ async function clearInvoiceNumberDraft(userId) {
     const transaction = database.transaction("meta", "readwrite");
 
     transaction.objectStore("meta").delete(
-      `invoice_number_draft_${userId}`
+      `invoice_number_draft_${userId}_${getTabId()}`
     );
 
     transaction.oncomplete = function () {
