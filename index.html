@@ -3954,6 +3954,7 @@ async function requestInvoiceNumberReservation() {
 
 
 
+
 async function prepareNextInvoiceNumber() {
   const input = $("invoiceNumber");
 
@@ -3965,65 +3966,86 @@ async function prepareNextInvoiceNumber() {
   }
 
   window.invoiceNumberPreparationPromise = (async () => {
-    try {
-      await OfflineStore.open();
 
-      const currentYear = Number(
-        new Intl.DateTimeFormat("en-US", {
-          timeZone: "Asia/Baghdad",
-          year: "numeric"
-        }).format(new Date())
-      );
-const savedDraft =
-  await OfflineStore.getInvoiceNumberDraft(currentUser.id);
+    const prepareUnderLock = async () => {
 
-if (
-  savedDraft &&
-  savedDraft.startsWith(`INV-${currentYear}-`)
-) {
-  input.value = savedDraft;
-  return;
-}
-      let reservation =
-        await OfflineStore.getInvoiceNumberReservation();
+      // إعادة الفحص بعد الحصول على القفل
+      if (!input || input.value.trim()) return;
 
-      if (
-        !reservation ||
-        reservation.invoice_year !== currentYear ||
-        reservation.next_number > reservation.range_end
-      ) {
-        await requestInvoiceNumberReservation();
+      try {
+        await OfflineStore.open();
 
-        reservation =
-          await OfflineStore.getInvoiceNumberReservation();
-      }
-
-      if (
-        !reservation ||
-        reservation.invoice_year !== currentYear ||
-        reservation.next_number > reservation.range_end
-      ) {
-        throw new Error("لا يوجد حجز صالح لأرقام الفواتير.");
-      }
-
-      const draftNumber =
-        await OfflineStore.getOrCreateInvoiceNumberDraft(
-          currentUser.id,
-          currentYear
+        const currentYear = Number(
+          new Intl.DateTimeFormat("en-US", {
+            timeZone: "Asia/Baghdad",
+            year: "numeric"
+          }).format(new Date())
         );
 
-      if (!input.value.trim()) {
-        input.value = draftNumber;
+        const savedDraft =
+          await OfflineStore.getInvoiceNumberDraft(currentUser.id);
+
+        if (
+          savedDraft &&
+          savedDraft.startsWith(`INV-${currentYear}-`)
+        ) {
+          input.value = savedDraft;
+          return;
+        }
+
+        let reservation =
+          await OfflineStore.getInvoiceNumberReservation();
+
+        if (
+          !reservation ||
+          reservation.invoice_year !== currentYear ||
+          reservation.next_number > reservation.range_end
+        ) {
+          await requestInvoiceNumberReservation();
+
+          reservation =
+            await OfflineStore.getInvoiceNumberReservation();
+        }
+
+        if (
+          !reservation ||
+          reservation.invoice_year !== currentYear ||
+          reservation.next_number > reservation.range_end
+        ) {
+          throw new Error("لا يوجد حجز صالح لأرقام الفواتير.");
+        }
+
+        const draftNumber =
+          await OfflineStore.getOrCreateInvoiceNumberDraft(
+            currentUser.id,
+            currentYear
+          );
+
+        if (!input.value.trim()) {
+          input.value = draftNumber;
+        }
+
+      } catch (error) {
+        console.error("Invoice number preparation error:", error);
+
+        setMessage(
+          "status",
+          "تعذر تجهيز رقم الفاتورة. تحقق من الاتصال أو حجز الأرقام."
+        );
       }
+    };
 
-    } catch (error) {
-      console.error("Invoice number preparation error:", error);
-
-      setMessage(
-        "status",
-        "تعذر تجهيز رقم الفاتورة. تحقق من الاتصال أو حجز الأرقام."
+    // قفل مشترك بين جميع التبويبات
+    if (navigator.locks?.request) {
+      await navigator.locks.request(
+        "invoice-number-preparation",
+        { mode: "exclusive" },
+        prepareUnderLock
       );
+    } else {
+      await prepareUnderLock();
     }
+
   })();
 
   try {
