@@ -297,17 +297,18 @@ async function getPurchasePermission(userId) {
 
   return await getMeta(`purchase_permission_${userId}`);
 }
-async function clearInvoiceNumberDraft(userId) {
+async function clearInvoiceNumberDraft(userId, tabId) {
   if (!userId) return false;
 
   const database = await openDatabase();
 
+  const draftKey =
+    `invoice_number_draft_${userId}_${tabId || getTabId()}`;
+
   return new Promise(function (resolve, reject) {
     const transaction = database.transaction("meta", "readwrite");
 
-    transaction.objectStore("meta").delete(
-      `invoice_number_draft_${userId}_${getTabId()}`
-    );
+    transaction.objectStore("meta").delete(draftKey);
 
     transaction.oncomplete = function () {
       resolve(true);
@@ -322,7 +323,6 @@ async function clearInvoiceNumberDraft(userId) {
     };
   });
 }
-
 async function getOrCreateInvoiceNumberDraft(userId, currentYear) {
   if (!userId || !Number.isInteger(currentYear)) {
     throw new Error("بيانات مسودة الفاتورة غير صحيحة.");
