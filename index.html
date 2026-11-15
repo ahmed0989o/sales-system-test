@@ -6398,7 +6398,10 @@ for (const operation of myPendingSales) {
 
     try {
       const currentDraft =
-        await OfflineStore.getInvoiceNumberDraft(currentUser.id);
+        await OfflineStore.getInvoiceNumberDraft(
+          currentUser.id,
+          claimedOperation.tab_id
+        );
 
       if (
         currentDraft ===
