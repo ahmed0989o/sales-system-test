@@ -345,6 +345,7 @@ async function getOrCreateInvoiceNumberDraft(userId, currentYear) {
 
     function processRecords() {
       if (!draftReady || !reservationReady) return;
+      
       if (
         typeof savedDraft === "string" &&
         savedDraft.startsWith(`INV-${currentYear}-`)
