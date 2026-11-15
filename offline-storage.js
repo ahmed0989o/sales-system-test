@@ -329,7 +329,8 @@ async function getOrCreateInvoiceNumberDraft(userId, currentYear) {
   }
 
   const database = await openDatabase();
-  const draftKey = `invoice_number_draft_${userId}`;
+  const draftKey =
+  `invoice_number_draft_${userId}_${getTabId()}`;
 
   return new Promise(function (resolve, reject) {
     const transaction = database.transaction("meta", "readwrite");
