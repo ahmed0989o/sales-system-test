@@ -6658,6 +6658,122 @@ async function syncPendingPurchases() {
     purchaseSyncRunning = false;
   }
 }
+  
+async function syncPendingCustomerPayments() {
+  if (paymentSyncRunning) return;
+  if (!navigator.onLine) return;
+  if (!currentUser || !db || !window.OfflineStore) return;
+
+  paymentSyncRunning = true;
+  let syncedAny = false;
+
+  try {
+    await OfflineStore.open();
+
+    const pendingOperations =
+      await OfflineStore.listOperations("pending");
+
+    const myPendingPayments = pendingOperations.filter(
+      operation =>
+        operation.type === "customer_payment.create" &&
+        operation.user_id === currentUser.id
+    );
+
+    console.log(
+      "عدد الدفعات المعلقة:",
+      myPendingPayments.length
+    );
+
+    for (const operation of myPendingPayments) {
+      if (!currentUser || operation.user_id !== currentUser.id) {
+        continue;
+      }
+
+      const claimedOperation =
+        await OfflineStore.claimPendingOperation(
+          operation.operation_id
+        );
+
+      if (!claimedOperation) continue;
+
+      try {
+        const { data, error } = await db.rpc(
+          "record_customer_payment",
+          {
+            ...claimedOperation.payload,
+            p_operation_id: claimedOperation.operation_id
+          }
+        );
+
+        if (error) {
+          const errorMessage = error.message || "";
+
+          const permanentError =
+            /غير مصرح|صلاحية|الحساب غير نشط|الزبون غير موجود|المبلغ|رقم العملية مستخدم/i
+              .test(errorMessage);
+
+          if (permanentError) {
+            await OfflineStore.markFailed(
+              claimedOperation.operation_id,
+              errorMessage
+            );
+          } else {
+            await OfflineStore.markPending(
+              claimedOperation.operation_id,
+              errorMessage
+            );
+          }
+
+          console.error(
+            "تعذرت مزامنة الدفعة:",
+            error
+          );
+
+          continue;
+        }
+
+        await OfflineStore.markCompleted(
+          claimedOperation.operation_id,
+          data
+        );
+
+        syncedAny = true;
+
+        console.log(
+          "تمت مزامنة دفعة:",
+          claimedOperation.operation_id
+        );
+
+      } catch (error) {
+        await OfflineStore.markPending(
+          claimedOperation.operation_id,
+          error.message
+        );
+
+        console.error("خطأ مزامنة الدفعة:", error);
+      }
+    }
+
+    if (syncedAny && currentUser) {
+      await loadCustomers();
+
+      const selectedCustomerId = $("customerSelect").value;
+
+      if (
+        selectedCustomerId &&
+        !$("creditCustomerDetails").classList.contains("hidden")
+      ) {
+        updateCreditCustomerDetails();
+      }
+    }
+
+  } catch (error) {
+    console.error("Customer payment sync:", error);
+  } finally {
+    paymentSyncRunning = false;
+  }
+}
+
 init();
   
 async function loadCashbox() {
