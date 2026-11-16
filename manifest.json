@@ -1,0 +1,13 @@
+{
+  "name": "نظام إدارة المبيعات",
+  "short_name": "نظام المبيعات",
+  "description": "نظام إدارة المبيعات والمخزون والحسابات",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "lang": "ar",
+  "dir": "rtl"
+}
