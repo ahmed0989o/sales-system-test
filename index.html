@@ -8706,6 +8706,14 @@ if (saved.toolName === "بحث عن زبون") {
   });
 })();
 </script>
-  
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(() => console.log("تم تشغيل Service Worker"))
+      .catch(error => console.error("خطأ في Service Worker:", error));
+  });
+}
+</script>  
 </body>
 </html>
