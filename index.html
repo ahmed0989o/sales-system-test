@@ -4150,6 +4150,7 @@ await OfflineStore.recoverSyncingOperations();
 setTimeout(() => {
   syncPendingSales();
   syncPendingPurchases();
+  syncPendingCustomerPayments();
 }, 1000);
   await Promise.all([loadProducts(), loadCustomers()]);
     
