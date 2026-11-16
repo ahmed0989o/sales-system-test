@@ -6401,7 +6401,8 @@ window.addEventListener("online", async function () {
   if (!currentUser || !db || !window.OfflineStore) return;
 
   try {
-    await Promise.all([
+   await Promise.all([
+  syncPendingCustomerPayments(),
   syncPendingSales(),
   syncPendingPurchases()
 ]);
