@@ -6549,7 +6549,7 @@ for (const operation of myPendingSales) {
     saleSyncRunning = false;
   }
 }
-
+let paymentSyncRunning = false;
 let purchaseSyncRunning = false;
 async function syncPendingPurchases() {
   if (purchaseSyncRunning) return;
