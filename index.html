@@ -5120,66 +5120,136 @@ function openCustomerDebtPayment() {
   highestWindowZ++;
   $("customerPaymentsPanel").style.zIndex = highestWindowZ;
 }
+
 async function saveCustomerPayment() {
   const button = $("savePaymentButton");
   const customerId = $("paymentCustomer").value;
   const amount = Number($("paymentAmount").value);
 
-  if (!currentUser) return setMessage("paymentStatus", "سجّل الدخول أولًا.");
-  if (!customerId) return setMessage("paymentStatus", "اختر الزبون.");
+  if (!currentUser) {
+    return setMessage("paymentStatus", "سجّل الدخول أولًا.");
+  }
+
+  if (!customerId) {
+    return setMessage("paymentStatus", "اختر الزبون.");
+  }
+
   if (!Number.isFinite(amount) || amount <= 0) {
     return setMessage("paymentStatus", "أدخل مبلغًا أكبر من صفر.");
   }
 
   button.disabled = true;
-  setMessage("paymentStatus", "جارٍ تسجيل الدفعة...");
+  let paymentOperation = null;
 
   try {
-    
+    await OfflineStore.open();
 
-const { data: sessionData, error: sessionError } =
-  await db.auth.refreshSession();
+    const allowed = await checkPaymentPermission();
 
-if (sessionError) throw sessionError;
+    if (!allowed) {
+      throw new Error("ليس لديك صلاحية تسجيل تسديد ديون الزبائن.");
+    }
 
-if (
-  sessionData?.user?.id !==
-  "1070d12c-c9ff-4915-9775-2367e5cd1d73"
-) {
-  throw new Error("حساب Supabase الحالي لا يطابق حساب المالك.");
-}
-
-console.log("Payment session:", await db.auth.getSession());
-    const { error } = await db.rpc("record_customer_payment", {
-      p_customer_id: Number(customerId),
-      p_amount: amount
+    paymentOperation = await OfflineStore.enqueueOperation({
+      type: "customer_payment.create",
+      payload: {
+        p_customer_id: Number(customerId),
+        p_amount: amount
+      },
+      userId: currentUser.id
     });
-    if (error) throw error;
 
-    
-$("paymentAmount").value = "";
-
-setMessage("paymentStatus", "تم تسجيل الدفعة بنجاح.");
-
-await loadCustomers();
-
-const selectedCustomerId = $("customerSelect").value;
-
-if (
-  selectedCustomerId &&
-  String(selectedCustomerId) === String(customerId) &&
-  !$("creditCustomerDetails").classList.contains("hidden")
-) {
-  updateCreditCustomerDetails();
-}
+    setMessage(
+      "paymentStatus",
+      "تم حفظ الدفعة محليًا، جارٍ تجهيز المزامنة..."
+    );
 
   } catch (error) {
-    console.error("Customer payment:", error);
-    setMessage("paymentStatus", "تعذر تسجيل الدفعة: " + error.message);
+    console.error("Local customer payment save:", error);
+
+    setMessage(
+      "paymentStatus",
+      "تعذر حفظ الدفعة: " + error.message
+    );
+
+    button.disabled = false;
+    return;
+  }
+
+  try {
+    if (!navigator.onLine) {
+      $("paymentAmount").value = "";
+
+      setMessage(
+        "paymentStatus",
+        "تم حفظ الدفعة محليًا. ستتم مزامنتها عند عودة الإنترنت."
+      );
+
+      return;
+    }
+
+    const operation = await OfflineStore.claimPendingOperation(
+      paymentOperation.operation_id
+    );
+
+    if (!operation) {
+      throw new Error("تعذر حجز عملية الدفعة للمزامنة.");
+    }
+
+    const { data, error } = await db.rpc(
+      "record_customer_payment",
+      {
+        ...operation.payload,
+        p_operation_id: operation.operation_id
+      }
+    );
+
+    if (error) throw error;
+
+    await OfflineStore.markCompleted(
+      operation.operation_id,
+      data
+    );
+
+    $("paymentAmount").value = "";
+
+    setMessage(
+      "paymentStatus",
+      "تم تسجيل الدفعة ومزامنتها بنجاح."
+    );
+
+    await loadCustomers();
+
+    const selectedCustomerId = $("customerSelect").value;
+
+    if (
+      selectedCustomerId &&
+      String(selectedCustomerId) === String(customerId) &&
+      !$("creditCustomerDetails").classList.contains("hidden")
+    ) {
+      updateCreditCustomerDetails();
+    }
+
+  } catch (error) {
+    console.error("Customer payment sync:", error);
+
+    await OfflineStore.markPending(
+      paymentOperation.operation_id,
+      error.message
+    );
+
+    $("paymentAmount").value = "";
+
+    setMessage(
+      "paymentStatus",
+      "الدفعة محفوظة محليًا، وتعذرت مزامنتها حاليًا. ستتم إعادة المحاولة لاحقًا."
+    );
+
   } finally {
     button.disabled = false;
   }
 }
+
 async function printDailyReport() {
   const date = $("reportDate").value;
 
