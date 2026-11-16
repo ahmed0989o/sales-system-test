@@ -4082,6 +4082,42 @@ async function prepareNextInvoiceNumber() {
 
   return cachedPermission?.allowed === true;
 }
+  async function checkPaymentPermission() {
+  if (!currentUser || !window.OfflineStore) {
+    return false;
+  }
+
+  if (isOwner(currentUser)) {
+    await OfflineStore.savePaymentPermission(
+      currentUser.id,
+      true
+    );
+    return true;
+  }
+
+  if (navigator.onLine) {
+    const { data, error } = await db.rpc(
+      "has_app_permission",
+      {
+        p_permission_key: "payments.record"
+      }
+    );
+
+    if (error) throw error;
+
+    await OfflineStore.savePaymentPermission(
+      currentUser.id,
+      data === true
+    );
+
+    return data === true;
+  }
+
+  const cachedPermission =
+    await OfflineStore.getPaymentPermission(currentUser.id);
+
+  return cachedPermission?.allowed === true;
+}
 async function showApp() {
   if (!currentUser || appLoading) return;
   appLoading = true;
