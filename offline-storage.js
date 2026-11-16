@@ -297,6 +297,25 @@ async function getPurchasePermission(userId) {
 
   return await getMeta(`purchase_permission_${userId}`);
 }
+  async function savePaymentPermission(userId, allowed) {
+  if (!userId || typeof allowed !== "boolean") {
+    throw new Error("بيانات صلاحية تسديد الديون غير صحيحة.");
+  }
+
+  return await setMeta(
+    `payment_permission_${userId}`,
+    {
+      allowed: allowed,
+      checked_at: new Date().toISOString()
+    }
+  );
+}
+
+async function getPaymentPermission(userId) {
+  if (!userId) return null;
+
+  return await getMeta(`payment_permission_${userId}`);
+}
 async function clearInvoiceNumberDraft(userId, tabId) {
   if (!userId) return false;
 
