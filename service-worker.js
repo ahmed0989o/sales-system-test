@@ -29,10 +29,8 @@ self.addEventListener("activate", event => {
           )
           .map(key => caches.delete(key))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", event => {
