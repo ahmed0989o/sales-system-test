@@ -573,40 +573,71 @@ async function saveInvoiceReservationRequestId(requestId) {
     return id;
   }
 
-  async function cacheRows(storeName, rows) {
-    if (!["products", "customers"].includes(storeName)) {
-      throw new Error("نوع البيانات غير مسموح.");
-    }
-
-    if (!Array.isArray(rows)) {
-      throw new Error("قائمة البيانات غير صحيحة.");
-    }
-
-    const database = await openDatabase();
-
-    return new Promise(function (resolve, reject) {
-      const transaction = database.transaction(storeName, "readwrite");
-      const store = transaction.objectStore(storeName);
-
-      rows.forEach(function (row) {
-        if (row && row.id !== undefined && row.id !== null) {
-          store.put(row);
-        }
-      });
-
-      transaction.oncomplete = function () {
-        resolve(rows.length);
-      };
-
-      transaction.onerror = function () {
-        reject(transaction.error);
-      };
-
-      transaction.onabort = function () {
-        reject(transaction.error || new Error("فشل تحديث البيانات المحلية."));
-      };
-    });
+  
+async function cacheRows(storeName, rows) {
+  if (!["products", "customers"].includes(storeName)) {
+    throw new Error("نوع البيانات غير مسموح.");
   }
+
+  if (!Array.isArray(rows)) {
+    throw new Error("قائمة البيانات غير صحيحة.");
+  }
+
+  const database = await openDatabase();
+
+  return new Promise(function (resolve, reject) {
+    const transaction = database.transaction(storeName, "readwrite");
+    const store = transaction.objectStore(storeName);
+
+    let savedCount = 0;
+
+    rows.forEach(function (row) {
+      if (!row || row.id === undefined || row.id === null) {
+        return;
+      }
+
+      if (storeName === "products") {
+        const validProduct =
+          typeof row.name === "string" &&
+          row.name.trim() !== "" &&
+          row.price !== null &&
+          row.price !== "" &&
+          Number.isFinite(Number(row.price)) &&
+          row.quantity !== null &&
+          row.quantity !== "" &&
+          Number.isFinite(Number(row.quantity));
+
+        if (!validProduct) return;
+      }
+
+      if (storeName === "customers") {
+        const validCustomer =
+          typeof row.name === "string" &&
+          row.name.trim() !== "";
+
+        if (!validCustomer) return;
+      }
+
+      store.put(row);
+      savedCount++;
+    });
+
+    transaction.oncomplete = function () {
+      resolve(savedCount);
+    };
+
+    transaction.onerror = function () {
+      reject(transaction.error);
+    };
+
+    transaction.onabort = function () {
+      reject(
+        transaction.error ||
+        new Error("فشل تحديث البيانات المحلية.")
+      );
+    };
+  });
+}
 
   async function getCachedRows(storeName) {
     if (!["products", "customers"].includes(storeName)) {
