@@ -1,11 +1,13 @@
-const CACHE_NAME = "sales-system-v4";
+const CACHE_NAME = "sales-system-v5";
 
 const APP_FILES = [
   "./",
   "./index.html",
   "./manifest.json",
   "./offline-storage.js",
-  "./supabase.js"
+  "./supabase.js",
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", event => {
