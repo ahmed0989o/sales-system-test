@@ -4158,13 +4158,8 @@ setTimeout(() => {
 const canManagePurchases =
   await checkPurchasePermission();
 
-const lastActiveSection = localStorage.getItem("lastActiveSection");
-
-$("purchasePanel").classList.toggle(
-  "hidden",
-  lastActiveSection !== "purchasePanel"
-);
-if (canManagePurchases === true) {
+$("purchasePanel").classList.add("hidden");
+    if (canManagePurchases === true) {
   await loadPurchases();
   
 }
