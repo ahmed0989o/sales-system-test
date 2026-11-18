@@ -8757,6 +8757,7 @@ window.addEventListener("load", async function () {
         salesCount: sales.length,
         sales: sales.map(op => ({
           invoice: op.payload?.p_invoice_number,
+          userId: op.user_id,
           status: op.status,
           error: op.last_error,
           createdAt: op.created_at
