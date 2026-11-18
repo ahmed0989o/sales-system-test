@@ -4881,7 +4881,7 @@ if (isCashCustomer && paymentMethod !== "نقدي") {
     "الزبون النقدي مخصص للبيع النقدي. اختر نقدي أو حدّد زبوناً مسجلاً للدفع الآجل أو الجزئي."
   );
 }
-
+window.saleDebugStage = "وصل إلى فحص محتويات الفاتورة";
   if (!Array.isArray(invoiceCart) || invoiceCart.length === 0) {
     return setMessage("status", "أضف منتجاً واحداً على الأقل إلى الفاتورة.");
   }
