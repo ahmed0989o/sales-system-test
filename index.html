@@ -4882,6 +4882,8 @@ if (isCashCustomer && paymentMethod !== "نقدي") {
   );
 }
 window.saleDebugStage = "وصل إلى فحص محتويات الفاتورة";
+  window.saleDebugStage = "عدد المنتجات في الفاتورة: " +
+  (Array.isArray(invoiceCart) ? invoiceCart.length : "ليست مصفوفة");
   if (!Array.isArray(invoiceCart) || invoiceCart.length === 0) {
     return setMessage("status", "أضف منتجاً واحداً على الأقل إلى الفاتورة.");
   }
