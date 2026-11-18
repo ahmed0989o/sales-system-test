@@ -8740,7 +8740,11 @@ window.addEventListener("load", async function () {
   panel.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:center;">
       <h3>فحص التخزين المحلي</h3>
-      <button id="offlineDiagnosticHide" type="button">✕</button>
+      <button id="offlineDiagnosticHide"
+  type="button"
+  style="display:block; width:35px; height:35px; background:#dc3545; color:white; border:0; border-radius:5px; font-size:20px; cursor:pointer;">
+  ✕
+</button>
     </div>
     <button id="offlineDiagnosticRefresh">تحديث الفحص</button>
     <pre id="offlineDiagnosticResult">جارٍ الفحص...</pre>
