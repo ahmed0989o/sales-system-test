@@ -4969,6 +4969,7 @@ if (previousSaleOperations.length === 1) {
 
   saleOperation = previousOperation;
 } else {
+  console.log("وصل تنفيذ البيع إلى التخزين المحلي");
   saleOperation = await OfflineStore.enqueueOperation({
     type: "sale.create",
     userId: currentUser.id,
