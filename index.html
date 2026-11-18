@@ -8754,6 +8754,8 @@ window.addEventListener("load", async function () {
         online: navigator.onLine,
         userId: currentUser.id,
         deviceId: await OfflineStore.getDeviceId(),
+        operationsCount: operations.length,
+        operationTypes: operations.map(op => op.type),
         salesCount: sales.length,
         sales: sales.map(op => ({
           invoice: op.payload?.p_invoice_number,
