@@ -8758,7 +8758,7 @@ window.addEventListener("load", async function () {
 
       output.textContent = JSON.stringify({
         online: navigator.onLine,
-        userId: currentUser.id,
+        userId: currentUser?.id || null,
         deviceId: await OfflineStore.getDeviceId(),
         saleDebugStage: window.saleDebugStage || "لم يصل إلى التخزين المحلي",
         operationsCount: operations.length,
