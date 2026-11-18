@@ -8747,8 +8747,7 @@ window.addEventListener("load", async function () {
 
       const operations = await OfflineStore.listOperations();
       const sales = operations.filter(op =>
-        op.type === "sale.create" &&
-        op.user_id === currentUser.id
+         op.type === "sale.create"
       );
 
       output.textContent = JSON.stringify({
