@@ -8738,10 +8738,17 @@ window.addEventListener("load", async function () {
   `;
 
   panel.innerHTML = `
-    <h3>فحص التخزين المحلي</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <h3>فحص التخزين المحلي</h3>
+      <button id="offlineDiagnosticHide" type="button">✕</button>
+    </div>
     <button id="offlineDiagnosticRefresh">تحديث الفحص</button>
     <pre id="offlineDiagnosticResult">جارٍ الفحص...</pre>
   `;
+
+  panel.querySelector("#offlineDiagnosticHide").onclick = () => {
+    panel.style.display = "none";
+  };
 
   document.body.appendChild(panel);
 
