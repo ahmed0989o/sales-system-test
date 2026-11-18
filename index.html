@@ -8756,6 +8756,7 @@ window.addEventListener("load", async function () {
         online: navigator.onLine,
         userId: currentUser.id,
         deviceId: await OfflineStore.getDeviceId(),
+        saleDebugStage: window.saleDebugStage || "لم يصل إلى التخزين المحلي",
         operationsCount: operations.length,
         operationTypes: operations.map(op => op.type),
         salesCount: sales.length,
