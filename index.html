@@ -4864,6 +4864,7 @@ const customer = isCashCustomer
 
 const paymentMethod = $("paymentMethod").value;
 const customerPhone = $("invoiceCustomerPhone").value.trim();
+  window.saleDebugStage = "وصل إلى قراءة رقم الهاتف";
   if (customerPhone !== "" && !/^07[0-9]{9}$/.test(customerPhone)) {
   return setMessage(
     "status",
