@@ -4846,6 +4846,7 @@ updatePartialPayment();
 }
 
 async function saveSale() {
+  window.saleDebugStage = "بدأ تنفيذ saveSale";
   const button = $("saveSaleButton");
 console.log("Current user:", currentUser);
   if (!currentUser) {
