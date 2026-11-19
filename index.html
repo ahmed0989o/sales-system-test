@@ -7859,6 +7859,20 @@ function openRent() {
   $("mainMenu").classList.remove("hidden");
   $("userManagementPanel").classList.remove("hidden");
 }
+  async function openDevicesMonitor() {
+  if (!currentUser) return;
+
+  if (!isOwner(currentUser)) {
+    const { data, error } = await db.rpc("has_app_permission", {
+      p_permission_key: "devices.monitor"
+    });
+
+    if (error || data !== true) return;
+  }
+
+  $("mainMenu").classList.remove("hidden");
+  $("devicesMonitorPanel").classList.remove("hidden");
+}
   // إدارة النوافذ: تصغير وإغلاق واستعادة
 function minimizeSection(sectionId, title) {
   const section = document.getElementById(sectionId);
