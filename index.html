@@ -7920,6 +7920,65 @@ function openRent() {
 
   await loadDevicesMonitor();
 }
+  async function loadDevicesMonitor() {
+  const status = $("devicesMonitorStatus");
+  const content = $("devicesMonitorContent");
+
+  if (!navigator.onLine) {
+    status.textContent =
+      "لا يوجد اتصال بالإنترنت؛ لا يمكن تحديث قائمة الأجهزة.";
+    content.innerHTML = "";
+    return;
+  }
+
+  status.textContent = "جارٍ تحميل الأجهزة...";
+  content.innerHTML = "";
+
+  try {
+    const { data, error } = await db.rpc("get_app_devices");
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      status.textContent = "لا توجد أجهزة مسجلة حتى الآن.";
+      return;
+    }
+
+    status.textContent = "عدد الأجهزة المسجلة: " + data.length;
+
+    const rows = data.map(device => `
+      <tr>
+        <td>${device.device_name || "جهاز"}</td>
+        <td>${device.is_online ? "متصل" : "غير متصل"}</td>
+        <td>${device.pending_operations ?? 0}</td>
+        <td>${device.sync_status || "غير معروف"}</td>
+        <td>${device.last_seen_at
+          ? new Date(device.last_seen_at).toLocaleString("ar-IQ")
+          : "لم يتصل بعد"}</td>
+      </tr>
+    `).join("");
+
+    content.innerHTML = `
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;text-align:center;">
+          <thead>
+            <tr>
+              <th>اسم الجهاز</th>
+              <th>الحالة</th>
+              <th>العمليات المعلقة</th>
+              <th>حالة المزامنة</th>
+              <th>آخر ظهور</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  } catch (error) {
+    status.textContent = "تعذر تحميل الأجهزة: " + error.message;
+    console.error("Devices monitor error:", error);
+  }
+}
   // إدارة النوافذ: تصغير وإغلاق واستعادة
 function minimizeSection(sectionId, title) {
   const section = document.getElementById(sectionId);
