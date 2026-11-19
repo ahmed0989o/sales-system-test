@@ -4212,6 +4212,40 @@ if (isOwner(currentUser)) {
   }
 }
 
+  async function reportCurrentDevice() {
+  if (!currentUser || !navigator.onLine) return;
+
+  try {
+    const deviceId = await OfflineStore.getDeviceId();
+    const pendingOperations = await OfflineStore.countPending();
+
+    const deviceName =
+      navigator.userAgent.includes("Android")
+        ? "جهاز لوحي أو هاتف"
+        : "حاسبة";
+
+    const deviceType =
+      navigator.userAgent.includes("Android")
+        ? "tablet"
+        : "computer";
+
+    const { error } = await db.rpc("report_app_device", {
+      p_device_id: deviceId,
+      p_device_name: deviceName,
+      p_device_type: deviceType,
+      p_pending_operations: pendingOperations,
+      p_sync_status: pendingOperations > 0 ? "pending" : "synced",
+      p_app_version: "1.0"
+    });
+
+    if (error) throw error;
+
+    console.log("تم إرسال تقرير الجهاز بنجاح");
+  } catch (error) {
+    console.error("تعذر إرسال تقرير الجهاز:", error);
+  }
+}
+
 
 
 async function loadProducts() {
