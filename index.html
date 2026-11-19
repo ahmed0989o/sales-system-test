@@ -8120,6 +8120,41 @@ function openRent() {
     console.error("Devices monitor error:", error);
   }
 }
+  async function saveDeviceDetails(deviceId) {
+  try {
+    const alias = $("deviceAlias_" + deviceId).value.trim();
+    const manufacturer = $("deviceManufacturer_" + deviceId).value.trim();
+    const model = $("deviceModel_" + deviceId).value.trim();
+    const numberValue = $("deviceNumber_" + deviceId).value.trim();
+
+    const deviceNumber = numberValue === ""
+      ? null
+      : Number(numberValue);
+
+    if (deviceNumber !== null &&
+        (!Number.isInteger(deviceNumber) || deviceNumber < 1)) {
+      alert("رقم الجهاز يجب أن يكون عدداً صحيحاً أكبر من صفر.");
+      return;
+    }
+
+    const { error } = await db.rpc("update_app_device_details", {
+      p_device_id: deviceId,
+      p_device_alias: alias || null,
+      p_manufacturer: manufacturer || null,
+      p_model: model || null,
+      p_device_number: deviceNumber
+    });
+
+    if (error) throw error;
+
+    alert("تم حفظ بيانات الجهاز بنجاح.");
+    await loadDevicesMonitor();
+
+  } catch (error) {
+    console.error("Device details save error:", error);
+    alert("تعذر حفظ بيانات الجهاز: " + error.message);
+  }
+}
   // إدارة النوافذ: تصغير وإغلاق واستعادة
 function minimizeSection(sectionId, title) {
   const section = document.getElementById(sectionId);
