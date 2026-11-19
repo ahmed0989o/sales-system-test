@@ -4363,6 +4363,16 @@ async function loadProducts() {
   }
 }
 
+  window.addEventListener("online", () => {
+  console.log("عاد الاتصال بالإنترنت، سيتم تحديث تقرير الجهاز");
+
+  reportCurrentDevice();
+});
+setInterval(() => {
+  if (currentUser && navigator.onLine) {
+    reportCurrentDevice();
+  }
+}, 30000);
 async function loadCustomers() {
   const selectedCustomerId = $("customerSelect").value;
   let loadedFromCache = false;
