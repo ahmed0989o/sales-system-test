@@ -4188,6 +4188,12 @@ if (devicesButton) {
 
 $("userInfo").textContent +=
   " — معرّف الجهاز: " + currentDeviceId;
+    const invoiceReservation =
+  await OfflineStore.getInvoiceNumberReservation();
+
+$("userInfo").textContent += invoiceReservation
+  ? ` — حجز الفواتير: ${invoiceReservation.range_start} إلى ${invoiceReservation.range_end} — التالي: ${invoiceReservation.next_number}`
+  : " — لا يوجد حجز فواتير";
     await reportCurrentDevice();
 await OfflineStore.recoverSyncingOperations();
 
