@@ -4228,23 +4228,80 @@ if (isOwner(currentUser)) {
   }
 }
 
-  async function reportCurrentDevice() {
-  if (!currentUser || !navigator.onLine) return;
+  
+async function reportCurrentDevice() {
+  if (!currentUser) return;
 
   try {
     const deviceId = await OfflineStore.getDeviceId();
+    const ua = navigator.userAgent || "";
+    const uaData = navigator.userAgentData;
+
+    let deviceType = "computer";
+    let manufacturer = "";
+    let model = "";
+
+    if (/iPad/i.test(ua)) {
+      deviceType = "tablet";
+      manufacturer = "Apple";
+      model = "iPad";
+    } else if (/Android/i.test(ua)) {
+      deviceType = /Mobile/i.test(ua) ? "phone" : "tablet";
+
+      const match = ua.match(/Android[^;]*;\s*([^;)]+)/i);
+      model = match ? match[1].trim() : "";
+
+      const brands = [
+        ["SM-", "Samsung"],
+        ["SAMSUNG", "Samsung"],
+        ["HONOR", "HONOR"],
+        ["HUAWEI", "HUAWEI"],
+        ["XIAOMI", "Xiaomi"],
+        ["REDMI", "Xiaomi"],
+        ["OPPO", "OPPO"],
+        ["VIVO", "vivo"]
+      ];
+
+      const detected = brands.find(([key]) =>
+        model.toUpperCase().includes(key)
+      );
+
+      if (detected) manufacturer = detected[1];
+    }
+
+    if (uaData?.getHighEntropyValues) {
+      try {
+        const details = await uaData.getHighEntropyValues([
+          "model",
+          "platform"
+        ]);
+
+        if (details.model) model = details.model;
+      } catch (e) {
+        console.warn("تعذر اكتشاف طراز الجهاز:", e);
+      }
+    }
+
+    const deviceInfo = {
+      deviceId,
+      deviceType,
+      manufacturer,
+      model,
+      detectedAt: new Date().toISOString()
+    };
+
+    await OfflineStore.saveDeviceInfo(deviceInfo);
+
+    if (!navigator.onLine) return;
+
     const pendingStats = await OfflineStore.countPending();
-    const pendingOperations = Number(pendingStats?.pending ?? pendingStats?.total ?? 0);
+    const pendingOperations = Number(
+      pendingStats?.pending ?? pendingStats?.total ?? 0
+    );
 
     const deviceName =
-      navigator.userAgent.includes("Android")
-        ? "جهاز لوحي أو هاتف"
-        : "حاسبة";
-
-    const deviceType =
-      navigator.userAgent.includes("Android")
-        ? "tablet"
-        : "computer";
+      deviceType === "tablet" ? "تابلت" :
+      deviceType === "phone" ? "هاتف" : "حاسبة";
 
     const { error } = await db.rpc("report_app_device", {
       p_device_id: deviceId,
@@ -4257,13 +4314,12 @@ if (isOwner(currentUser)) {
 
     if (error) throw error;
 
-    console.log("تم إرسال تقرير الجهاز بنجاح");
+    console.log("تم إرسال تقرير الجهاز بنجاح", deviceInfo);
+
   } catch (error) {
     console.error("تعذر إرسال تقرير الجهاز:", error);
   }
 }
-
-
 
 async function loadProducts() {
   $("product").innerHTML =
