@@ -4150,6 +4150,22 @@ $("returnsPanel").classList.add("hidden");
   $("reportDate").value = todayInBaghdad();
 
   try {
+    const devicesButton = $("devicesMonitorMenuButton");
+
+if (devicesButton) {
+  let canMonitorDevices = isOwner(currentUser);
+
+  if (!canMonitorDevices && navigator.onLine) {
+    const { data, error } = await db.rpc("has_app_permission", {
+      p_permission_key: "devices.monitor"
+    });
+
+    if (error) throw error;
+    canMonitorDevices = data === true;
+  }
+
+  devicesButton.classList.toggle("hidden", !canMonitorDevices);
+}
   await OfflineStore.open();
 await OfflineStore.recoverSyncingOperations();
 
