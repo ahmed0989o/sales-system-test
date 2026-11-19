@@ -4223,7 +4223,8 @@ if (isOwner(currentUser)) {
 
   try {
     const deviceId = await OfflineStore.getDeviceId();
-    const pendingOperations = await OfflineStore.countPending();
+    const pendingStats = await OfflineStore.countPending();
+    const pendingOperations = Number(pendingStats?.pending ?? pendingStats?.total ?? 0);
 
     const deviceName =
       navigator.userAgent.includes("Android")
