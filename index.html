@@ -4131,23 +4131,7 @@ async function showApp() {
   $("loginPanel").classList.add("hidden");
   $("appPanel").classList.remove("hidden");
   showMainMenu();
-  const devicesButton = $("devicesMonitorMenuButton");
-
-if (devicesButton) {
-  let canMonitorDevices = isOwner(currentUser);
-
-  if (!canMonitorDevices && navigator.onLine) {
-    const { data, error } = await db.rpc("has_app_permission", {
-      p_permission_key: "devices.monitor"
-    });
-
-    if (error) throw error;
-    canMonitorDevices = data === true;
-  }
-
-  devicesButton.classList.toggle("hidden", !canMonitorDevices);
-}
-  $("userInfo").textContent =
+    $("userInfo").textContent =
     "الحساب: " + (currentUser.email || "مستخدم") +
     (isOwner(currentUser) ? " — مسؤول" : "");
 
