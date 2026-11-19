@@ -8046,24 +8046,58 @@ function openRent() {
     status.textContent = "عدد الأجهزة المسجلة: " + data.length;
 
     const rows = data.map(device => `
-      <tr>
-        <td>
-  <strong>${device.device_alias || device.device_name || "جهاز"}</strong>
-  <br>
-  <small>${device.manufacturer || ""} ${device.model || ""}</small>
-  <br>
-  <small>رقم الجهاز: ${device.device_number ?? "غير محدد"}</small>
-  <br>
-  <small style="direction:ltr;display:inline-block;">${device.device_id}</small>
-</td>
-        <td>${device.is_online ? "متصل" : "غير متصل"}</td>
-        <td>${device.pending_operations ?? 0}</td>
-        <td>${device.sync_status || "غير معروف"}</td>
-        <td>${device.last_seen_at
-          ? new Date(device.last_seen_at).toLocaleString("ar-IQ")
-          : "لم يتصل بعد"}</td>
-      </tr>
-    `).join("");
+  <tr>
+    <td>
+      <strong>${device.device_alias || device.device_name || "جهاز"}</strong>
+      <br>
+      <small>${device.manufacturer || ""} ${device.model || ""}</small>
+      <br>
+      <small>رقم الجهاز: ${device.device_number ?? "غير محدد"}</small>
+      <br>
+      <small style="direction:ltr;display:inline-block;">${device.device_id}</small>
+
+      <div style="margin-top:10px;display:grid;gap:5px;">
+        <input
+          id="deviceAlias_${device.device_id}"
+          type="text"
+          placeholder="اسم الجهاز"
+          value="${device.device_alias || ""}"
+        >
+        <input
+          id="deviceManufacturer_${device.device_id}"
+          type="text"
+          placeholder="الشركة المصنعة"
+          value="${device.manufacturer || ""}"
+        >
+        <input
+          id="deviceModel_${device.device_id}"
+          type="text"
+          placeholder="طراز الجهاز"
+          value="${device.model || ""}"
+        >
+        <input
+          id="deviceNumber_${device.device_id}"
+          type="number"
+          min="1"
+          placeholder="رقم الجهاز"
+          value="${device.device_number ?? ""}"
+        >
+        <button
+          type="button"
+          onclick="saveDeviceDetails('${device.device_id}')"
+        >
+          💾 حفظ بيانات الجهاز
+        </button>
+      </div>
+    </td>
+    <td>${device.is_online ? "متصل" : "غير متصل"}</td>
+    <td>${device.pending_operations ?? 0}</td>
+    <td>${device.sync_status || "غير معروف"}</td>
+    <td>${device.last_seen_at
+      ? new Date(device.last_seen_at).toLocaleString("ar-IQ")
+      : "لم يتصل بعد"}</td>
+  </tr>
+`).join("");
 
     content.innerHTML = `
       <div style="overflow-x:auto;">
