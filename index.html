@@ -8047,7 +8047,7 @@ function openRent() {
 
     const rows = data.map(device => `
       <tr>
-        <td>${device.device_name || "جهاز"}</td>
+        <td>${device.device_alias || device.device_name || "جهاز"}</td>
         <td>${device.is_online ? "متصل" : "غير متصل"}</td>
         <td>${device.pending_operations ?? 0}</td>
         <td>${device.sync_status || "غير معروف"}</td>
