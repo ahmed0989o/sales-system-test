@@ -451,7 +451,13 @@ hr{margin-top:28px}
 
   <h2>🖥️ مراقبة الأجهزة والفحص</h2>
 
-  <div id="devicesMonitorStatus" class="status"></div>
+<button type="button"
+  onclick="loadDevicesMonitor()"
+  style="margin:10px 0;padding:8px 16px;cursor:pointer;">
+  🔄 تحديث الأجهزة
+</button>
+
+<div id="devicesMonitorStatus" class="status"></div>
   <div id="devicesMonitorContent"></div>
 </section>
 <!-- نافذة خيارات المبيعات -->
