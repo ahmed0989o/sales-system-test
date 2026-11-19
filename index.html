@@ -442,7 +442,18 @@ hr{margin-top:28px}
 </div>
 
 <div id="minimizedSections" class="minimized-sections"></div>
+<section id="devicesMonitorPanel" class="hidden">
+  <div class="section-window-controls">
+    <button type="button"
+      onclick="closeSection('devicesMonitorPanel')"
+      title="إغلاق">×</button>
+  </div>
 
+  <h2>🖥️ مراقبة الأجهزة والفحص</h2>
+
+  <div id="devicesMonitorStatus" class="status"></div>
+  <div id="devicesMonitorContent"></div>
+</section>
 <!-- نافذة خيارات المبيعات -->
 <div id="salesMenu" class="hidden">
   <button type="button" class="secondary" onclick="closeSalesMenu()">×</button>
