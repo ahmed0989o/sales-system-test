@@ -4178,6 +4178,7 @@ if (devicesButton) {
   devicesButton.classList.toggle("hidden", !canMonitorDevices);
 }
   await OfflineStore.open();
+    await reportCurrentDevice();
 await OfflineStore.recoverSyncingOperations();
 
 setTimeout(() => {
