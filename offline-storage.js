@@ -572,7 +572,18 @@ async function saveInvoiceReservationRequestId(requestId) {
 
     return id;
   }
+async function getDeviceInfo() {
+  return await getMeta("device_info");
+}
 
+async function saveDeviceInfo(info) {
+  if (!info || typeof info !== "object") {
+    throw new Error("معلومات الجهاز غير صحيحة.");
+  }
+
+  await setMeta("device_info", info);
+  return info;
+}
   
 async function cacheRows(storeName, rows) {
   if (!["products", "customers"].includes(storeName)) {
