@@ -4184,6 +4184,10 @@ if (devicesButton) {
   devicesButton.classList.toggle("hidden", !canMonitorDevices);
 }
   await OfflineStore.open();
+    const currentDeviceId = await OfflineStore.getDeviceId();
+
+$("userInfo").textContent +=
+  " — معرّف الجهاز: " + currentDeviceId;
     await reportCurrentDevice();
 await OfflineStore.recoverSyncingOperations();
 
