@@ -7917,6 +7917,8 @@ function openRent() {
 
   $("mainMenu").classList.remove("hidden");
   $("devicesMonitorPanel").classList.remove("hidden");
+
+  await loadDevicesMonitor();
 }
   // إدارة النوافذ: تصغير وإغلاق واستعادة
 function minimizeSection(sectionId, title) {
