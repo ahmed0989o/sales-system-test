@@ -1,4 +1,4 @@
-const CACHE_NAME = "sales-system-v11";
+const CACHE_NAME = "sales-system-v12";
 const APP_FILES = [
   "./",
   "./index.html",
