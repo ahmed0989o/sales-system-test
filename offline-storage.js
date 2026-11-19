@@ -1001,6 +1001,8 @@ async function recoverSyncingOperations() {
 window.OfflineStore = Object.freeze({
   open: openDatabase,
   getDeviceId,
+  getDeviceInfo,
+  saveDeviceInfo,
   saveInvoiceNumberReservation,
   completeInvoiceNumberReservation,
   getInvoiceNumberReservation,
