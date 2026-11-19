@@ -4229,27 +4229,30 @@ if (isOwner(currentUser)) {
 }
 
   
+
 async function reportCurrentDevice() {
   if (!currentUser) return;
 
   try {
     const deviceId = await OfflineStore.getDeviceId();
+    const savedInfo = await OfflineStore.getDeviceInfo() || {};
+
     const ua = navigator.userAgent || "";
     const uaData = navigator.userAgentData;
 
     let deviceType = "computer";
-    let manufacturer = "";
-    let model = "";
+    let detectedManufacturer = "";
+    let detectedModel = "";
 
     if (/iPad/i.test(ua)) {
       deviceType = "tablet";
-      manufacturer = "Apple";
-      model = "iPad";
+      detectedManufacturer = "Apple";
+      detectedModel = "iPad";
     } else if (/Android/i.test(ua)) {
       deviceType = /Mobile/i.test(ua) ? "phone" : "tablet";
 
       const match = ua.match(/Android[^;]*;\s*([^;)]+)/i);
-      model = match ? match[1].trim() : "";
+      detectedModel = match ? match[1].trim() : "";
 
       const brands = [
         ["SM-", "Samsung"],
@@ -4263,10 +4266,10 @@ async function reportCurrentDevice() {
       ];
 
       const detected = brands.find(([key]) =>
-        model.toUpperCase().includes(key)
+        detectedModel.toUpperCase().includes(key)
       );
 
-      if (detected) manufacturer = detected[1];
+      if (detected) detectedManufacturer = detected[1];
     }
 
     if (uaData?.getHighEntropyValues) {
@@ -4276,17 +4279,30 @@ async function reportCurrentDevice() {
           "platform"
         ]);
 
-        if (details.model) model = details.model;
+        if (details.model) detectedModel = details.model;
       } catch (e) {
         console.warn("تعذر اكتشاف طراز الجهاز:", e);
       }
     }
 
+    const manufacturer =
+      savedInfo.manufacturer || detectedManufacturer;
+
+    const model =
+      savedInfo.model || detectedModel;
+
+    const deviceNumber =
+      Number.isInteger(savedInfo.deviceNumber)
+        ? savedInfo.deviceNumber
+        : null;
+
     const deviceInfo = {
+      ...savedInfo,
       deviceId,
       deviceType,
       manufacturer,
       model,
+      deviceNumber,
       detectedAt: new Date().toISOString()
     };
 
@@ -4299,9 +4315,16 @@ async function reportCurrentDevice() {
       pendingStats?.pending ?? pendingStats?.total ?? 0
     );
 
-    const deviceName =
+    const deviceLabel =
       deviceType === "tablet" ? "تابلت" :
       deviceType === "phone" ? "هاتف" : "حاسبة";
+
+    const deviceName = [
+      deviceLabel,
+      manufacturer,
+      model,
+      deviceNumber ? `رقم ${deviceNumber}` : ""
+    ].filter(Boolean).join(" ");
 
     const { error } = await db.rpc("report_app_device", {
       p_device_id: deviceId,
@@ -4309,7 +4332,10 @@ async function reportCurrentDevice() {
       p_device_type: deviceType,
       p_pending_operations: pendingOperations,
       p_sync_status: pendingOperations > 0 ? "pending" : "synced",
-      p_app_version: "1.0"
+      p_app_version: "1.0",
+      p_manufacturer: manufacturer || null,
+      p_model: model || null,
+      p_device_number: deviceNumber
     });
 
     if (error) throw error;
