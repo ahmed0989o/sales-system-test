@@ -8644,10 +8644,16 @@ function toggleSystemFullscreen() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
   padding-bottom: 12px;
   border-bottom: 1px solid #eee;
   font-size: 17px;
+}
+
+.device-card-header strong {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .device-card-header span {
