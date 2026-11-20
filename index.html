@@ -8138,10 +8138,16 @@ function openRent() {
             <div>رقم الجهاز: ${device.device_number ?? "غير محدد"}</div>
             <div>العمليات المعلقة: ${device.pending_operations ?? 0}</div>
             <div>حالة المزامنة: ${device.sync_status || "غير معروفة"}</div>
-            <div>آخر ظهور: ${
+                        <div>آخر ظهور: ${
               device.last_seen_at
                 ? new Date(device.last_seen_at).toLocaleString("ar-IQ")
                 : "لم يتصل بعد"
+            }</div>
+
+            <div>آخر مزامنة: ${
+              device.last_sync_at
+                ? new Date(device.last_sync_at).toLocaleString("ar-IQ")
+                : "لم تتم المزامنة بعد"
             }</div>
           </div>
 
