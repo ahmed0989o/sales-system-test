@@ -8141,8 +8141,6 @@ function openRent() {
   async function saveDeviceDetails(deviceId) {
   try {
     const alias = $("deviceAlias_" + deviceId).value.trim();
-    const manufacturer = $("deviceManufacturer_" + deviceId).value.trim();
-    const model = $("deviceModel_" + deviceId).value.trim();
     const numberValue = $("deviceNumber_" + deviceId).value.trim();
 
     const deviceNumber = numberValue === ""
@@ -8158,8 +8156,8 @@ function openRent() {
     const { error } = await db.rpc("update_app_device_details", {
       p_device_id: deviceId,
       p_device_alias: alias || null,
-      p_manufacturer: manufacturer || null,
-      p_model: model || null,
+      p_manufacturer: null,
+      p_model: null,
       p_device_number: deviceNumber
     });
 
