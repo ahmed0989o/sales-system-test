@@ -8620,7 +8620,79 @@ function toggleSystemFullscreen() {
   user-select: none;
   font-weight: bold;
 }
+/* بطاقات مراقبة الأجهزة */
+.devices-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  direction: rtl;
+}
 
+.device-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 7px rgba(0,0,0,0.06);
+  text-align: right;
+  min-width: 0;
+}
+
+.device-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 17px;
+}
+
+.device-card-header span {
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: bold;
+  color: #198754;
+}
+
+.device-card-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+.device-card-id {
+  direction: ltr;
+  text-align: left;
+  overflow-wrap: anywhere;
+  color: #777;
+  font-size: 11px;
+  margin: 14px 0;
+}
+
+.device-card button {
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.device-card input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px;
+  margin-top: 7px;
+}
+
+@media (max-width: 500px) {
+  .device-card-details {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
