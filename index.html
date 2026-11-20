@@ -8146,6 +8146,13 @@ function openRent() {
     console.error("Devices monitor error:", error);
   }
 }
+  function toggleDeviceEdit(deviceId) {
+  const editBox = $("deviceEdit_" + deviceId);
+
+  if (!editBox) return;
+
+  editBox.hidden = !editBox.hidden;
+}
   async function saveDeviceDetails(deviceId) {
   try {
     const alias = $("deviceAlias_" + deviceId).value.trim();
