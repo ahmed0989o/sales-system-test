@@ -8068,9 +8068,11 @@ function openRent() {
       return `
         <div class="device-card">
           <div class="device-card-header">
-            <strong>${deviceName}</strong>
-            <span>${online ? "متصل" : "غير متصل"}</span>
-          </div>
+  <strong>${deviceName}</strong>
+  <span class="${online ? "device-online" : "device-offline"}">
+    ${online ? "متصل" : "غير متصل"}
+  </span>
+</div>
 
           <div class="device-card-details">
             <div>الشركة: ${device.manufacturer || "غير محددة"}</div>
