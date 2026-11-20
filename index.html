@@ -6692,9 +6692,29 @@ for (const operation of myPendingSales) {
     }
 
         await OfflineStore.markCompleted(
-      claimedOperation.operation_id,
-      response.data
-    );
+  claimedOperation.operation_id,
+  response.data
+);
+
+// تحديث وقت آخر مزامنة ناجحة
+try {
+  const deviceId = await OfflineStore.getDeviceId();
+
+  const { error: syncReportError } = await db.rpc(
+    "report_device_sync",
+    {
+      p_device_id: deviceId
+    }
+  );
+
+  if (syncReportError) throw syncReportError;
+
+} catch (syncReportError) {
+  console.error(
+    "تعذر تحديث وقت آخر مزامنة للجهاز:",
+    syncReportError
+  );
+}
 
     try {
       const currentDraft =
