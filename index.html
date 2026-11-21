@@ -8349,7 +8349,7 @@ function openRent() {
 
   try {
     const { data, error } = await db.rpc("get_app_devices");
-
+  console.log("بيانات الأجهزة من قاعدة البيانات:", data);
     if (error) throw error;
 
     if (!data || data.length === 0) {
