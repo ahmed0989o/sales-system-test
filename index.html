@@ -4438,7 +4438,18 @@ const syncStatus =
 
     if (error) throw error;
 
-    console.log("تم إرسال تقرير الجهاز بنجاح", deviceInfo);
+    if (pendingOperations === 0) {
+  const { error: syncError } = await db.rpc(
+    "report_device_sync",
+    { p_device_id: deviceId }
+  );
+
+  if (syncError) throw syncError;
+
+  console.log("تم تسجيل وقت آخر مزامنة بنجاح");
+}
+
+console.log("تم إرسال تقرير الجهاز بنجاح", deviceInfo);
 
   } catch (error) {
     console.error("تعذر إرسال تقرير الجهاز:", error);
