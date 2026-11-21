@@ -4325,9 +4325,19 @@ async function reportCurrentDevice() {
     if (!navigator.onLine) return;
 
     const pendingStats = await OfflineStore.countPending();
-    const pendingOperations = Number(
-      pendingStats?.pending ?? pendingStats?.total ?? 0
-    );
+
+const pendingCount = Number(pendingStats?.pending || 0);
+const syncingCount = Number(pendingStats?.syncing || 0);
+const failedCount = Number(pendingStats?.failed || 0);
+
+const pendingOperations =
+  pendingCount + syncingCount + failedCount;
+
+const syncStatus =
+  failedCount > 0 ? "failed" :
+  syncingCount > 0 ? "syncing" :
+  pendingCount > 0 ? "pending" :
+  "synced";
 
     const deviceLabel =
       deviceType === "tablet" ? "تابلت" :
