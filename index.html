@@ -8134,7 +8134,15 @@ function openRent() {
         device.device_alias || device.device_name || "جهاز";
 
       const online = !!device.is_online;
+    const syncStatusLabels = {
+  synced: "مكتملة",
+  pending: "بانتظار المزامنة",
+  syncing: "جارٍ المزامنة",
+  failed: "توجد عمليات فاشلة"
+};
 
+const syncStatusLabel =
+  syncStatusLabels[device.sync_status] || "غير معروفة";
       return `
         <div class="device-card">
           <div class="device-card-header">
