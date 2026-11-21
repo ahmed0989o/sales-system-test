@@ -470,7 +470,15 @@ hr{margin-top:28px}
   style="margin:10px 0;padding:8px 16px;cursor:pointer;">
   🔄 تحديث الأجهزة
 </button>
+<button type="button"
+  onclick="showLocalDeviceInfo()"
+  style="margin:10px;padding:8px 16px;cursor:pointer;">
+  🔍 فحص هذا الجهاز
+</button>
 
+<div id="localDeviceInfo"
+  style="margin:10px 0;padding:12px;border:1px solid #ccc;border-radius:8px;direction:rtl;">
+</div>
 <div id="devicesMonitorStatus" class="status"></div>
   <div id="devicesMonitorContent"></div>
 </section>
