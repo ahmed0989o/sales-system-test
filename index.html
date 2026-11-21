@@ -4491,7 +4491,69 @@ async function showLocalDeviceInfo() {
     box.textContent = "تعذر قراءة معلومات الجهاز: " + error.message;
   }
 }
-  
+async function scanLocalStorageDiagnostics() {
+  const box = document.getElementById("localStorageDiagnosticsContent");
+
+  box.textContent = "جارٍ فحص التخزين المحلي...";
+
+  try {
+    const result = await OfflineStore.getDiagnostics();
+
+    const labels = {
+      meta: "الإعدادات والبيانات الأساسية",
+      products: "المواد",
+      customers: "الزبائن",
+      outbox: "العمليات بانتظار المزامنة"
+    };
+
+    box.textContent = "";
+
+    const databaseInfo = document.createElement("div");
+    databaseInfo.textContent =
+      "قاعدة البيانات: " + result.databaseName +
+      " — الإصدار: " + result.databaseVersion;
+    box.appendChild(databaseInfo);
+
+    for (const [name, store] of Object.entries(result.stores)) {
+      const line = document.createElement("div");
+      line.style.margin = "8px 0";
+      line.textContent =
+        (labels[name] || name) + ": " +
+        (store.exists ? store.count + " سجل" : "المخزن غير موجود");
+      box.appendChild(line);
+    }
+
+    if (result.storage) {
+      const storageLine = document.createElement("div");
+      storageLine.style.marginTop = "10px";
+
+      if (result.storage.error) {
+        storageLine.textContent =
+          "تعذر قراءة مساحة التخزين: " + result.storage.error;
+      } else {
+        const used = (result.storage.usage / 1024 / 1024).toFixed(2);
+        const quota = (result.storage.quota / 1024 / 1024).toFixed(2);
+
+        storageLine.textContent =
+          "المساحة المستخدمة: " + used + " MB من " + quota + " MB" +
+          (result.storage.usagePercent !== null
+            ? " (" + result.storage.usagePercent + "%)"
+            : "");
+      }
+
+      box.appendChild(storageLine);
+    }
+
+    const checked = document.createElement("div");
+    checked.style.marginTop = "8px";
+    checked.textContent =
+      "وقت الفحص: " + new Date(result.checkedAt).toLocaleString("ar-IQ");
+    box.appendChild(checked);
+
+  } catch (error) {
+    box.textContent = "تعذر فحص التخزين المحلي: " + error.message;
+  }
+}  
 async function scanLocalOperations() {
   const summary = document.getElementById("localOperationsSummary");
   const details = document.getElementById("localOperationsDetails");
