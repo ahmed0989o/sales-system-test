@@ -8372,9 +8372,8 @@ function openRent() {
 };
 
 const syncStatusLabel =
-  !device.last_sync_at
-    ? "لم تتم المزامنة بعد"
-    : syncStatusLabels[device.sync_status] || "غير معروفة";
+  syncStatusLabels[device.sync_status] ||
+  (!device.last_sync_at ? "لم تتم المزامنة بعد" : "غير معروفة");
       return `
         <div class="device-card">
           <div class="device-card-header">
