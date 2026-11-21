@@ -4591,12 +4591,14 @@ async function scanLocalOperations() {
     });
 
     summary.innerHTML = `
-      <div>إجمالي العمليات: ${myOperations.length}</div>
-      <div>مكتملة: ${counts.completed}</div>
-      <div>بانتظار المزامنة: ${counts.pending}</div>
-      <div>جارٍ تنفيذها: ${counts.syncing}</div>
-      <div>فاشلة: ${counts.failed}</div>
-    `;
+  <div>إجمالي سجلات التخزين المحلي: ${allOperations.length}</div>
+  <div>عمليات هذا الجهاز والمستخدم: ${myOperations.length}</div>
+  <div>عمليات خارج نطاق الجهاز أو المستخدم: ${allOperations.length - myOperations.length}</div>
+  <div>مكتملة: ${counts.completed}</div>
+  <div>بانتظار المزامنة: ${counts.pending}</div>
+  <div>جارٍ تنفيذها: ${counts.syncing}</div>
+  <div>فاشلة: ${counts.failed}</div>
+`;
 
     if (myOperations.length === 0) {
       details.textContent =
