@@ -4435,7 +4435,8 @@ async function showLocalDeviceInfo() {
     box.textContent = "تعذر قراءة معلومات الجهاز: " + error.message;
   }
 }
-  async function scanLocalOperations() {
+  
+async function scanLocalOperations() {
   const summary = document.getElementById("localOperationsSummary");
   const details = document.getElementById("localOperationsDetails");
 
@@ -4446,7 +4447,6 @@ async function showLocalDeviceInfo() {
     await OfflineStore.open();
 
     const deviceId = await OfflineStore.getDeviceId();
-
     const allOperations = await OfflineStore.listOperations();
 
     const myOperations = allOperations.filter(operation =>
@@ -4476,11 +4476,124 @@ async function showLocalDeviceInfo() {
     `;
 
     if (myOperations.length === 0) {
-      details.textContent = "لا توجد عمليات مسجلة لهذا المستخدم على هذا الجهاز.";
+      details.textContent =
+        "لا توجد عمليات مسجلة لهذا المستخدم على هذا الجهاز.";
       return;
     }
 
-    details.textContent = "اكتمل الفحص بنجاح. لم يتم تعديل أي عملية أو سجل.";
+    // إنشاء جدول التفاصيل
+    const wrapper = document.createElement("div");
+    wrapper.style.overflowX = "auto";
+    wrapper.style.marginTop = "15px";
+
+    const table = document.createElement("table");
+    table.style.cssText =
+      "width:100%;min-width:650px;border-collapse:collapse;text-align:center;font-size:13px;";
+
+    const headers = [
+      "نوع العملية",
+      "رقم العملية / الفاتورة",
+      "تاريخ الإنشاء",
+      "الحالة",
+      "المحاولات",
+      "آخر خطأ"
+    ];
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    headers.forEach(title => {
+      const th = document.createElement("th");
+      th.textContent = title;
+      th.style.cssText =
+        "padding:10px;border:1px solid #ddd;background:#f1f1f1;";
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+
+    const typeLabels = {
+      "sale.create": "فاتورة بيع",
+      "purchase.create": "شراء مخزون",
+      "customer_payment.create": "تسديد زبون"
+    };
+
+    const statusLabels = {
+      completed: "مكتملة",
+      pending: "بانتظار المزامنة",
+      syncing: "جارٍ التنفيذ",
+      failed: "فاشلة"
+    };
+
+    myOperations
+      .slice()
+      .sort((a, b) =>
+        new Date(b.created_at) - new Date(a.created_at)
+      )
+      .forEach(operation => {
+        const result = operation.server_result || {};
+
+        let reference = operation.operation_id || "غير متوفر";
+
+        if (operation.type === "sale.create") {
+          reference = result.invoice_number || reference;
+        } else if (operation.type === "purchase.create") {
+          if (result.quantity_added != null) {
+            reference = "الكمية المضافة: " + result.quantity_added;
+          }
+        }
+
+        const date = operation.created_at
+          ? new Date(operation.created_at).toLocaleString("ar-IQ", {
+              timeZone: "Asia/Baghdad"
+            })
+          : "غير متوفر";
+
+        const values = [
+          typeLabels[operation.type] || operation.type || "غير معروف",
+          reference,
+          date,
+          statusLabels[operation.status] || operation.status,
+          operation.attempt_count ?? 0,
+          operation.last_error || "لا يوجد"
+        ];
+
+        const tr = document.createElement("tr");
+
+        values.forEach((value, index) => {
+          const td = document.createElement("td");
+          td.textContent = String(value);
+          td.style.cssText =
+            "padding:9px;border:1px solid #ddd;vertical-align:middle;";
+
+          if (index === 3 && operation.status === "completed") {
+            td.style.color = "#198754";
+          }
+
+          if (index === 3 && operation.status === "failed") {
+            td.style.color = "#dc3545";
+          }
+
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+
+    table.appendChild(tbody);
+    wrapper.appendChild(table);
+
+    details.replaceChildren(wrapper);
+
+    const message = document.createElement("div");
+    message.textContent =
+      "اكتمل الفحص بنجاح. لم يتم تعديل أي عملية أو سجل.";
+    message.style.marginTop = "12px";
+
+    details.appendChild(message);
 
   } catch (error) {
     summary.textContent = "تعذر فحص العمليات المحلية.";
