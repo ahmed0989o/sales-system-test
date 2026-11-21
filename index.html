@@ -4435,6 +4435,59 @@ async function showLocalDeviceInfo() {
     box.textContent = "تعذر قراءة معلومات الجهاز: " + error.message;
   }
 }
+  async function scanLocalOperations() {
+  const summary = document.getElementById("localOperationsSummary");
+  const details = document.getElementById("localOperationsDetails");
+
+  summary.textContent = "جارٍ فحص العمليات المحلية...";
+  details.textContent = "";
+
+  try {
+    await OfflineStore.open();
+
+    const deviceId = await OfflineStore.getDeviceId();
+
+    const allOperations = await OfflineStore.listOperations();
+
+    const myOperations = allOperations.filter(operation =>
+      operation.device_id === deviceId &&
+      operation.user_id === currentUser.id
+    );
+
+    const counts = {
+      pending: 0,
+      syncing: 0,
+      failed: 0,
+      completed: 0
+    };
+
+    myOperations.forEach(operation => {
+      if (Object.prototype.hasOwnProperty.call(counts, operation.status)) {
+        counts[operation.status]++;
+      }
+    });
+
+    summary.innerHTML = `
+      <div>إجمالي العمليات: ${myOperations.length}</div>
+      <div>مكتملة: ${counts.completed}</div>
+      <div>بانتظار المزامنة: ${counts.pending}</div>
+      <div>جارٍ تنفيذها: ${counts.syncing}</div>
+      <div>فاشلة: ${counts.failed}</div>
+    `;
+
+    if (myOperations.length === 0) {
+      details.textContent = "لا توجد عمليات مسجلة لهذا المستخدم على هذا الجهاز.";
+      return;
+    }
+
+    details.textContent = "اكتمل الفحص بنجاح. لم يتم تعديل أي عملية أو سجل.";
+
+  } catch (error) {
+    summary.textContent = "تعذر فحص العمليات المحلية.";
+    details.textContent = error.message;
+    console.error("Local operations scan:", error);
+  }
+}
 async function loadProducts() {
   $("product").innerHTML =
     '<option value="">جارٍ تحميل المنتجات...</option>';
