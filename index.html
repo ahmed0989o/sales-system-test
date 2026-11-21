@@ -4355,7 +4355,7 @@ const syncStatus =
       p_device_name: deviceName,
       p_device_type: deviceType,
       p_pending_operations: pendingOperations,
-      p_sync_status: pendingOperations > 0 ? "pending" : "synced",
+      p_sync_status: syncStatus,
       p_app_version: "1.0",
       p_manufacturer: manufacturer || null,
       p_model: model || null,
