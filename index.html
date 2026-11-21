@@ -4378,7 +4378,35 @@ const syncStatus =
     console.error("تعذر إرسال تقرير الجهاز:", error);
   }
 }
+async function showLocalDeviceInfo() {
+  const box = document.getElementById("localDeviceInfo");
 
+  try {
+    const info = await OfflineStore.getDeviceInfo() || {};
+
+    box.textContent = "";
+
+    const details = [
+      ["معرف الجهاز", info.deviceId || "غير محفوظ"],
+      ["نوع الجهاز", info.deviceType || "غير معروف"],
+      ["الشركة", info.manufacturer || "غير معروفة"],
+      ["الطراز", info.model || "غير معروف"],
+      ["رقم الجهاز", info.deviceNumber ?? "غير محدد"],
+      ["آخر فحص", info.detectedAt || "غير متوفر"],
+      ["حالة الإنترنت", navigator.onLine ? "متصل" : "غير متصل"]
+    ];
+
+    for (const [label, value] of details) {
+      const line = document.createElement("div");
+      line.style.margin = "6px 0";
+      line.textContent = label + ": " + value;
+      box.appendChild(line);
+    }
+
+  } catch (error) {
+    box.textContent = "تعذر قراءة معلومات الجهاز: " + error.message;
+  }
+}
 async function loadProducts() {
   $("product").innerHTML =
     '<option value="">جارٍ تحميل المنتجات...</option>';
