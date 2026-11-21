@@ -997,9 +997,66 @@ async function recoverSyncingOperations() {
       total: pending.length + syncing.length + failed.length
     };
   }
+async function getDiagnostics() {
+  const database = await openDatabase();
 
+  const expectedStores = [
+    "meta",
+    "products",
+    "customers",
+    "outbox"
+  ];
+
+  const stores = {};
+
+  for (const name of expectedStores) {
+    if (!database.objectStoreNames.contains(name)) {
+      stores[name] = { exists: false, count: 0 };
+      continue;
+    }
+
+    stores[name] = await new Promise((resolve, reject) => {
+      const transaction = database.transaction(name, "readonly");
+      const request = transaction.objectStore(name).count();
+
+      request.onsuccess = () => resolve({
+        exists: true,
+        count: request.result
+      });
+
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  let storage = null;
+
+  if (navigator.storage?.estimate) {
+    try {
+      const estimate = await navigator.storage.estimate();
+
+      storage = {
+        usage: estimate.usage || 0,
+        quota: estimate.quota || 0,
+        usagePercent: estimate.quota
+          ? Math.round((estimate.usage / estimate.quota) * 100)
+          : null
+      };
+    } catch (error) {
+      storage = { error: error.message };
+    }
+  }
+
+  return {
+    databaseName: database.name,
+    databaseVersion: database.version,
+    stores,
+    storage,
+    checkedAt: new Date().toISOString()
+  };
+}
 window.OfflineStore = Object.freeze({
   open: openDatabase,
+  getDiagnostics: getDiagnostics,
   getDeviceId,
   getDeviceInfo,
   saveDeviceInfo,
