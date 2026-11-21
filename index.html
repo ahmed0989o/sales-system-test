@@ -8349,7 +8349,16 @@ function openRent() {
 
   try {
     const { data, error } = await db.rpc("get_app_devices");
-  console.log("بيانات الأجهزة من قاعدة البيانات:", data);
+ alert(
+  "بيانات جهاز Honor:\n" +
+  JSON.stringify(
+    data?.find(d =>
+      d.device_id === "fe15ad89-add1-4edd-bdaa-f34a2e274dc9"
+    ),
+    null,
+    2
+  )
+);
     if (error) throw error;
 
     if (!data || data.length === 0) {
