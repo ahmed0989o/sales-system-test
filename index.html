@@ -4717,7 +4717,11 @@ const otherOperations = allOperations.filter(operation =>
     wrapper.appendChild(table);
 
     details.replaceChildren(wrapper);
+const otherTitle = document.createElement("h3");
+otherTitle.textContent = "🔎 عمليات الأجهزة أو المستخدمين الآخرين";
+otherTitle.style.marginTop = "20px";
 
+details.appendChild(otherTitle);
     const message = document.createElement("div");
     message.textContent =
       "اكتمل الفحص بنجاح. لم يتم تعديل أي عملية أو سجل.";
