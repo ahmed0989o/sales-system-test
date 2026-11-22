@@ -4572,7 +4572,17 @@ async function scanLocalOperations() {
 
     const deviceId = await OfflineStore.getDeviceId();
     const allOperations = await OfflineStore.listOperations();
+const { data: employees, error: employeesError } =
+  await db.rpc("get_app_employees");
 
+if (employeesError) throw employeesError;
+
+const employeeNames = new Map(
+  (employees || []).map(employee => [
+    employee.user_id,
+    employee.display_name
+  ])
+);
     const myOperations = allOperations.filter(operation =>
       operation.device_id === deviceId &&
       operation.user_id === currentUser.id
