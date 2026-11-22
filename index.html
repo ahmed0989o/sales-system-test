@@ -7011,6 +7011,7 @@ window.addEventListener("online", async function () {
 setInterval(function () {
   syncPendingSales();
   syncPendingPurchases();
+  syncPendingCustomerPayments();
 }, 30000);
 window.addEventListener("error", function (event) {
   const status = document.getElementById("loginStatus");
