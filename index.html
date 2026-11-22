@@ -9402,6 +9402,59 @@ function toggleSystemFullscreen() {
     grid-template-columns: 1fr;
   }
 }
+  /* بطاقة فحص التخزين المحلي */
+#devicesMonitorPanel .monitor-info-card {
+  background: linear-gradient(145deg, #ffffff, #f5f9ff);
+  border: 1px solid #dce9f8;
+  border-radius: 19px;
+  padding: 19px;
+  margin: 18px 0;
+  box-shadow: 0 7px 22px rgba(62, 115, 170, .08);
+  direction: rtl;
+  text-align: right;
+}
+
+#devicesMonitorPanel .monitor-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 13px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #e6eef8;
+}
+
+#devicesMonitorPanel .monitor-info-header h3 {
+  margin: 0;
+  color: #245b91;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+#devicesMonitorPanel .monitor-info-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: #eaf3ff;
+  color: #3475b9;
+  font-size: 22px;
+}
+
+#devicesMonitorPanel #localStorageDiagnosticsContent {
+  color: #526b87;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  #devicesMonitorPanel .monitor-info-card {
+    padding: 14px;
+    border-radius: 15px;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
