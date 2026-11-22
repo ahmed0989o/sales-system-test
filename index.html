@@ -4749,6 +4749,31 @@ details.appendChild(otherTitle);
   });
 
   otherTable.appendChild(otherHead);
+      otherOperations.forEach(operation => {
+  const tr = document.createElement("tr");
+
+  const values = [
+    operation.type || "غير معروف",
+    operation.device_id || "غير متوفر",
+    operation.user_id || "غير متوفر",
+    operation.status || "غير معروف",
+    operation.created_at
+      ? new Date(operation.created_at).toLocaleString("ar-IQ", {
+          timeZone: "Asia/Baghdad"
+        })
+      : "غير متوفر"
+  ];
+
+  values.forEach(value => {
+    const td = document.createElement("td");
+    td.textContent = String(value);
+    td.style.cssText =
+      "padding:8px;border:1px solid #ddd;overflow-wrap:anywhere;";
+    tr.appendChild(td);
+  });
+
+  otherTable.appendChild(tr);
+});
 }
     const message = document.createElement("div");
     message.textContent =
