@@ -405,7 +405,97 @@ hr{margin-top:28px}
   left: -5px;
   cursor: nesw-resize;
 }
+/* تصميم 2027 - نافذة مراقبة الأجهزة فقط */
+#devicesMonitorPanel {
+  background: #f4f8ff;
+  color: #23436b;
+  border: 1px solid #dce9f8;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 12px 35px rgba(65, 125, 190, 0.12);
+  direction: rtl;
+  text-align: right;
+  box-sizing: border-box;
+}
 
+#devicesMonitorPanel h2 {
+  color: #245b9e;
+  font-size: 25px;
+  font-weight: 800;
+  margin: 12px 0 22px;
+}
+
+#devicesMonitorPanel h3 {
+  color: #3475b9;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+#devicesMonitorPanel button {
+  background: #eaf3ff;
+  color: #2464a8;
+  border: 1px solid #d3e5fa;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: bold;
+  transition: .2s ease;
+}
+
+#devicesMonitorPanel button:hover {
+  background: #dcecff;
+  box-shadow: 0 5px 14px rgba(55, 115, 180, .13);
+  transform: translateY(-1px);
+}
+
+#devicesMonitorPanel #localDeviceInfo,
+#devicesMonitorPanel #localStorageDiagnostics,
+#devicesMonitorPanel #localOperationsMonitor {
+  background: #ffffff !important;
+  border: 1px solid #dfebf8 !important;
+  border-radius: 17px !important;
+  padding: 18px !important;
+  margin: 16px 0 !important;
+  box-shadow: 0 6px 20px rgba(60, 110, 165, .07);
+}
+
+#devicesMonitorPanel #devicesMonitorStatus {
+  border-radius: 12px;
+  padding: 12px;
+  background: #eaf4ff;
+  color: #245b9e;
+}
+
+#devicesMonitorPanel table {
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+#devicesMonitorPanel th {
+  background: #e8f2ff;
+  color: #245b9e;
+}
+
+#devicesMonitorPanel td {
+  color: #405b78;
+}
+
+@media (max-width: 700px) {
+  #devicesMonitorPanel {
+    padding: 12px;
+    border-radius: 15px;
+  }
+
+  #devicesMonitorPanel h2 {
+    font-size: 20px;
+  }
+
+  #devicesMonitorPanel button {
+    margin: 5px 2px;
+  }
+}
 </style>
 <link rel="manifest" href="manifest.json">
 </head>
