@@ -538,6 +538,107 @@ hr{margin-top:28px}
     flex: 1 1 100%;
   }
 }
+  /* بطاقات الأجهزة - تصميم عصري */
+#devicesMonitorPanel .devices-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+#devicesMonitorPanel .device-card {
+  background: linear-gradient(145deg, #ffffff, #f5f9ff);
+  border: 1px solid #dce9f8;
+  border-radius: 19px;
+  padding: 19px;
+  box-shadow: 0 7px 22px rgba(62, 115, 170, .08);
+  transition: .2s ease;
+  min-width: 0;
+}
+
+#devicesMonitorPanel .device-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 27px rgba(62, 115, 170, .13);
+}
+
+#devicesMonitorPanel .device-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #e6eef8;
+  margin-bottom: 14px;
+}
+
+#devicesMonitorPanel .device-card-header strong {
+  color: #245b91;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel .device-online,
+#devicesMonitorPanel .device-offline {
+  padding: 6px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+#devicesMonitorPanel .device-online {
+  background: #e5f8ee;
+  color: #218653;
+}
+
+#devicesMonitorPanel .device-offline {
+  background: #fff0ed;
+  color: #c65c50;
+}
+
+#devicesMonitorPanel .device-card-details {
+  display: grid;
+  gap: 10px;
+  color: #526b87;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+#devicesMonitorPanel .device-card-details > div {
+  padding: 8px 10px;
+  background: #f1f6fc;
+  border-radius: 9px;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel .device-card-id {
+  margin-top: 13px;
+  padding: 9px;
+  border-radius: 9px;
+  background: #edf4fc;
+  color: #71869e;
+  font-size: 11px;
+  direction: ltr;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel .device-card button {
+  width: 100%;
+  margin-top: 13px;
+}
+
+#devicesMonitorPanel .device-card input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 9px;
+}
+
+@media (max-width: 600px) {
+  #devicesMonitorPanel .devices-cards {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 <link rel="manifest" href="manifest.json">
 </head>
