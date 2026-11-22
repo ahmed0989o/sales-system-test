@@ -4733,7 +4733,7 @@ const employeeNames = new Map(
         operation => [
           typeLabels[operation.type] || operation.type || "غير معروف",
           operation.device_id || "غير متوفر",
-          operation.user_id || "غير متوفر",
+          employeeNames.get(operation.user_id) || "حساب غير معروف",
           statusLabels[operation.status] || operation.status || "غير معروف",
           operation.created_at
             ? new Date(operation.created_at).toLocaleString("ar-IQ", {
