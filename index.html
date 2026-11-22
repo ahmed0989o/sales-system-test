@@ -4772,9 +4772,11 @@ details.appendChild(otherTitle);
     tr.appendChild(td);
   });
 
-  otherTable.appendChild(tr);
+    otherTable.appendChild(tr);
 });
-}
+
+details.appendChild(otherTable);
+  }
     const message = document.createElement("div");
     message.textContent =
       "اكتمل الفحص بنجاح. لم يتم تعديل أي عملية أو سجل.";
