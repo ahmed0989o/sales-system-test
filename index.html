@@ -4722,6 +4722,34 @@ otherTitle.textContent = "🔎 عمليات الأجهزة أو المستخدم
 otherTitle.style.marginTop = "20px";
 
 details.appendChild(otherTitle);
+    if (otherOperations.length === 0) {
+  const emptyMessage = document.createElement("div");
+  emptyMessage.textContent = "لا توجد عمليات أخرى.";
+  details.appendChild(emptyMessage);
+} else {
+  const otherTable = document.createElement("table");
+  otherTable.style.cssText =
+    "width:100%;border-collapse:collapse;text-align:center;font-size:12px;margin-top:10px;";
+
+  const otherHeaders = [
+    "نوع العملية",
+    "معرّف الجهاز",
+    "معرّف المستخدم",
+    "الحالة",
+    "تاريخ الإنشاء"
+  ];
+
+  const otherHead = document.createElement("tr");
+
+  otherHeaders.forEach(title => {
+    const th = document.createElement("th");
+    th.textContent = title;
+    th.style.cssText = "padding:8px;border:1px solid #ddd;";
+    otherHead.appendChild(th);
+  });
+
+  otherTable.appendChild(otherHead);
+}
     const message = document.createElement("div");
     message.textContent =
       "اكتمل الفحص بنجاح. لم يتم تعديل أي عملية أو سجل.";
