@@ -4573,13 +4573,14 @@ async function scanLocalOperations() {
     const allOperations = await OfflineStore.listOperations();
 
     const myOperations = allOperations.filter(operation =>
-      const otherOperations = allOperations.filter(operation =>
+  operation.device_id === deviceId &&
+  operation.user_id === currentUser.id
+);
+
+const otherOperations = allOperations.filter(operation =>
   operation.device_id !== deviceId ||
   operation.user_id !== currentUser.id
 );
-      operation.device_id === deviceId &&
-      operation.user_id === currentUser.id
-    );
 
     const counts = {
       pending: 0,
