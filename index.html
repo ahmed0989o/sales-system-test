@@ -9449,6 +9449,54 @@ function toggleSystemFullscreen() {
     border-radius: 15px;
   }
 }
+  /* تصميم مراقبة العمليات المحلية */
+#devicesMonitorPanel #localOperationsMonitor {
+  background: linear-gradient(145deg, #ffffff, #f5f9ff) !important;
+  border: 1px solid #dce9f8 !important;
+  border-radius: 19px !important;
+  padding: 19px !important;
+  margin: 18px 0 !important;
+  box-shadow: 0 7px 22px rgba(62, 115, 170, .08);
+  direction: rtl;
+  text-align: right;
+}
+
+#devicesMonitorPanel #localOperationsMonitor h3 {
+  color: #245b91;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+#devicesMonitorPanel #localOperationsSummary {
+  color: #526b87;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel #localOperationsDetails {
+  color: #526b87;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel #localOperationsMonitor table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  #devicesMonitorPanel #localOperationsMonitor {
+    padding: 14px !important;
+    border-radius: 15px !important;
+  }
+
+  #devicesMonitorPanel #localOperationsMonitor h3 {
+    font-size: 16px;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
