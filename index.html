@@ -691,6 +691,78 @@ hr{margin-top:28px}
   }
 }
 
+/* تحسين التفاصيل الداخلية لبطاقات الأجهزة */
+#devicesMonitorPanel .device-card-header {
+  padding-bottom: 13px;
+  margin-bottom: 13px;
+  border-bottom-color: #edf0f4;
+}
+
+#devicesMonitorPanel .device-card-header strong {
+  color: #334e68;
+  font-size: 18px;
+}
+
+#devicesMonitorPanel .device-online {
+  background: #edf8f1;
+  color: #267449;
+}
+
+#devicesMonitorPanel .device-offline {
+  background: #f3f4f6;
+  color: #64748b;
+}
+
+#devicesMonitorPanel .device-card-details {
+  gap: 9px;
+  color: #526174;
+  font-size: 13px;
+}
+
+#devicesMonitorPanel .device-card-details > div {
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e8edf3;
+  border-radius: 11px;
+  line-height: 1.8;
+}
+
+#devicesMonitorPanel .device-card-details > div:last-child {
+  background: #f1f5f9;
+}
+
+#devicesMonitorPanel .device-card-id {
+  background: #f8fafc;
+  border: 1px dashed #d5dee8;
+  color: #64748b;
+  border-radius: 9px;
+  padding: 10px;
+  font-size: 11px;
+}
+
+#devicesMonitorPanel .device-card button {
+  background: #f1f5f9;
+  color: #334e68;
+  border: 1px solid #dce4ed;
+  transition: .2s ease;
+}
+
+#devicesMonitorPanel .device-card button:hover {
+  background: #e6edf5;
+  border-color: #c5d2e0;
+}
+
+#devicesMonitorPanel .device-card input {
+  border-color: #dce4ed;
+  border-radius: 9px;
+}
+
+#devicesMonitorPanel .device-card input:focus {
+  outline: none;
+  border-color: #829bb6;
+  box-shadow: 0 0 0 3px rgba(100, 130, 160, .12);
+}
+
 </style>
 <link rel="manifest" href="manifest.json">
 </head>
