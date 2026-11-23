@@ -9974,7 +9974,56 @@ function toggleSystemFullscreen() {
     grid-template-columns: 1fr;
   }
 }
+/* تحسين بطاقة معلومات الجهاز الحالي */
+#devicesMonitorPanel #localDeviceInfo {
+  display: block;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  padding: 18px !important;
+  margin: 16px 0 !important;
+  box-shadow: 0 4px 14px rgba(30, 50, 80, .05);
+  box-sizing: border-box;
+}
 
+#devicesMonitorPanel #localDeviceInfo .device-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#devicesMonitorPanel #localDeviceInfo .device-info-item {
+  background: #f8fafc;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  padding: 14px;
+  min-width: 0;
+}
+
+#devicesMonitorPanel #localDeviceInfo .device-info-label {
+  color: #718096;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#devicesMonitorPanel #localDeviceInfo .device-info-value {
+  color: #334e68;
+  font-size: 14px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 800px) {
+  #devicesMonitorPanel #localDeviceInfo .device-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 500px) {
+  #devicesMonitorPanel #localDeviceInfo .device-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
