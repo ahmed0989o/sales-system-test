@@ -4696,13 +4696,23 @@ console.log("تم إرسال تقرير الجهاز بنجاح", deviceInfo);
     console.error("تعذر إرسال تقرير الجهاز:", error);
   }
 }
+
 async function showLocalDeviceInfo() {
   const box = document.getElementById("localDeviceInfo");
 
   try {
     const info = await OfflineStore.getDeviceInfo() || {};
 
-    box.textContent = "";
+    box.innerHTML = "";
+
+    const header = document.createElement("div");
+    header.className = "device-info-header";
+
+    const title = document.createElement("h3");
+    title.textContent = "🖥️ معلومات هذا الجهاز";
+
+    header.appendChild(title);
+    box.appendChild(header);
 
     const details = [
       ["معرف الجهاز", info.deviceId || "غير محفوظ"],
@@ -4714,17 +4724,34 @@ async function showLocalDeviceInfo() {
       ["حالة الإنترنت", navigator.onLine ? "متصل" : "غير متصل"]
     ];
 
+    const grid = document.createElement("div");
+    grid.className = "device-info-grid";
+
     for (const [label, value] of details) {
-      const line = document.createElement("div");
-      line.style.margin = "6px 0";
-      line.textContent = label + ": " + value;
-      box.appendChild(line);
+      const item = document.createElement("div");
+      item.className = "device-info-item";
+
+      const name = document.createElement("span");
+      name.className = "device-info-label";
+      name.textContent = label;
+
+      const content = document.createElement("strong");
+      content.className = "device-info-value";
+      content.textContent = value;
+
+      item.appendChild(name);
+      item.appendChild(content);
+      grid.appendChild(item);
     }
 
+    box.appendChild(grid);
+
   } catch (error) {
-    box.textContent = "تعذر قراءة معلومات الجهاز: " + error.message;
+    box.textContent =
+      "تعذر قراءة معلومات الجهاز: " + error.message;
   }
 }
+
 async function scanLocalStorageDiagnostics() {
   const box = document.getElementById("localStorageDiagnosticsContent");
 
