@@ -9870,6 +9870,39 @@ function toggleSystemFullscreen() {
   }
 }
 
+/* تحسين توزيع بطاقات الأجهزة */
+#devicesMonitorPanel .devices-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+#devicesMonitorPanel .device-card {
+  background: #fff;
+  border: 1px solid #e1e8f0;
+  border-radius: 16px;
+  padding: 17px;
+  box-shadow: 0 4px 14px rgba(30, 50, 80, .06);
+  min-width: 0;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+#devicesMonitorPanel .device-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(30, 50, 80, .10);
+}
+
+@media (max-width: 900px) {
+  #devicesMonitorPanel .devices-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  #devicesMonitorPanel .devices-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
 
 <div id="appCustomizeMenu">
