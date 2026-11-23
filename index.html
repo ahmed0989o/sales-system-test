@@ -9663,14 +9663,42 @@ function toggleSystemFullscreen() {
     padding: 11px;
   }
 }
-  /* إبراز حالة المزامنة داخل بطاقة الجهاز */
+ /* إبراز حالات المزامنة */
 #devicesMonitorPanel .device-sync-status {
-  border: 1px solid #d5e5f5;
-  background: linear-gradient(135deg, #eaf4ff, #f7fbff);
-  color: #245b91;
-  font-weight: 800;
   border-radius: 12px;
   padding: 12px;
+  font-weight: 800;
+  border: 1px solid #d5e5f5;
+}
+
+#devicesMonitorPanel .device-sync-synced {
+  background: #e8f7ef;
+  color: #218653;
+  border-color: #c8ead7;
+}
+
+#devicesMonitorPanel .device-sync-pending {
+  background: #fff7e6;
+  color: #a66b12;
+  border-color: #f3dfb5;
+}
+
+#devicesMonitorPanel .device-sync-syncing {
+  background: #eaf4ff;
+  color: #245b91;
+  border-color: #cfe2f7;
+}
+
+#devicesMonitorPanel .device-sync-failed {
+  background: #fff0ed;
+  color: #c64e43;
+  border-color: #f1d0ca;
+}
+
+#devicesMonitorPanel .device-sync-unknown {
+  background: #f1f3f5;
+  color: #64748b;
+  border-color: #e0e5ea;
 }
 </style>
 
