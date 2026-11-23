@@ -8788,6 +8788,8 @@ function printInvoice(existingWindow = null) {
 function showMainMenu() {
   $("mainMenu").classList.remove("hidden");
   $("salesMenu").classList.add("hidden");
+
+  $("salesInvoicesSection")?.classList.add("hidden");
 }
 
 // فتح قائمة المبيعات
