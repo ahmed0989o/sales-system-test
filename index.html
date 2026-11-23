@@ -10024,6 +10024,60 @@ function toggleSystemFullscreen() {
     grid-template-columns: 1fr;
   }
 }
+  /* تحسين بطاقة فحص التخزين المحلي */
+#devicesMonitorPanel #localStorageDiagnostics {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 16px !important;
+  padding: 18px !important;
+  margin: 16px 0 !important;
+  box-shadow: 0 4px 14px rgba(30, 50, 80, .05);
+  box-sizing: border-box;
+}
+
+#devicesMonitorPanel #localStorageDiagnostics .monitor-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 13px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+#devicesMonitorPanel #localStorageDiagnostics h3 {
+  margin: 0;
+  color: #334e68;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+#devicesMonitorPanel #localStorageDiagnosticsContent {
+  color: #526174;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel #localStorageDiagnosticsContent table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#devicesMonitorPanel #localStorageDiagnosticsContent th,
+#devicesMonitorPanel #localStorageDiagnosticsContent td {
+  padding: 11px;
+  border-bottom: 1px solid #edf0f4;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  #devicesMonitorPanel #localStorageDiagnostics {
+    padding: 13px !important;
+  }
+
+  #devicesMonitorPanel #localStorageDiagnostics h3 {
+    font-size: 16px;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
