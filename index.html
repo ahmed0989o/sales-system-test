@@ -9701,6 +9701,175 @@ function toggleSystemFullscreen() {
   color: #64748b;
   border-color: #e0e5ea;
 }
+  
+/* التصميم الموحد الحديث لمراقبة الأجهزة */
+#devicesMonitorPanel {
+  background: #f7f9fc;
+  color: #26384d;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 20px;
+  direction: rtl;
+  text-align: right;
+  box-sizing: border-box;
+}
+
+#devicesMonitorPanel .monitor-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+#devicesMonitorPanel .monitor-actions button {
+  min-width: 0;
+  min-height: 48px;
+  padding: 11px;
+  border: 1px solid #dce4ee;
+  border-radius: 12px;
+  background: #fff;
+  color: #334e68;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 2px 7px rgba(30, 50, 80, .05);
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+#devicesMonitorPanel .monitor-actions button:hover {
+  background: #f0f5fa;
+  border-color: #b8c9dc;
+  transform: translateY(-2px);
+}
+
+#devicesMonitorPanel .monitor-info-card,
+#devicesMonitorPanel #localDeviceInfo,
+#devicesMonitorPanel #localOperationsMonitor {
+  background: #fff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 15px !important;
+  padding: 18px !important;
+  margin: 16px 0 !important;
+  box-shadow: 0 3px 12px rgba(30, 50, 80, .04);
+  box-sizing: border-box;
+}
+
+#devicesMonitorPanel .monitor-info-header,
+#devicesMonitorPanel .device-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+#devicesMonitorPanel .monitor-info-header h3,
+#devicesMonitorPanel .device-info-header h3,
+#devicesMonitorPanel #localDeviceInfo h3,
+#devicesMonitorPanel #localOperationsMonitor h3 {
+  margin: 0;
+  color: #334e68;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+#devicesMonitorPanel .monitor-info-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #f1f5f9;
+  color: #52677e;
+  font-size: 21px;
+}
+
+#devicesMonitorPanel .device-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+#devicesMonitorPanel .device-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 13px;
+  background: #f8fafc;
+  border: 1px solid #e8edf3;
+  border-radius: 11px;
+}
+
+#devicesMonitorPanel .device-info-label {
+  color: #718096;
+  font-size: 12px;
+}
+
+#devicesMonitorPanel .device-info-value {
+  color: #334e68;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel .device-sync-status {
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+}
+
+#devicesMonitorPanel #localStorageDiagnosticsContent,
+#devicesMonitorPanel #localOperationsSummary,
+#devicesMonitorPanel #localOperationsDetails,
+#devicesMonitorPanel #localDeviceInfo {
+  color: #526174;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#devicesMonitorPanel th,
+#devicesMonitorPanel td {
+  padding: 10px;
+  border-bottom: 1px solid #edf0f4;
+  text-align: right;
+}
+
+@media (max-width: 800px) {
+  #devicesMonitorPanel .monitor-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 500px) {
+  #devicesMonitorPanel {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  #devicesMonitorPanel .monitor-actions {
+    grid-template-columns: 1fr;
+  }
+
+  #devicesMonitorPanel .device-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #devicesMonitorPanel .monitor-info-card,
+  #devicesMonitorPanel #localDeviceInfo,
+  #devicesMonitorPanel #localOperationsMonitor {
+    padding: 13px !important;
+  }
+}
+
 </style>
 
 <div id="appCustomizeMenu">
