@@ -8840,6 +8840,7 @@ function openRent() {
 };
 
 const syncStatusLabel =
+  console.log("قيمة الحالة الأصلية:", JSON.stringify(device.sync_status));
   syncStatusLabels[device.sync_status] ||
   (!device.last_sync_at ? "لم تتم المزامنة بعد" : "غير معروفة");
       return `
