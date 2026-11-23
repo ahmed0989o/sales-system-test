@@ -10169,6 +10169,58 @@ function toggleSystemFullscreen() {
     padding: 9px 8px;
   }
 }
+  /* بطاقات إحصائيات العمليات المحلية */
+#devicesMonitorPanel .operations-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+#devicesMonitorPanel .operations-stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  min-height: 95px;
+  padding: 15px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+  box-shadow: 0 3px 10px rgba(30, 50, 80, .04);
+  box-sizing: border-box;
+}
+
+#devicesMonitorPanel .operations-stat-card span {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+#devicesMonitorPanel .operations-stat-card strong {
+  color: #334e68;
+  font-size: 25px;
+  font-weight: 800;
+  direction: ltr;
+  text-align: right;
+}
+
+@media (max-width: 800px) {
+  #devicesMonitorPanel .operations-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 450px) {
+  #devicesMonitorPanel .operations-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #devicesMonitorPanel .operations-stat-card {
+    min-height: 75px;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
