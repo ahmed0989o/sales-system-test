@@ -10291,6 +10291,29 @@ function toggleSystemFullscreen() {
     min-height: 75px;
   }
 }
+  /* توسيع مساحة مراقبة الأجهزة */
+#devicesMonitorPanel {
+  width: 100% !important;
+  max-width: none !important;
+  grid-column: 1 / -1;
+}
+
+#devicesMonitorPanel .local-storage-stats-grid {
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 800px) {
+  #devicesMonitorPanel .local-storage-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 450px) {
+  #devicesMonitorPanel .local-storage-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
