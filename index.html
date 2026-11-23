@@ -8818,7 +8818,7 @@ function openRent() {
     const { data, error } = await db.rpc("get_app_devices");
  
     if (error) throw error;
-
+   console.log("بيانات الأجهزة المستلمة:", data);
     if (!data || data.length === 0) {
       status.textContent = "لا توجد أجهزة مسجلة حتى الآن.";
       return;
