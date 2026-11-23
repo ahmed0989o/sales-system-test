@@ -4893,48 +4893,67 @@ async function scanLocalStorageDiagnostics() {
 
     box.textContent = "";
 
-    const databaseInfo = document.createElement("div");
-    databaseInfo.textContent =
-      "قاعدة البيانات: " + result.databaseName +
-      " — الإصدار: " + result.databaseVersion;
-    box.appendChild(databaseInfo);
+const grid = document.createElement("div");
+grid.className = "local-storage-stats-grid";
 
-    for (const [name, store] of Object.entries(result.stores)) {
-      const line = document.createElement("div");
-      line.style.margin = "8px 0";
-      line.textContent =
-        (labels[name] || name) + ": " +
-        (store.exists ? store.count + " سجل" : "المخزن غير موجود");
-      box.appendChild(line);
+function addStorageCard(title, value) {
+  const card = document.createElement("div");
+  card.className = "local-storage-stat-card";
+
+  const label = document.createElement("span");
+  label.textContent = title;
+
+  const number = document.createElement("strong");
+  number.textContent = value;
+
+  card.appendChild(label);
+  card.appendChild(number);
+  grid.appendChild(card);
+}
+
+// معلومات قاعدة البيانات
+addStorageCard(
+  "قاعدة البيانات",
+  result.databaseName + " — الإصدار " + result.databaseVersion
+);
+
+// أعداد السجلات
+for (const [name, store] of Object.entries(result.stores)) {
+  addStorageCard(
+    labels[name] || name,
+    store.exists ? store.count + " سجل" : "غير موجود"
+  );
+}
+
+// مساحة التخزين
+if (result.storage) {
+  if (result.storage.error) {
+    addStorageCard("مساحة التخزين", "تعذرت القراءة");
+  } else {
+    const used = (result.storage.usage / 1024 / 1024).toFixed(2);
+    const quota = (result.storage.quota / 1024 / 1024).toFixed(2);
+
+    addStorageCard(
+      "المساحة المستخدمة",
+      used + " MB من " + quota + " MB"
+    );
+
+    if (result.storage.usagePercent !== null) {
+      addStorageCard(
+        "نسبة الاستخدام",
+        result.storage.usagePercent + "%"
+      );
     }
+  }
+}
 
-    if (result.storage) {
-      const storageLine = document.createElement("div");
-      storageLine.style.marginTop = "10px";
+// وقت الفحص
+addStorageCard(
+  "وقت الفحص",
+  new Date(result.checkedAt).toLocaleString("ar-IQ")
+);
 
-      if (result.storage.error) {
-        storageLine.textContent =
-          "تعذر قراءة مساحة التخزين: " + result.storage.error;
-      } else {
-        const used = (result.storage.usage / 1024 / 1024).toFixed(2);
-        const quota = (result.storage.quota / 1024 / 1024).toFixed(2);
-
-        storageLine.textContent =
-          "المساحة المستخدمة: " + used + " MB من " + quota + " MB" +
-          (result.storage.usagePercent !== null
-            ? " (" + result.storage.usagePercent + "%)"
-            : "");
-      }
-
-      box.appendChild(storageLine);
-    }
-
-    const checked = document.createElement("div");
-    checked.style.marginTop = "8px";
-    checked.textContent =
-      "وقت الفحص: " + new Date(result.checkedAt).toLocaleString("ar-IQ");
-    box.appendChild(checked);
-
+box.appendChild(grid);
   } catch (error) {
     box.textContent = "تعذر فحص التخزين المحلي: " + error.message;
   }
