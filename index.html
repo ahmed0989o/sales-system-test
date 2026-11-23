@@ -4987,14 +4987,45 @@ const employeeNames = new Map(
     });
 
     summary.innerHTML = `
-      <div>إجمالي سجلات التخزين المحلي: ${allOperations.length}</div>
-      <div>عمليات هذا الجهاز والمستخدم: ${myOperations.length}</div>
-      <div>عمليات خارج نطاق الجهاز أو المستخدم: ${otherOperations.length}</div>
-      <div>مكتملة: ${counts.completed}</div>
-      <div>بانتظار المزامنة: ${counts.pending}</div>
-      <div>جارٍ تنفيذها: ${counts.syncing}</div>
-      <div>فاشلة: ${counts.failed}</div>
-    `;
+  <div class="operations-stats-grid">
+
+    <div class="operations-stat-card">
+      <span>إجمالي السجلات</span>
+      <strong>${allOperations.length}</strong>
+    </div>
+
+    <div class="operations-stat-card">
+      <span>عمليات هذا الجهاز والمستخدم</span>
+      <strong>${myOperations.length}</strong>
+    </div>
+
+    <div class="operations-stat-card">
+      <span>عمليات خارج النطاق</span>
+      <strong>${otherOperations.length}</strong>
+    </div>
+
+    <div class="operations-stat-card">
+      <span>مكتملة</span>
+      <strong>${counts.completed}</strong>
+    </div>
+
+    <div class="operations-stat-card">
+      <span>بانتظار المزامنة</span>
+      <strong>${counts.pending}</strong>
+    </div>
+
+    <div class="operations-stat-card">
+      <span>جارٍ تنفيذها</span>
+      <strong>${counts.syncing}</strong>
+    </div>
+
+    <div class="operations-stat-card">
+      <span>فاشلة</span>
+      <strong>${counts.failed}</strong>
+    </div>
+
+  </div>
+`;
 
     const wrapper = document.createElement("div");
     wrapper.style.cssText = "overflow-x:auto;margin-top:15px;";
