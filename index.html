@@ -10078,6 +10078,66 @@ function toggleSystemFullscreen() {
     font-size: 16px;
   }
 }
+  /* تحسين جداول مراقبة العمليات المحلية */
+#devicesMonitorPanel #localOperationsMonitor table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+#devicesMonitorPanel #localOperationsMonitor thead th {
+  background: #f1f5f9;
+  color: #334e68;
+  font-weight: 800;
+  white-space: nowrap;
+  padding: 13px 11px;
+  border-bottom: 1px solid #dfe7ef;
+}
+
+#devicesMonitorPanel #localOperationsMonitor tbody td {
+  color: #526174;
+  padding: 12px 11px;
+  border-bottom: 1px solid #edf0f4;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+#devicesMonitorPanel #localOperationsMonitor tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+#devicesMonitorPanel #localOperationsMonitor tbody tr:hover {
+  background: #f8fafc;
+}
+
+#devicesMonitorPanel #localOperationsMonitor {
+  min-width: 0;
+}
+
+#devicesMonitorPanel #localOperationsDetails {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+#devicesMonitorPanel #localOperationsDetails table {
+  min-width: 650px;
+}
+
+@media (max-width: 600px) {
+  #devicesMonitorPanel #localOperationsMonitor table {
+    font-size: 12px;
+  }
+
+  #devicesMonitorPanel #localOperationsMonitor thead th,
+  #devicesMonitorPanel #localOperationsMonitor tbody td {
+    padding: 9px 8px;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
