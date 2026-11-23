@@ -8923,6 +8923,7 @@ function openRent() {
   $("devicesMonitorPanel").classList.remove("hidden");
 
   await loadDevicesMonitor();
+  $("salesInvoicesSection")?.classList.add("hidden");
 }
   async function loadDevicesMonitor() {
   const status = $("devicesMonitorStatus");
