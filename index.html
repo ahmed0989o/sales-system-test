@@ -8831,6 +8831,7 @@ function openRent() {
         device.device_alias || device.device_name || "جهاز";
 
       const online = !!device.is_online;
+      console.log("حالة مزامنة الجهاز:", device.device_name, device.sync_status);
     const syncStatusLabels = {
   synced: "مكتملة",
   pending: "بانتظار المزامنة",
