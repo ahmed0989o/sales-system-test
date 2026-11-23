@@ -9442,7 +9442,39 @@ function toggleSystemFullscreen() {
   line-height: 1.9;
   overflow-wrap: anywhere;
 }
+/* تصميم معلومات الجهاز الحالي */
+#devicesMonitorPanel #localDeviceInfo {
+  background: linear-gradient(145deg, #ffffff, #f5f9ff) !important;
+  border: 1px solid #dce9f8 !important;
+  border-radius: 19px !important;
+  padding: 19px !important;
+  margin: 18px 0 !important;
+  box-shadow: 0 7px 22px rgba(62, 115, 170, .08);
+  direction: rtl;
+  text-align: right;
+  color: #526b87;
+  line-height: 2;
+  overflow-wrap: anywhere;
+}
 
+#devicesMonitorPanel #localDeviceInfo h3 {
+  color: #245b91;
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 12px;
+}
+
+#devicesMonitorPanel #localDeviceInfo strong {
+  color: #245b91;
+}
+
+@media (max-width: 600px) {
+  #devicesMonitorPanel #localDeviceInfo {
+    padding: 14px !important;
+    border-radius: 15px !important;
+    font-size: 13px;
+  }
+}
 @media (max-width: 600px) {
   #devicesMonitorPanel .monitor-info-card {
     padding: 14px;
