@@ -8853,7 +8853,7 @@ const syncStatusLabel =
           <div class="device-card-details">
             <div>رقم الجهاز: ${device.device_number ?? "غير محدد"}</div>
             <div>العمليات المعلقة: ${device.pending_operations ?? 0}</div>
-            <div>حالة المزامنة: ${syncStatusLabel}</div>
+            <div class="device-sync-status">حالة المزامنة: ${syncStatusLabel}</div>
                         <div>آخر ظهور: ${
               device.last_seen_at
                 ? new Date(device.last_seen_at).toLocaleString("ar-IQ")
