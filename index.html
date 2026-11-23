@@ -6609,7 +6609,8 @@ $("cashCustomerButton").textContent = "💵 زبون نقدي";
   async function viewSalesInvoices() {
   const button = $("viewSalesInvoicesButton");
   const container = $("salesInvoicesList");
-
+const section = $("salesInvoicesSection");
+if (section) section.classList.remove("hidden");
   if (!db || !currentUser) {
     container.textContent = "سجّل الدخول أولاً.";
     return;
