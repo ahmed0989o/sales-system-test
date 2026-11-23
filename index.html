@@ -9556,6 +9556,61 @@ function toggleSystemFullscreen() {
     font-size: 16px;
   }
 }
+  /* شبكة معلومات الجهاز */
+#devicesMonitorPanel .device-info-header {
+  padding-bottom: 13px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e6eef8;
+}
+
+#devicesMonitorPanel .device-info-header h3 {
+  margin: 0;
+  color: #245b91;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+#devicesMonitorPanel .device-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#devicesMonitorPanel .device-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 13px;
+  background: #f5f9ff;
+  border: 1px solid #e1ecf8;
+  border-radius: 13px;
+  min-width: 0;
+}
+
+#devicesMonitorPanel .device-info-label {
+  color: #71869e;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#devicesMonitorPanel .device-info-value {
+  color: #245b91;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  direction: ltr;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  #devicesMonitorPanel .device-info-grid {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+
+  #devicesMonitorPanel .device-info-item {
+    padding: 11px;
+  }
+}
 </style>
 
 <div id="appCustomizeMenu">
