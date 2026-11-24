@@ -6608,7 +6608,13 @@ $("cashCustomerButton").textContent = "💵 زبون نقدي";
   const button = $("viewSalesInvoicesButton");
   const container = $("salesInvoicesList");
 const section = $("salesInvoicesSection");
-if (section) section.classList.remove("hidden");
+if (section) {
+  section.classList.remove("hidden");
+  section.style.display = "block";
+  section.style.position = "fixed";
+  section.style.inset = "60px 10px 10px 10px";
+  section.style.zIndex = "5000";
+}
   if (!db || !currentUser) {
     container.textContent = "سجّل الدخول أولاً.";
     return;
