@@ -6,7 +6,8 @@ const APP_FILES = [
   "./offline-storage.js",
   "./supabase.js",
   "./icon-192.png",
-  "./icon-512.png"
+  "./icon-512.png",
+  "./blue-eye.png.png"
 ];
 
 self.addEventListener("install", event => {
