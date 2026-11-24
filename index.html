@@ -10479,19 +10479,44 @@ function toggleSystemFullscreen() {
               transform .2s ease, box-shadow .2s ease;
 }
 
+.sales-invoice-view-btn {
+  transition: transform .25s ease,
+              box-shadow .25s ease,
+              background .25s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
 .sales-invoice-view-btn:hover {
-  background: #2563eb;
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, .25);
+  background: #dbeafe;
+  transform: scale(1.12);
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, .12),
+    0 5px 15px rgba(37, 99, 235, .35);
 }
 
 .sales-invoice-view-btn:active {
-  transform: scale(.94);
+  transform: scale(.90);
+  box-shadow: 0 2px 5px rgba(37, 99, 235, .2);
 }
 
-.sales-invoice-view-btn svg {
+.sales-invoice-view-btn:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 3px;
+}
+
+.sales-invoice-view-btn svg,
+.sales-invoice-view-btn img {
   display: block;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  transition: transform .25s ease;
+}
+
+.sales-invoice-view-btn:hover svg,
+.sales-invoice-view-btn:hover img {
+  transform: scale(1.08);
 }
 </style>
 
