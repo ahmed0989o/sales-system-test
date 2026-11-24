@@ -8847,6 +8847,7 @@ function openSalesReturns() {
 }
 // فتح سجل المبيعات
 
+
 function openSalesHistory() {
   $("mainMenu").classList.add("hidden");
   $("salesMenu").classList.add("hidden");
@@ -8867,18 +8868,13 @@ function openSalesHistory() {
     toolWindow.style.display = "none";
   });
 
-  section.classList.remove("hidden");
-
-  if (section.parentElement !== document.body) {
-    document.body.appendChild(section);
-  }
-
   if (!section.open) {
     section.showModal();
   }
 
   viewSalesInvoices();
 }
+
 
 // فتح التقرير اليومي
 function openDailyReport() {
