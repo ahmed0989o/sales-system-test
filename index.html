@@ -8807,6 +8807,7 @@ function closeSalesMenu() {
 // فتح فاتورة البيع
 function openSalesInvoice() {
   $("mainMenu").classList.remove("hidden");
+  $("salesInvoicesSection").classList.add("hidden");
   $("salesMenu").classList.add("hidden");
 
   const win = $("salesPanel");
