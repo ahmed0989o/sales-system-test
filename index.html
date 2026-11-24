@@ -8795,7 +8795,11 @@ function showMainMenu() {
   $("mainMenu").classList.remove("hidden");
   $("salesMenu").classList.add("hidden");
 
-  $("salesInvoicesSection")?.classList.add("hidden");
+  const section = $("salesInvoicesSection");
+  if (section) {
+    section.classList.add("hidden");
+    section.style.display = "none";
+  }
 }
 
 // فتح قائمة المبيعات
