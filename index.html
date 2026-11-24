@@ -8860,18 +8860,18 @@ function openSalesReturns() {
 // فتح سجل المبيعات
 
 function openSalesHistory() {
-  console.log("تم تشغيل openSalesHistory");
-
   $("mainMenu").classList.add("hidden");
   $("salesMenu").classList.add("hidden");
 
-  const win = $("salesPanel");
+  const section = $("salesInvoicesSection");
 
-  win.classList.remove("hidden");
-  highestWindowZ++;
-  win.style.zIndex = highestWindowZ;
+  if (!section) {
+    alert("نافذة سجل الفواتير غير موجودة");
+    return;
+  }
 
-  $("salesInvoiceForm").classList.add("hidden");
+  $("salesPanel").classList.remove("hidden");
+  $("salesInvoiceForm").classList.remove("hidden");
 
   document.querySelectorAll(
     '#appCustomizeToolsLayer .appCustomizeToolWindow[data-tool-name="بحث عن زبون"][data-section-id="salesPanel"]'
@@ -8879,9 +8879,18 @@ function openSalesHistory() {
     toolWindow.style.display = "none";
   });
 
+  document.body.appendChild(section);
+
+  highestWindowZ++;
+  section.style.setProperty("z-index", "2147483647", "important");
+  section.style.setProperty("position", "fixed", "important");
+  section.style.setProperty("display", "block", "important");
+  section.style.setProperty("inset", "60px 10px 10px 10px", "important");
+
+  section.classList.remove("hidden");
+
   viewSalesInvoices();
 }
-
 
 // فتح التقرير اليومي
 function openDailyReport() {
