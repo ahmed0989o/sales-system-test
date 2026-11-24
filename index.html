@@ -1460,13 +1460,78 @@ font-size:16px;
 </div>
 
 </section>
-  <dialog id="salesInvoicesSection" style="position:fixed; margin:auto; width:95%; height:90%; max-width:none; max-height:none; border:1px solid #ccc; border-radius:10px; padding:15px; overflow:auto; background:white;">
-  <h2>🧾 سجل فواتير البيع</h2>
-<button type="button" class="secondary" onclick="viewSalesInvoices()">
-  عرض فواتير البيع
-</button>
+  <dialog id="salesInvoicesSection"
+  style="
+    position:fixed;
+    margin:auto;
+    width:95%;
+    height:90%;
+    max-width:none;
+    max-height:none;
+    border:1px solid #ccc;
+    border-radius:10px;
+    padding:15px;
+    overflow:auto;
+    background:white;
+  "
+  ondblclick="if(event.target===this) toggleSalesInvoicesMaximize()">
+
+  <button type="button"
+    onclick="toggleSalesInvoicesMaximize()"
+    title="تكبير واستعادة"
+    style="
+      position:absolute;
+      top:7px;
+      right:44px;
+      width:27px;
+      height:27px;
+      padding:0;
+      border:0;
+      border-radius:5px;
+      background:#2563eb;
+      color:white;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    ">
+    <span style="position:relative;display:block;width:15px;height:15px;">
+      <span style="position:absolute;top:0;right:0;width:9px;height:9px;border:1.5px solid white;border-radius:1px;"></span>
+      <span style="position:absolute;bottom:0;left:0;width:9px;height:9px;border:1.5px solid white;border-radius:1px;"></span>
+    </span>
+  </button>
+
+  <button type="button"
+    onclick="closeSalesInvoices()"
+    title="إغلاق"
+    style="
+      position:absolute;
+      top:7px;
+      right:10px;
+      width:27px;
+      height:27px;
+      padding:0;
+      border:0;
+      border-radius:50%;
+      background:#dc2626;
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    ">✕</button>
+
+  <h2 style="margin-top:25px;">🧾 سجل فواتير البيع</h2>
+
+  <button type="button" class="secondary" onclick="viewSalesInvoices()">
+    عرض فواتير البيع
+  </button>
+
   <div id="salesInvoicesList" class="tablewrap"></div>
-     </dialog> <!-- نهاية salesInvoicesSection -->
+
+</dialog> <!-- نهاية salesInvoicesSection -->
 <section id="returnsPanel" class="hidden">
     <div class="section-window-controls">
     <button type="button" onclick="minimizeSection('returnsPanel','المرتجعات')" title="تصغير">−</button>
