@@ -8853,19 +8853,30 @@ function openSalesReturns() {
   }
 }
 // فتح سجل المبيعات
+
 function openSalesHistory() {
   console.log("تم تشغيل openSalesHistory");
-  $("mainMenu").classList.remove("hidden");
+
+  $("mainMenu").classList.add("hidden");
   $("salesMenu").classList.add("hidden");
-  $("salesPanel").classList.remove("hidden");
+
+  const win = $("salesPanel");
+
+  win.classList.remove("hidden");
+  highestWindowZ++;
+  win.style.zIndex = highestWindowZ;
+
   $("salesInvoiceForm").classList.add("hidden");
+
   document.querySelectorAll(
-  '#appCustomizeToolsLayer .appCustomizeToolWindow[data-tool-name="بحث عن زبون"][data-section-id="salesPanel"]'
-).forEach(function (win) {
-  win.style.display = "none";
-});
+    '#appCustomizeToolsLayer .appCustomizeToolWindow[data-tool-name="بحث عن زبون"][data-section-id="salesPanel"]'
+  ).forEach(function (toolWindow) {
+    toolWindow.style.display = "none";
+  });
+
   viewSalesInvoices();
 }
+
 
 // فتح التقرير اليومي
 function openDailyReport() {
