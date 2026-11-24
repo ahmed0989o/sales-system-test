@@ -1454,13 +1454,13 @@ font-size:16px;
 </div>
 
 </section>
-  <div id="salesInvoicesSection" class="hidden" style="position:fixed; inset:60px 10px 10px 10px; z-index:5000; overflow:auto; background:white;">
+  <dialog id="salesInvoicesSection" style="position:fixed; margin:auto; width:95%; height:90%; max-width:none; max-height:none; border:1px solid #ccc; border-radius:10px; padding:15px; overflow:auto; background:white;">
   <h2>🧾 سجل فواتير البيع</h2>
 <button type="button" class="secondary" onclick="viewSalesInvoices()">
   عرض فواتير البيع
 </button>
   <div id="salesInvoicesList" class="tablewrap"></div>
-     </div> <!-- نهاية salesInvoicesSection -->
+     </dialog> <!-- نهاية salesInvoicesSection -->
 <section id="returnsPanel" class="hidden">
     <div class="section-window-controls">
     <button type="button" onclick="minimizeSection('returnsPanel','المرتجعات')" title="تصغير">−</button>
