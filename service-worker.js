@@ -1,4 +1,4 @@
-const CACHE_NAME = "sales-system-v36";
+const CACHE_NAME = "sales-system-v37";
 const APP_FILES = [
   "./",
   "./index.html",
@@ -45,9 +45,29 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(request, { ignoreSearch: true }).then(cached => {
-      if (cached) return cached;
-      return fetch(request);
+  fetch(request)
+    .then(response => {
+      if (response && response.ok) {
+        const copy = response.clone();
+
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(request, copy);
+        });
+      }
+
+      return response;
     })
-  );
+    .catch(async () => {
+      const cached = await caches.match(request, {
+        ignoreSearch: true
+      });
+
+      if (cached) return cached;
+
+      return new Response("لا يوجد اتصال بالإنترنت ولا توجد نسخة محفوظة.", {
+        status: 503,
+        headers: { "Content-Type": "text/plain; charset=utf-8" }
+      });
+    })
+);
 });
