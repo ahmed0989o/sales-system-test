@@ -6799,7 +6799,6 @@ if (error) throw error;
         row.appendChild(td);
       });
 
-      tbody.appendChild(row);
       const actionCell = document.createElement("td");
 const viewButton = document.createElement("button");
 
@@ -6807,15 +6806,19 @@ viewButton.type = "button";
 viewButton.className = "sales-invoice-view-btn";
 
 viewButton.innerHTML = `
-  <svg width="22" height="22" viewBox="0 0 24 24"
-       fill="none" stroke="currentColor"
-       stroke-width="2" stroke-linecap="round"
-       stroke-linejoin="round">
-    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/>
-    <circle cx="12" cy="12" r="3"/>
+  <svg width="24" height="24" viewBox="0 0 24 24"
+       fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M2 12C4.2 7.8 7.5 5.5 12 5.5C16.5 5.5 19.8 7.8 22 12C19.8 16.2 16.5 18.5 12 18.5C7.5 18.5 4.2 16.2 2 12Z"
+      fill="#DBEAFE"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linejoin="round"/>
+    <circle cx="12" cy="12" r="4" fill="#2563EB"/>
+    <circle cx="12" cy="12" r="1.8" fill="#FFFFFF"/>
+    <circle cx="12.7" cy="11.3" r=".65" fill="#93C5FD"/>
   </svg>
 `;
-viewButton.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
 viewButton.title = "عرض تفاصيل الفاتورة";
 viewButton.style.marginTop = "0";
 
