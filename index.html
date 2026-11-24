@@ -8870,6 +8870,10 @@ function openSalesHistory() {
 
   if (!section.open) {
     section.showModal();
+    console.log("حالة سجل الفواتير:", {
+  open: section.open,
+  modal: section.matches(":modal")
+});
   }
 
   viewSalesInvoices();
