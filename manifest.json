@@ -12,12 +12,12 @@
   "dir": "rtl",
   "icons": [
     {
-      "src": "./icon-192.png",
+      "src": "./blue-eye.png.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./icon-512.png",
+      "src": "./blue-eye.png.png",
       "sizes": "512x512",
       "type": "image/png"
     }
