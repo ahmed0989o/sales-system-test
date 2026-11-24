@@ -6609,12 +6609,16 @@ $("cashCustomerButton").textContent = "💵 زبون نقدي";
   const container = $("salesInvoicesList");
 const section = $("salesInvoicesSection");
 if (section) {
+  document.body.appendChild(section);
+
   section.classList.remove("hidden");
   section.style.setProperty("display", "block", "important");
-  section.style.position = "fixed";
-  section.style.inset = "60px 10px 10px 10px";
-  highestWindowZ++;
-  section.style.zIndex = String(highestWindowZ);
+  section.style.setProperty("position", "fixed", "important");
+  section.style.setProperty("inset", "60px 10px 10px 10px", "important");
+  section.style.setProperty("z-index", "2147483647", "important");
+  section.style.setProperty("background", "white", "important");
+  section.style.setProperty("overflow", "auto", "important");
+  section.style.setProperty("direction", "rtl", "important");
 }
   if (!db || !currentUser) {
     container.textContent = "سجّل الدخول أولاً.";
