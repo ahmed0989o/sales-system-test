@@ -10460,6 +10460,36 @@ function toggleSystemFullscreen() {
     grid-template-columns: 1fr;
   }
 }
+  .sales-invoice-view-btn {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease,
+              transform .2s ease, box-shadow .2s ease;
+}
+
+.sales-invoice-view-btn:hover {
+  background: #2563eb;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, .25);
+}
+
+.sales-invoice-view-btn:active {
+  transform: scale(.94);
+}
+
+.sales-invoice-view-btn svg {
+  display: block;
+}
 </style>
 
 <div id="appCustomizeMenu">
