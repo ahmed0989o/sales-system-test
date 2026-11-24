@@ -3657,6 +3657,42 @@ content.appendChild(actions);
     resize: "none"
   });
 }
+  function toggleSalesInvoicesMaximize() {
+  const win = $("salesInvoicesSection");
+
+  if (!win) return;
+
+  if (win.dataset.maximized === "true") {
+    win.style.cssText = win._previousCssText;
+    win.dataset.maximized = "false";
+    return;
+  }
+
+  win._previousCssText = win.style.cssText;
+  win.dataset.maximized = "true";
+
+  Object.assign(win.style, {
+    position: "fixed",
+    inset: "0",
+    width: "100vw",
+    height: "100vh",
+    maxWidth: "none",
+    maxHeight: "none",
+    minWidth: "0",
+    minHeight: "0",
+    margin: "0",
+    borderRadius: "0",
+    resize: "none"
+  });
+}
+
+function closeSalesInvoices() {
+  const win = $("salesInvoicesSection");
+
+  if (win && win.open) {
+    win.close();
+  }
+}
   function handleCustomerDebtItemsDoubleClick(event) {
   if (event.detail === 2) {
     event.preventDefault();
