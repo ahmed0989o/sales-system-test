@@ -6610,10 +6610,11 @@ $("cashCustomerButton").textContent = "💵 زبون نقدي";
 const section = $("salesInvoicesSection");
 if (section) {
   section.classList.remove("hidden");
-  section.style.display = "block";
+  section.style.setProperty("display", "block", "important");
   section.style.position = "fixed";
   section.style.inset = "60px 10px 10px 10px";
-  section.style.zIndex = "5000";
+  highestWindowZ++;
+  section.style.zIndex = String(highestWindowZ);
 }
   if (!db || !currentUser) {
     container.textContent = "سجّل الدخول أولاً.";
