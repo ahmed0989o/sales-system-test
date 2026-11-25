@@ -6844,7 +6844,11 @@ if (button) button.disabled = false;
     "تفاصيل الفاتورة رقم " + (invoiceNumber || saleId);
 
   panel.classList.remove("hidden");
-  content.textContent = "جارٍ تحميل التفاصيل...";
+
+highestWindowZ++;
+panel.style.zIndex = highestWindowZ;
+
+content.textContent = "جارٍ تحميل التفاصيل...";
 
   try {
     const { data, error } = await db
