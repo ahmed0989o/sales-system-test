@@ -1602,6 +1602,7 @@ font-size:16px;
 <div id="paymentStatus" class="status"></div>
 </section>
 
+
 <section id="purchasePanel" class="hidden">
   <div class="section-window-controls">
     <button type="button" onclick="minimizeSection('purchasePanel','المشتريات')" title="تصغير">−</button>
@@ -1609,24 +1610,49 @@ font-size:16px;
     <button type="button" onclick="resetSingleWindow('purchasePanel')" title="إعادة ضبط النافذة">↩️</button>
     <button type="button" onclick="closeSection('purchasePanel')" title="إغلاق">×</button>
   </div>
-<hr>
-<h2>🔒 المشتريات — المسؤول فقط</h2>
-<label for="purchaseProduct">المنتج</label>
-<select id="purchaseProduct">
-<option value="">اختر المنتج</option>
-</select>
-<label for="purchaseQuantity">الكمية المشتراة</label>
-<input id="purchaseQuantity" type="number" min="1" step="1" value="1" oninput="calculatePurchaseTotal()">
-<label for="purchaseUnitCost">تكلفة الوحدة</label>
-<input id="purchaseUnitCost" type="number" min="0" step="0.01" oninput="calculatePurchaseTotal()">
-<label for="purchaseTotalCost">إجمالي التكلفة</label>
-<input id="purchaseTotalCost" type="number" readonly>
-<button id="savePurchaseButton" type="button" onclick="savePurchase()">حفظ المشتريات</button>
-<div id="purchaseStatus" class="status"></div>
-<button type="button" class="secondary" onclick="loadPurchases()">تحديث سجل المشتريات</button>
-<div id="purchaseDetails" class="tablewrap"></div>
-<p class="note">تسجيل المشتريات هنا يحفظ سجل الشراء ويزيد كمية المنتج في المخزون تلقائيًا.</p>
-  </section>
+
+  <hr>
+
+  <h2>🔒 المشتريات — المسؤول فقط</h2>
+
+  <div class="purchase-entry-card">
+    <h3>تسجيل مشتريات جديدة</h3>
+
+    <label for="purchaseProduct">المنتج</label>
+    <select id="purchaseProduct">
+      <option value="">اختر المنتج</option>
+    </select>
+
+    <div class="purchase-fields-grid">
+      <div>
+        <label for="purchaseQuantity">الكمية المشتراة</label>
+        <input id="purchaseQuantity" type="number" min="1" step="1" value="1" oninput="calculatePurchaseTotal()">
+      </div>
+
+      <div>
+        <label for="purchaseUnitCost">تكلفة الوحدة</label>
+        <input id="purchaseUnitCost" type="number" min="0" step="0.01" oninput="calculatePurchaseTotal()">
+      </div>
+    </div>
+
+    <label for="purchaseTotalCost">إجمالي التكلفة</label>
+    <input id="purchaseTotalCost" type="number" readonly>
+
+    <button id="savePurchaseButton" type="button" onclick="savePurchase()">حفظ المشتريات</button>
+    <div id="purchaseStatus" class="status"></div>
+  </div>
+
+  <div class="purchase-history-card">
+    <h3>سجل المشتريات</h3>
+
+    <button type="button" class="secondary" onclick="loadPurchases()">تحديث سجل المشتريات</button>
+
+    <div id="purchaseDetails" class="tablewrap"></div>
+  </div>
+
+  <p class="note">تسجيل المشتريات هنا يحفظ سجل الشراء ويزيد كمية المنتج في المخزون تلقائيًا.</p>
+</section>
+
 
 <section id="ownerPanel" class="hidden">
 <section id="cashboxPanel">
