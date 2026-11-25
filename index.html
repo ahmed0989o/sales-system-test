@@ -6837,19 +6837,28 @@ tbody.appendChild(row);
 if (button) button.disabled = false;
   }
 }
-  async function viewSaleDetails(saleId, invoiceNumber) {
+  
+async function viewSaleDetails(saleId, invoiceNumber) {
   const panel = $("saleDetailsPanel");
   const content = $("saleDetailsContent");
 
   $("saleDetailsTitle").textContent =
-    "تفاصيل الفاتورة رقم " + (invoiceNumber || saleId);
+    "فاتورة بيع رقم " + (invoiceNumber || saleId);
 
   if (!panel.open) panel.showModal();
 
-content.textContent = "جارٍ تحميل التفاصيل...";
+  content.textContent = "جارٍ تحميل الفاتورة...";
 
   try {
-    const { data, error } = await db
+    const { data: sale, error: saleError } = await db
+      .from("sales")
+      .select("*")
+      .eq("id", saleId)
+      .single();
+
+    if (saleError) throw saleError;
+
+    const { data: items, error } = await db
       .from("sale_details")
       .select("id,product_id,quantity,unit_price,total,products(name,barcode)")
       .eq("sale_id", saleId)
@@ -6857,61 +6866,209 @@ content.textContent = "جارٍ تحميل التفاصيل...";
 
     if (error) throw error;
 
-    if (!data || !data.length) {
+    if (!items || !items.length) {
       content.textContent = "لا توجد منتجات في هذه الفاتورة.";
       return;
     }
 
-    const table = document.createElement("table");
-    const headers = ["المنتج", "الباركود", "الكمية", "سعر الوحدة", "الإجمالي"];
-    const thead = document.createElement("thead");
-    const headerRow = document.createElement("tr");
+    let customerPhone = sale.customer_phone || "—";
 
-    headers.forEach(label => {
-      const th = document.createElement("th");
-      th.textContent = label;
-      headerRow.appendChild(th);
-    });
+    if (sale.customer_id) {
+      const { data: customer } = await db
+        .from("customers")
+        .select("phone")
+        .eq("id", sale.customer_id)
+        .maybeSingle();
 
-    thead.appendChild(headerRow);
-    table.appendChild(thead);
+      if (customer?.phone) customerPhone = customer.phone;
+    }
 
-    const tbody = document.createElement("tbody");
-    let total = 0;
+    const escapeHtml = value =>
+      String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
 
-    data.forEach(item => {
-      const row = document.createElement("tr");
+    const formatMoney = value =>
+      Number(value || 0).toLocaleString("de-DE");
+
+    const invoiceDate = new Date(
+      sale.created_at || Date.now()
+    ).toLocaleString("ar-IQ");
+
+    const total = Number(
+      sale.total_amount ?? sale.total ??
+      items.reduce((sum, item) => sum + Number(item.total || 0), 0)
+    );
+
+    const amountReceived = Number(
+      sale.amount_received ?? sale.received_amount ?? sale.received ?? 0
+    );
+
+    const remaining = Number(
+      sale.remaining_amount ?? sale.remaining ?? (total - amountReceived)
+    );
+
+    const creditUsed = Number(
+      sale.credit_used ?? sale.creditUsed ?? 0
+    );
+
+    const itemsHtml = items.map((item, index) => {
       const product = Array.isArray(item.products)
         ? item.products[0]
         : item.products;
 
-      [
-        product?.name || ("منتج رقم " + item.product_id),
-        product?.barcode || "—",
-        item.quantity,
-        money(item.unit_price),
-        money(item.total)
-      ].forEach(value => {
-        const td = document.createElement("td");
-        td.textContent = String(value);
-        row.appendChild(td);
-      });
+      return `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${escapeHtml(product?.name || "منتج")}</td>
+          <td>${formatMoney(item.unit_price)} د.ع</td>
+          <td>${formatMoney(item.quantity)}</td>
+          <td>${formatMoney(item.total)} د.ع</td>
+        </tr>
+      `;
+    }).join("");
 
-      total += Number(item.total || 0);
-      tbody.appendChild(row);
-    });
+    content.innerHTML = `
+      <div class="invoice" style="
+        max-width:800px;
+        margin:auto;
+        color:#222;
+        font-family:Arial,sans-serif;
+        direction:rtl;
+      ">
+        <h1 style="text-align:center">فاتورة بيع</h1>
 
-    table.appendChild(tbody);
+        <h2 style="text-align:center">
+          رقم الفاتورة: ${escapeHtml(sale.invoice_number || invoiceNumber)}
+        </h2>
 
-    const summary = document.createElement("p");
-    summary.textContent = "مجموع المنتجات: " + money(total);
+        <div style="
+          border:1px solid #ddd;
+          padding:14px;
+          margin:20px 0;
+          line-height:2;
+        ">
+          <div>الزبون: ${escapeHtml(sale.customer_name || "—")}</div>
+          <div>📱 هاتف الزبون: ${escapeHtml(customerPhone)}</div>
+          <div>التاريخ: ${escapeHtml(invoiceDate)}</div>
+          <div>طريقة الدفع: ${escapeHtml(sale.payment_method || "—")}</div>
+        </div>
 
-    content.replaceChildren(table, summary);
+        <table style="
+          width:100%;
+          border-collapse:collapse;
+          margin-top:20px;
+        ">
+          <thead>
+            <tr>
+              <th style="border:1px solid #ccc;padding:10px 6px">ت</th>
+              <th style="border:1px solid #ccc;padding:10px 6px">المنتج</th>
+              <th style="border:1px solid #ccc;padding:10px 6px">سعر الوحدة</th>
+              <th style="border:1px solid #ccc;padding:10px 6px">الكمية</th>
+              <th style="border:1px solid #ccc;padding:10px 6px">المجموع</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <div style="
+          margin-top:24px;
+          line-height:2.2;
+          font-size:17px;
+        ">
+          <div><strong>إجمالي الفاتورة:</strong>
+            ${formatMoney(total)} د.ع</div>
+
+          <div><strong>المبلغ الواصل:</strong>
+            ${formatMoney(amountReceived)} د.ع</div>
+
+          <div><strong>الرصيد الدائن المستخدم:</strong>
+            ${formatMoney(creditUsed)} د.ع</div>
+
+          <div><strong>المتبقي على الزبون:</strong>
+            ${formatMoney(remaining)} د.ع</div>
+        </div>
+
+        <div style="
+          margin-top:35px;
+          text-align:center;
+          color:#555;
+        ">شكراً لتعاملكم معنا</div>
+
+        <button type="button" onclick="printSaleDetailsInvoice()" style="
+          display:block;
+          margin:20px auto;
+          padding:10px 24px;
+          cursor:pointer;
+        ">طباعة الفاتورة</button>
+      </div>
+    `;
 
   } catch (error) {
     console.error("تفاصيل الفاتورة:", error);
-    content.textContent = "تعذر تحميل التفاصيل: " + error.message;
+    content.textContent = "تعذر تحميل الفاتورة: " + error.message;
   }
+}
+
+function printSaleDetailsInvoice() {
+  const content = $("saleDetailsContent");
+
+  if (!content) return;
+
+  const printWindow = window.open("", "_blank");
+
+  if (!printWindow) {
+    alert("يرجى السماح بالنوافذ المنبثقة للطباعة.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>فاتورة بيع</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          direction: rtl;
+          margin: 30px;
+          color: #222;
+        }
+        table {
+          width:100%;
+          border-collapse:collapse;
+        }
+        th,td {
+          border:1px solid #ccc;
+          padding:10px 6px;
+          text-align:center;
+        }
+        th { background:#eef5fb; }
+        button { display:none !important; }
+        @media print {
+          body { margin:10mm; }
+        }
+      </style>
+    </head>
+    <body>
+      ${content.querySelector(".invoice").outerHTML}
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+
+  setTimeout(() => {
+    printWindow.focus();
+    printWindow.print();
+  }, 400);
 }
 
 function closeSaleDetails() {
