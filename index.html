@@ -8227,12 +8227,16 @@ $("cashboxBalance").textContent = money(summary.balance);
 ].includes(m.movement_type);
 
       const typeLabels = {
-        capital_in: "رأس المال",
-        cash_sale: "مبيعات نقدية",
-        customer_payment: "تسديد دين زبون",
-        purchase_payment: "دفعة مشتريات",
-        rent_payment: "دفعة إيجار"
-      };
+  capital_in: "رأس المال",
+  cash_sale: "مبيعات نقدية",
+  customer_payment: "تسديد دين زبون",
+  purchase_payment: "دفعة مشتريات",
+  rent_payment: "دفعة إيجار",
+  expense: "مصروف",
+  other_expense: "مصروف آخر",
+  other_income: "استرداد / إيراد آخر",
+  owner_draw: "سحب المالك"
+};
 
       [
         new Date(m.movement_date).toLocaleString("en-GB", {
