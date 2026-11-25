@@ -6840,10 +6840,7 @@ if (button) button.disabled = false;
   $("saleDetailsTitle").textContent =
     "تفاصيل الفاتورة رقم " + (invoiceNumber || saleId);
 
-  panel.classList.remove("hidden");
-
-highestWindowZ++;
-panel.style.zIndex = highestWindowZ;
+  if (!panel.open) panel.showModal();
 
 content.textContent = "جارٍ تحميل التفاصيل...";
 
