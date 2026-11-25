@@ -6911,7 +6911,9 @@ content.textContent = "جارٍ تحميل التفاصيل...";
 }
 
 function closeSaleDetails() {
-  $("saleDetailsPanel").classList.add("hidden");
+  if ($("saleDetailsPanel").open) {
+  $("saleDetailsPanel").close();
+}
   $("saleDetailsContent").replaceChildren();
 }
 async function loadDailyReport() {
