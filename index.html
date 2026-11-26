@@ -1615,6 +1615,131 @@ font-size:16px;
 
   <h2>🔒 المشتريات — المسؤول فقط</h2>
 
+<div id="newPurchaseInvoice" class="purchase-entry-card">
+
+  <h3>فاتورة مشتريات جديدة</h3>
+
+  <div class="purchase-fields-grid">
+    <div>
+      <label>رقم الفاتورة</label>
+      <input id="purchaseInvoiceNumber" type="text" readonly>
+    </div>
+
+    <div>
+      <label>تاريخ الفاتورة</label>
+      <input id="purchaseInvoiceDate" type="date">
+    </div>
+
+    <div>
+      <label>المورد</label>
+      <select id="purchaseSupplier">
+        <option value="">اختر المورد</option>
+      </select>
+    </div>
+
+    <div>
+      <label>رقم فاتورة المورد</label>
+      <input id="purchaseSupplierInvoiceNumber" type="text">
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="purchase-invoice-toolbar">
+    <button type="button" id="addPurchaseInvoiceItemButton">
+      إضافة مادة
+    </button>
+
+    <button type="button" id="quickPurchaseEntryButton">
+      إدخال سريع
+    </button>
+
+    <button type="button" id="purchaseBarcodeButton">
+      باركود
+    </button>
+
+    <button type="button" id="purchaseInvoiceSearchButton">
+      بحث
+    </button>
+  </div>
+
+  <div class="tablewrap">
+    <table id="purchaseInvoiceItemsTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>المادة</th>
+          <th>الباركود</th>
+          <th>الوحدة</th>
+          <th>الكمية</th>
+          <th>المجاني</th>
+          <th>سعر الشراء</th>
+          <th>الخصم %</th>
+          <th>الخصم</th>
+          <th>سعر البيع 1</th>
+          <th>سعر البيع 2</th>
+          <th>الإجمالي</th>
+          <th>حذف</th>
+        </tr>
+      </thead>
+      <tbody id="purchaseInvoiceItemsBody">
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <div class="purchase-fields-grid">
+    <div>
+      <label>المجموع</label>
+      <input id="purchaseInvoiceSubtotal" type="number" readonly>
+    </div>
+
+    <div>
+      <label>الخصم</label>
+      <input id="purchaseInvoiceDiscount" type="number" value="0">
+    </div>
+
+    <div>
+      <label>المصاريف</label>
+      <input id="purchaseInvoiceExpenses" type="number" value="0">
+    </div>
+
+    <div>
+      <label>الإجمالي النهائي</label>
+      <input id="purchaseInvoiceTotal" type="number" readonly>
+    </div>
+
+    <div>
+      <label>المدفوع</label>
+      <input id="purchaseInvoicePaid" type="number" value="0">
+    </div>
+
+    <div>
+      <label>المتبقي</label>
+      <input id="purchaseInvoiceRemaining" type="number" readonly>
+    </div>
+
+    <div>
+      <label>طريقة الدفع</label>
+      <select id="purchaseInvoicePaymentMethod">
+        <option value="">اختر طريقة الدفع</option>
+      </select>
+    </div>
+
+    <div>
+      <label>حالة التسديد</label>
+      <input id="purchaseInvoicePaymentStatus" type="text" readonly>
+    </div>
+  </div>
+
+  <label>ملاحظات</label>
+  <textarea id="purchaseInvoiceNotes"></textarea>
+
+  <div id="purchaseInvoiceStatus" class="status"></div>
+
+</div>
+
   <div class="purchase-entry-card">
     <h3>تسجيل مشتريات جديدة</h3>
 
