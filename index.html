@@ -9645,8 +9645,6 @@ function calculatePurchaseInvoiceTotals() {
   const remaining = Math.max(0, total - paid);
 
   $("purchaseInvoiceSubtotal").value = subtotal.toFixed(2);
-  $("purchaseInvoiceDiscount").value =
-    (totalDiscount + invoiceDiscount).toFixed(2);
   $("purchaseInvoiceTotal").value = total.toFixed(2);
   $("purchaseInvoiceRemaining").value = remaining.toFixed(2);
 
