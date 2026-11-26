@@ -10179,6 +10179,23 @@ calculatePurchaseInvoiceTotals();
       }
     });
 }
+  async function searchPurchaseInvoice() {
+  const invoiceNumber = prompt("أدخل رقم فاتورة المشتريات:");
+
+  if (!invoiceNumber || !invoiceNumber.trim()) return;
+
+  const { data, error } = await db.rpc(
+    "get_purchase_invoice_details",
+    { p_invoice_number: invoiceNumber.trim() }
+  );
+
+  if (error) {
+    alert("تعذر البحث عن الفاتورة: " + error.message);
+    return;
+  }
+
+  console.log("نتيجة البحث عن فاتورة المشتريات:", data);
+}
 function openPurchaseBarcode() {
   const barcode = prompt("أدخل باركود المادة:");
 
