@@ -10198,10 +10198,14 @@ calculatePurchaseInvoiceTotals();
     return;
   }
 
-  if (!invoices || !invoices.length) {
-    alert("الفاتورة غير موجودة.");
-    return;
-  }
+  const invoice = invoices?.find(
+  item => item.invoice_number === invoiceNumber.trim()
+);
+
+if (!invoice) {
+  alert("لم يتم العثور على رقم الفاتورة المطابق.");
+  return;
+}
 
   const { data, error } = await db.rpc(
     "get_purchase_invoice_details",
