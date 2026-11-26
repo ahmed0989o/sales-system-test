@@ -10284,7 +10284,8 @@ $("purchaseInvoiceItemsBody").replaceChildren();
 
   row.querySelector(".purchase-item-discount-percent").value =
     item.discount_percent ?? 0;
-
+row.querySelector(".purchase-item-discount").value =
+  Number(item.discount_amount || 0).toFixed(2);
   row.querySelector(".purchase-item-sale1").value =
     item.sale_price1 ?? 0;
 
