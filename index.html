@@ -9916,7 +9916,8 @@ if (window.viewingExistingPurchaseInvoice) {
     window.purchaseInvoiceSaving = false;
   }
 }
-  function addPurchaseInvoiceItem() {
+  
+function addPurchaseInvoiceItem() {
   const tbody = $("purchaseInvoiceItemsBody");
   if (!tbody) return;
 
@@ -9932,18 +9933,15 @@ if (window.viewingExistingPurchaseInvoice) {
   row.innerHTML = `
     <td class="purchase-row-number"></td>
     <td>
-  <input
-    type="text"
-    class="purchase-item-search"
-    placeholder="ابحث عن المادة بالاسم أو الباركود"
-    autocomplete="off"
-  >
-  <div class="purchase-item-search-results"></div>
-  <input
-    type="hidden"
-    class="purchase-item-product"
-  >
-</td>
+      <input
+        type="text"
+        class="purchase-item-search"
+        placeholder="ابحث عن المادة بالاسم أو الباركود"
+        autocomplete="off"
+      >
+      <div class="purchase-item-search-results"></div>
+      <input type="hidden" class="purchase-item-product">
+    </td>
     <td><input class="purchase-item-barcode" readonly></td>
     <td><input class="purchase-item-unit" value="قطعة"></td>
     <td><input class="purchase-item-quantity" type="number" min="1" step="1" value="1"></td>
@@ -9957,52 +9955,69 @@ if (window.viewingExistingPurchaseInvoice) {
     <td><button type="button" class="purchase-item-remove">حذف</button></td>
   `;
 
-  
-const searchInput = row.querySelector(".purchase-item-search");
-const searchResults = row.querySelector(".purchase-item-search-results");
-const productInput = row.querySelector(".purchase-item-product");
+  const searchInput = row.querySelector(".purchase-item-search");
+  const searchResults = row.querySelector(".purchase-item-search-results");
+  const productInput = row.querySelector(".purchase-item-product");
 
-searchInput.addEventListener("input", () => {
-  const query = searchInput.value.trim().toLowerCase();
-  searchResults.replaceChildren();
-  productInput.value = "";
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.trim().toLowerCase();
 
-  if (!query) return;
+    searchResults.replaceChildren();
+    productInput.value = "";
 
-  const matches = availableProducts.filter(product =>
-    String(product.name || "").toLowerCase().includes(query) ||
-    String(product.barcode || "").toLowerCase().includes(query)
-  ).slice(0, 15);
+    if (!query) return;
 
-  if (!matches.length) {
-    searchResults.textContent = "لا توجد مادة مطابقة";
-    return;
-  }
+    const matches = availableProducts.filter(product =>
+      String(product.name || "").toLowerCase().includes(query) ||
+      String(product.barcode || "").toLowerCase().includes(query)
+    ).slice(0, 15);
 
-  matches.forEach(product => {
-    const option = document.createElement("button");
-    option.type = "button";
-    option.textContent = product.name;
-    option.style.cssText =
-      "display:block;width:100%;padding:8px;text-align:right;";
+    if (!matches.length) {
+      searchResults.textContent = "لا توجد مادة مطابقة";
+      return;
+    }
 
-    option.addEventListener("click", () => {
-      productInput.value = product.id;
-      searchInput.value = product.name;
-      searchResults.replaceChildren();
+    matches.forEach(product => {
+      const option = document.createElement("button");
+      option.type = "button";
+      option.textContent = product.name;
+      option.style.cssText =
+        "display:block;width:100%;padding:8px;text-align:right;";
 
-      row.querySelector(".purchase-item-barcode").value =
-        product.barcode || "";
+      option.addEventListener("click", () => {
+        productInput.value = product.id;
+        searchInput.value = product.name;
+        searchResults.replaceChildren();
 
-      row.querySelector(".purchase-item-cost").value =
-        product.purchase_price ?? 0;
+        row.querySelector(".purchase-item-barcode").value =
+          product.barcode || "";
 
-      calculatePurchaseInvoiceTotals();
+        row.querySelector(".purchase-item-cost").value =
+          product.purchase_price ?? 0;
+
+        calculatePurchaseInvoiceTotals();
+      });
+
+      searchResults.appendChild(option);
     });
-
-    searchResults.appendChild(option);
   });
-});
+
+  row.querySelectorAll("input").forEach(input => {
+    input.addEventListener("input", calculatePurchaseInvoiceTotals);
+  });
+
+  row.querySelector(".purchase-item-remove").addEventListener("click", () => {
+    row.remove();
+    updatePurchaseInvoiceRowNumbers();
+    calculatePurchaseInvoiceTotals();
+  });
+
+  tbody.appendChild(row);
+
+  updatePurchaseInvoiceRowNumbers();
+  calculatePurchaseInvoiceTotals();
+}
+
 
 function openQuickPurchaseEntry() {
   const products = getPurchaseInvoiceProducts();
