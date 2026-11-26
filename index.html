@@ -4932,6 +4932,8 @@ if (
   canManagePurchases === true
 ) {
   await openPurchases(true);
+} else if (lastActiveSection === "salesMenu") {
+  openSalesMenu();
 }
     if (isOwner(currentUser)) await loadCashbox();
 if (isOwner(currentUser)) {
