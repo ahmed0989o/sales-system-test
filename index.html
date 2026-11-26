@@ -10043,11 +10043,21 @@ function openQuickPurchaseEntry() {
   panel.innerHTML = `
     <h3 style="margin-top:0">إدخال سريع للمواد</h3>
 
-    <label>المادة</label>
-    <select id="quickPurchaseProduct"
-      style="width:100%;padding:10px;margin:6px 0 12px">
-      <option value="">اختر المادة</option>
-    </select>
+    <label>ابحث عن المادة</label>
+<input
+  id="quickPurchaseProductSearch"
+  type="text"
+  placeholder="اسم المادة أو الباركود..."
+  autocomplete="off"
+  style="width:100%;padding:10px;margin:6px 0 4px;box-sizing:border-box"
+>
+
+<div
+  id="quickPurchaseProductResults"
+  style="max-height:160px;overflow-y:auto;margin-bottom:12px"
+></div>
+
+<input type="hidden" id="quickPurchaseProduct">
 
     <label>الكمية</label>
     <input id="quickPurchaseQuantity"
