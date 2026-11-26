@@ -243,6 +243,27 @@ async function saveInvoiceNumberReservation(reservation) {
     };
   });
 }
+  
+async function savePurchaseInvoiceNumberReservation(reservation) {
+  if (
+    !reservation ||
+    !Number.isInteger(reservation.invoice_year) ||
+    !Number.isSafeInteger(reservation.range_start) ||
+    !Number.isSafeInteger(reservation.range_end) ||
+    !Number.isSafeInteger(reservation.next_number) ||
+    reservation.range_start <= 0 ||
+    reservation.range_end < reservation.range_start ||
+    reservation.next_number < reservation.range_start ||
+    reservation.next_number > reservation.range_end
+  ) {
+    throw new Error("بيانات حجز أرقام فواتير المشتريات غير صحيحة.");
+  }
+
+  await setMeta("purchase_invoice_number_reservation", reservation);
+
+  return reservation;
+}
+
 async function getInvoiceNumberReservation() {
   return await getMeta("invoice_number_reservation");
 }
