@@ -10111,9 +10111,18 @@ function calculatePurchaseInvoiceTotals() {
       row.querySelector(".purchase-item-cost").value
     ) || 0;
 
-    const discount = Number(
-      row.querySelector(".purchase-item-discount").value
-    ) || 0;
+    const discountInput = row.querySelector(".purchase-item-discount");
+
+let discount = Number(discountInput.value) || 0;
+
+if (!window.viewingExistingPurchaseInvoice) {
+  const discountPercent = Number(
+    row.querySelector(".purchase-item-discount-percent").value
+  ) || 0;
+
+  discount = quantity * cost * discountPercent / 100;
+  discountInput.value = discount.toFixed(2);
+}
 
     const gross = quantity * cost;
     const lineTotal = Math.max(0, gross - discount);
