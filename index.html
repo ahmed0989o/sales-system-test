@@ -8036,7 +8036,9 @@ async function syncPendingPurchases() {
   if (!currentUser || !db || !window.OfflineStore) return;
 
   purchaseSyncRunning = true;
+
   let syncedAny = false;
+  let purchaseInvoiceSyncedAny = false;
 
   try {
     await OfflineStore.open();
@@ -8044,26 +8046,18 @@ async function syncPendingPurchases() {
     const pendingOperations =
       await OfflineStore.listOperations("pending");
 
+    // المشتريات القديمة
     const myPendingPurchases = pendingOperations.filter(
       operation =>
         operation.type === "purchase.create" &&
         operation.user_id === currentUser.id
     );
 
-    console.log(
-      "عدد المشتريات المعلقة:",
-      myPendingPurchases.length
-    );
-
     for (const operation of myPendingPurchases) {
-      if (!currentUser || operation.user_id !== currentUser.id) {
-        continue;
-      }
+      if (!currentUser || operation.user_id !== currentUser.id) continue;
 
       const claimedOperation =
-        await OfflineStore.claimPendingOperation(
-          operation.operation_id
-        );
+        await OfflineStore.claimPendingOperation(operation.operation_id);
 
       if (!claimedOperation) continue;
 
@@ -8077,61 +8071,101 @@ async function syncPendingPurchases() {
         );
 
         if (response.error) {
-  const errorMessage = response.error.message || "";
+          const message = response.error.message || "";
 
-  const permanentError =
-    /غير مصرح|صلاحية|الحساب غير نشط|بيانات المشتريات غير صحيحة|المنتج غير موجود/i
-      .test(errorMessage);
+          const permanentError =
+            /غير مصرح|صلاحية|الحساب غير نشط|بيانات المشتريات غير صحيحة|المنتج غير موجود/i
+              .test(message);
 
-  if (permanentError) {
-    await OfflineStore.markFailed(
-      claimedOperation.operation_id,
-      errorMessage
-    );
-  } else {
-    await OfflineStore.markPending(
-      claimedOperation.operation_id,
-      errorMessage
-    );
-  }
+          if (permanentError) {
+            await OfflineStore.markFailed(
+              claimedOperation.operation_id,
+              message
+            );
+          } else {
+            await OfflineStore.markPending(
+              claimedOperation.operation_id,
+              message
+            );
+          }
 
-  console.error(
-    "تعذرت مزامنة المشتريات:",
-    response.error
-  );
+          continue;
+        }
 
-  continue;
-}
         await OfflineStore.markCompleted(
-  claimedOperation.operation_id,
-  response.data
-);
+          claimedOperation.operation_id,
+          response.data
+        );
 
-// تحديث وقت آخر مزامنة ناجحة
-try {
-  const deviceId = await OfflineStore.getDeviceId();
+        syncedAny = true;
 
-  const { error: syncReportError } = await db.rpc(
-    "report_device_sync",
-    {
-      p_device_id: deviceId
+      } catch (error) {
+        await OfflineStore.markPending(
+          claimedOperation.operation_id,
+          error.message
+        );
+
+        console.error("خطأ مزامنة المشتريات:", error);
+      }
     }
-  );
 
-  if (syncReportError) throw syncReportError;
+    // فواتير المشتريات الجديدة
+    const myPendingPurchaseInvoices = pendingOperations.filter(
+      operation =>
+        operation.type === "purchase.invoice.create" &&
+        operation.user_id === currentUser.id
+    );
 
-} catch (syncReportError) {
-  console.error(
-    "تعذر تحديث وقت آخر مزامنة للجهاز:",
-    syncReportError
-  );
-}
+    for (const operation of myPendingPurchaseInvoices) {
+      if (!currentUser || operation.user_id !== currentUser.id) continue;
 
-syncedAny = true;
-purchaseInvoiceSyncedAny = true;
+      const claimedOperation =
+        await OfflineStore.claimPendingOperation(operation.operation_id);
+
+      if (!claimedOperation) continue;
+
+      try {
+        const { data, error } = await db.rpc(
+          "create_purchase_invoice_idempotent",
+          {
+            p_operation_id: claimedOperation.operation_id,
+            p_invoice: claimedOperation.payload
+          }
+        );
+
+        if (error) {
+          const message = error.message || "";
+
+          const permanentError =
+            /غير مصرح|صلاحية|الحساب غير نشط|المورد غير موجود|بيانات الفاتورة غير صحيحة/i
+              .test(message);
+
+          if (permanentError) {
+            await OfflineStore.markFailed(
+              claimedOperation.operation_id,
+              message
+            );
+          } else {
+            await OfflineStore.markPending(
+              claimedOperation.operation_id,
+              message
+            );
+          }
+
+          console.error("تعذرت مزامنة فاتورة المشتريات:", error);
+          continue;
+        }
+
+        await OfflineStore.markCompleted(
+          claimedOperation.operation_id,
+          data
+        );
+
+        syncedAny = true;
+        purchaseInvoiceSyncedAny = true;
 
         console.log(
-          "تمت مزامنة عملية شراء:",
+          "تمت مزامنة فاتورة المشتريات:",
           claimedOperation.operation_id
         );
 
@@ -8140,87 +8174,29 @@ purchaseInvoiceSyncedAny = true;
           claimedOperation.operation_id,
           error.message
         );
-        let purchaseInvoiceSyncedAny = false;
-const myPendingPurchaseInvoices = pendingOperations.filter(
-  operation =>
-    currentUser &&
-    operation.type === "purchase.invoice.create" &&
-    operation.user_id === currentUser.id
-);
 
-for (const operation of myPendingPurchaseInvoices) {
-  if (!currentUser || operation.user_id !== currentUser.id) {
-    continue;
-  }
-  const claimedOperation =
-    await OfflineStore.claimPendingOperation(
-      operation.operation_id
-    );
-
-  if (!claimedOperation) continue;
-
-  try {
-    const { data, error } = await db.rpc(
-      "create_purchase_invoice_idempotent",
-      {
-        p_operation_id: claimedOperation.operation_id,
-        p_invoice: claimedOperation.payload
+        console.error("خطأ مزامنة فاتورة المشتريات:", error);
       }
-    );
-
-    if (error) {
-      const message = error.message || "";
-
-      const permanentError =
-        /غير مصرح|صلاحية|الحساب غير نشط|المورد غير موجود|بيانات الفاتورة غير صحيحة/i
-          .test(message);
-
-      if (permanentError) {
-        await OfflineStore.markFailed(
-          claimedOperation.operation_id,
-          message
-        );
-      } else {
-        await OfflineStore.markPending(
-          claimedOperation.operation_id,
-          message
-        );
-      }
-
-      console.error("تعذرت مزامنة فاتورة المشتريات:", error);
-      continue;
     }
 
-    await OfflineStore.markCompleted(
-      claimedOperation.operation_id,
-      data
-    );
+    if (syncedAny && currentUser) {
+      await Promise.all([
+        loadProducts(),
+        loadPurchases()
+      ]);
+    }
 
-    syncedAny = true;
-
-    console.log(
-      "تمت مزامنة فاتورة المشتريات:",
-      claimedOperation.operation_id
-    );
+    if (purchaseInvoiceSyncedAny) {
+      const status = $("purchaseInvoiceStatus");
+      if (status) {
+        status.textContent = "تمت مزامنة فواتير المشتريات بنجاح.";
+      }
+    }
 
   } catch (error) {
-    await OfflineStore.markPending(
-      claimedOperation.operation_id,
-      error.message
-    );
-
-    console.error("خطأ مزامنة فاتورة المشتريات:", error);
-  }
-}
-   if (syncedAny && currentUser) {
-  await Promise.all([
-    loadProducts(),
-    loadPurchases()
-  ]);
-
-  const status = $("purchaseInvoiceStatus");
-  if (status) {
-    status.textContent = "تمت مزامنة فواتير المشتريات بنجاح.";
+    console.error("Purchase sync:", error);
+  } finally {
+    purchaseSyncRunning = false;
   }
 }
   
