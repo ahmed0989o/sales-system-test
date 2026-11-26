@@ -9426,8 +9426,10 @@ async function openPurchases(restore = false) {
 
   if (!restore) {
   $("mainMenu").classList.remove("hidden");
+  $("appUserToolbar").classList.remove("hidden");
 } else {
   $("mainMenu").classList.add("hidden");
+  $("appUserToolbar").classList.remove("hidden");
 }
   $("purchasePanel").classList.remove("hidden");
 
