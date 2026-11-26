@@ -9943,7 +9943,146 @@ function collectPurchaseInvoiceItems() {
   updatePurchaseInvoiceRowNumbers();
   calculatePurchaseInvoiceTotals();
 }
+function openQuickPurchaseEntry() {
+  const products = getPurchaseInvoiceProducts();
 
+  if (!products.length) {
+    alert("لا توجد مواد محمّلة.");
+    return;
+  }
+
+  const oldWindow = document.getElementById("quickPurchaseEntryWindow");
+  if (oldWindow) oldWindow.remove();
+
+  const overlay = document.createElement("div");
+  overlay.id = "quickPurchaseEntryWindow";
+
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    z-index:100000;
+    background:rgba(0,0,0,.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    direction:rtl;
+    padding:15px;
+  `;
+
+  const panel = document.createElement("div");
+  panel.style.cssText = `
+    background:white;
+    width:100%;
+    max-width:450px;
+    padding:20px;
+    border-radius:8px;
+    box-sizing:border-box;
+  `;
+
+  panel.innerHTML = `
+    <h3 style="margin-top:0">إدخال سريع للمواد</h3>
+
+    <label>المادة</label>
+    <select id="quickPurchaseProduct"
+      style="width:100%;padding:10px;margin:6px 0 12px">
+      <option value="">اختر المادة</option>
+    </select>
+
+    <label>الكمية</label>
+    <input id="quickPurchaseQuantity"
+      type="number" min="1" step="1" value="1"
+      style="width:100%;padding:10px;box-sizing:border-box;margin:6px 0 12px">
+
+    <label>الكمية المجانية</label>
+    <input id="quickPurchaseFree"
+      type="number" min="0" step="1" value="0"
+      style="width:100%;padding:10px;box-sizing:border-box;margin:6px 0 15px">
+
+    <button type="button" id="quickPurchaseAdd"
+      style="width:100%;padding:11px;margin-bottom:8px">
+      إضافة المادة والاستمرار
+    </button>
+
+    <button type="button" id="quickPurchaseClose"
+      style="width:100%;padding:10px">
+      إغلاق
+    </button>
+
+    <div id="quickPurchaseStatus"
+      style="margin-top:10px;text-align:center"></div>
+  `;
+
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+
+  const select = panel.querySelector("#quickPurchaseProduct");
+
+  products.forEach(product => {
+    const option = document.createElement("option");
+    option.value = product.id;
+    option.textContent = product.name;
+    select.appendChild(option);
+  });
+
+  panel.querySelector("#quickPurchaseClose").onclick = () => {
+    overlay.remove();
+  };
+
+  panel.querySelector("#quickPurchaseAdd").onclick = () => {
+    const productId = select.value;
+    const quantity = Number(
+      panel.querySelector("#quickPurchaseQuantity").value
+    );
+    const freeQuantity = Number(
+      panel.querySelector("#quickPurchaseFree").value
+    );
+
+    if (!productId) {
+      alert("اختر المادة أولاً.");
+      return;
+    }
+
+    if (!Number.isSafeInteger(quantity) || quantity < 1) {
+      alert("أدخل كمية صحيحة.");
+      return;
+    }
+
+    if (!Number.isSafeInteger(freeQuantity) || freeQuantity < 0) {
+      alert("أدخل كمية مجانية صحيحة.");
+      return;
+    }
+
+    const previousCount =
+      $("purchaseInvoiceItemsBody").children.length;
+
+    addPurchaseInvoiceItem();
+
+    const tbody = $("purchaseInvoiceItemsBody");
+
+    if (tbody.children.length !== previousCount + 1) return;
+
+    const row = tbody.lastElementChild;
+    const productSelect =
+      row.querySelector(".purchase-item-product");
+
+    productSelect.value = productId;
+    productSelect.dispatchEvent(
+      new Event("change", { bubbles: true })
+    );
+
+    row.querySelector(".purchase-item-quantity").value = quantity;
+    row.querySelector(".purchase-item-free").value = freeQuantity;
+
+    calculatePurchaseInvoiceTotals();
+
+    select.value = "";
+    panel.querySelector("#quickPurchaseQuantity").value = "1";
+    panel.querySelector("#quickPurchaseFree").value = "0";
+
+    panel.querySelector("#quickPurchaseStatus").textContent =
+      "تمت إضافة المادة. يمكنك اختيار مادة أخرى.";
+  };
+}
 function updatePurchaseInvoiceRowNumbers() {
   const tbody = $("purchaseInvoiceItemsBody");
   if (!tbody) return;
