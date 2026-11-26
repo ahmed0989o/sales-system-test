@@ -9330,20 +9330,32 @@ function openDailyReport() {
   loadDailyReport();
 }
   // فتح حركة الصندوق
- async function openPurchases() {
+ 
+async function openPurchases() {
   const allowed = await checkPurchasePermission();
 
-if (!allowed) {
-  alert("ليس لديك صلاحية إدارة المشتريات أو تعذر التحقق منها.");
-  return;
-}
+  if (!allowed) {
+    alert("ليس لديك صلاحية إدارة المشتريات أو تعذر التحقق منها.");
+    return;
+  }
 
   $("mainMenu").classList.remove("hidden");
   $("purchasePanel").classList.remove("hidden");
-localStorage.setItem("lastActiveSection", "purchasePanel");
+
+  localStorage.setItem("lastActiveSection", "purchasePanel");
+
   await loadPurchases();
   await loadPurchaseInvoiceSuppliers();
+
+  initializePurchaseInvoiceDate();
+
+  try {
+    await initializePurchaseInvoiceNumber();
+  } catch (error) {
+    console.error("تعذر تهيئة رقم فاتورة المشتريات:", error);
+  }
 }
+
   
 async function loadPurchaseInvoiceSuppliers() {
   const select = document.getElementById("purchaseSupplier");
