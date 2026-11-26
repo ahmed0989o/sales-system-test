@@ -8136,13 +8136,10 @@ try {
           claimedOperation.operation_id,
           error.message
         );
-
-        console.error("خطأ مزامنة المشتريات:", error);
-      }
-    }
 const myPendingPurchaseInvoices = pendingOperations.filter(
   operation =>
-    operation.type === "purchase_invoice.create" &&
+    currentUser &&
+    operation.type === "purchase.invoice.create" &&
     operation.user_id === currentUser.id
 );
 
@@ -8150,7 +8147,6 @@ for (const operation of myPendingPurchaseInvoices) {
   if (!currentUser || operation.user_id !== currentUser.id) {
     continue;
   }
-
   const claimedOperation =
     await OfflineStore.claimPendingOperation(
       operation.operation_id
