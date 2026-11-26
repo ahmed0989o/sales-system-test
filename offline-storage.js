@@ -334,6 +334,10 @@ async function completePurchaseInvoiceNumberReservation(reservation) {
 async function getInvoiceNumberReservation() {
   return await getMeta("invoice_number_reservation");
 }
+
+async function getPurchaseInvoiceNumberReservation() {
+  return await getMeta("purchase_invoice_number_reservation");
+}
   
 async function saveInvoiceNumberDraft(userId, invoiceNumber) {
   if (!userId || typeof invoiceNumber !== "string" || !invoiceNumber.trim()) {
