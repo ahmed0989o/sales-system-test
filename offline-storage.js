@@ -1056,6 +1056,50 @@ async function claimPendingOperation(operationId) {
     };
   });
 }
+  async function recoverStaleSyncingOperations() {
+  const database = await openDatabase();
+  const staleTime = Date.now() - 10 * 60 * 1000;
+
+  return new Promise(function (resolve, reject) {
+    const transaction = database.transaction("outbox", "readwrite");
+    const store = transaction.objectStore("outbox");
+    const request = store.getAll();
+
+    let recoveredCount = 0;
+
+    request.onsuccess = function () {
+      (request.result || []).forEach(operation => {
+        if (
+          operation.status === "syncing" &&
+          operation.syncing_at &&
+          new Date(operation.syncing_at).getTime() < staleTime
+        ) {
+          operation.status = "pending";
+          delete operation.syncing_at;
+          operation.last_error = "أُعيدت العملية إلى قائمة الانتظار بعد انقطاع المزامنة.";
+          store.put(operation);
+          recoveredCount++;
+        }
+      });
+    };
+
+    request.onerror = function () {
+      reject(request.error);
+    };
+
+    transaction.oncomplete = function () {
+      resolve(recoveredCount);
+    };
+
+    transaction.onerror = function () {
+      reject(transaction.error);
+    };
+
+    transaction.onabort = function () {
+      reject(transaction.error || new Error("تعذرت استعادة العمليات العالقة."));
+    };
+  });
+}
   async function markSyncing(operationId) {
   return updateOperation(operationId, {
     status: "syncing",
