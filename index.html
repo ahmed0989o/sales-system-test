@@ -10311,6 +10311,11 @@ $("purchaseInvoiceDiscount").value = "0";
 
 $("purchaseInvoicePaymentMethod").value =
   firstPayment?.payment_method || "";
+    $("purchaseInvoiceItemsBody")
+  .querySelectorAll("input, select, button")
+  .forEach(element => {
+    element.disabled = true;
+  });
     updatePurchaseInvoiceRowNumbers();
 calculatePurchaseInvoiceTotals();
 console.log("تم تحميل بيانات رأس الفاتورة:", data);
