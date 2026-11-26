@@ -8127,7 +8127,8 @@ try {
   );
 }
 
-        syncedAny = true;
+syncedAny = true;
+purchaseInvoiceSyncedAny = true;
 
         console.log(
           "تمت مزامنة عملية شراء:",
@@ -8139,6 +8140,7 @@ try {
           claimedOperation.operation_id,
           error.message
         );
+        let purchaseInvoiceSyncedAny = false;
 const myPendingPurchaseInvoices = pendingOperations.filter(
   operation =>
     currentUser &&
