@@ -9522,10 +9522,16 @@ async function getNextPurchaseInvoiceSequence() {
     await store.completePurchaseInvoiceNumberReservation(reservation);
   }
 
-  return {
-    invoice_year: reservation.invoice_year,
-    invoice_sequence: await store.takeNextPurchaseInvoiceNumber()
-  };
+  const invoiceSequence = await store.takeNextPurchaseInvoiceNumber();
+const activeReservation = await store.getPurchaseInvoiceNumberReservation();
+const deviceId = await store.getDeviceId();
+
+return {
+  reservation_id: activeReservation.reservation_id,
+  device_id: deviceId,
+  invoice_year: activeReservation.invoice_year,
+  invoice_sequence: invoiceSequence
+};
 }
 
 async function initializePurchaseInvoiceNumber() {
