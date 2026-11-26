@@ -10257,7 +10257,7 @@ $("purchaseInvoicePaid").value =
 $("purchaseInvoiceNotes").value =
   invoiceData.notes || "";
 $("purchaseInvoiceItemsBody").replaceChildren();
-
+window.viewingExistingPurchaseInvoice = true;
 (data.items || []).forEach(item => {
   addPurchaseInvoiceItem();
 
@@ -10314,7 +10314,7 @@ $("purchaseInvoicePaymentMethod").value =
     updatePurchaseInvoiceRowNumbers();
 calculatePurchaseInvoiceTotals();
 console.log("تم تحميل بيانات رأس الفاتورة:", data);
-window.viewingExistingPurchaseInvoice = true;
+
 $("savePurchaseInvoiceButton").disabled = true;
     $("addPurchaseInvoiceItemButton").disabled = true;
 $("quickPurchaseEntryButton").disabled = true;
