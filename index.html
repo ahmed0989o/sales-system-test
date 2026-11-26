@@ -8140,7 +8140,77 @@ try {
         console.error("خطأ مزامنة المشتريات:", error);
       }
     }
+const myPendingPurchaseInvoices = pendingOperations.filter(
+  operation =>
+    operation.type === "purchase_invoice.create" &&
+    operation.user_id === currentUser.id
+);
 
+for (const operation of myPendingPurchaseInvoices) {
+  if (!currentUser || operation.user_id !== currentUser.id) {
+    continue;
+  }
+
+  const claimedOperation =
+    await OfflineStore.claimPendingOperation(
+      operation.operation_id
+    );
+
+  if (!claimedOperation) continue;
+
+  try {
+    const { data, error } = await db.rpc(
+      "create_purchase_invoice_idempotent",
+      {
+        p_operation_id: claimedOperation.operation_id,
+        p_invoice: claimedOperation.payload
+      }
+    );
+
+    if (error) {
+      const message = error.message || "";
+
+      const permanentError =
+        /غير مصرح|صلاحية|الحساب غير نشط|المورد غير موجود|بيانات الفاتورة غير صحيحة/i
+          .test(message);
+
+      if (permanentError) {
+        await OfflineStore.markFailed(
+          claimedOperation.operation_id,
+          message
+        );
+      } else {
+        await OfflineStore.markPending(
+          claimedOperation.operation_id,
+          message
+        );
+      }
+
+      console.error("تعذرت مزامنة فاتورة المشتريات:", error);
+      continue;
+    }
+
+    await OfflineStore.markCompleted(
+      claimedOperation.operation_id,
+      data
+    );
+
+    syncedAny = true;
+
+    console.log(
+      "تمت مزامنة فاتورة المشتريات:",
+      claimedOperation.operation_id
+    );
+
+  } catch (error) {
+    await OfflineStore.markPending(
+      claimedOperation.operation_id,
+      error.message
+    );
+
+    console.error("خطأ مزامنة فاتورة المشتريات:", error);
+  }
+}
     if (syncedAny && currentUser) {
       await Promise.all([
         loadProducts(),
