@@ -4906,9 +4906,19 @@ const canManagePurchases =
   await checkPurchasePermission();
 
 $("purchasePanel").classList.add("hidden");
-    if (canManagePurchases === true) {
+
+if (canManagePurchases === true) {
   await loadPurchases();
-  
+}
+
+const lastActiveSection =
+  localStorage.getItem("lastActiveSection");
+
+if (
+  lastActiveSection === "purchasePanel" &&
+  canManagePurchases === true
+) {
+  await openPurchases();
 }
     if (isOwner(currentUser)) await loadCashbox();
 if (isOwner(currentUser)) {
