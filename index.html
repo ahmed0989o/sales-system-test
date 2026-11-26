@@ -10173,7 +10173,35 @@ calculatePurchaseInvoiceTotals();
       }
     });
 }
+function openPurchaseBarcode() {
+  const barcode = prompt("أدخل باركود المادة:");
 
+  if (!barcode || !barcode.trim()) return;
+
+  const product = getPurchaseInvoiceProducts().find(
+    item => String(item.barcode || "").trim() === barcode.trim()
+  );
+
+  if (!product) {
+    alert("لم يتم العثور على مادة بهذا الباركود.");
+    return;
+  }
+
+  addPurchaseInvoiceItem();
+
+  const tbody = $("purchaseInvoiceItemsBody");
+  const row = tbody.lastElementChild;
+
+  if (!row) return;
+
+  const productSelect = row.querySelector(".purchase-item-product");
+  productSelect.value = product.id;
+  productSelect.dispatchEvent(
+    new Event("change", { bubbles: true })
+  );
+
+  calculatePurchaseInvoiceTotals();
+}
 async function clearPurchaseInvoice() {
   if (window.purchaseInvoiceSaving) {
   alert("انتظر حتى تنتهي عملية حفظ الفاتورة.");
