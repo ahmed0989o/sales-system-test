@@ -9370,6 +9370,22 @@ async function loadPurchaseInvoiceSuppliers() {
   }
 }
 
+function initializePurchaseInvoiceDate() {
+  const input = document.getElementById("purchaseInvoiceDate");
+  if (!input) return;
+
+  const now = new Date();
+  const baghdadDate = new Date(
+    now.toLocaleString("en-US", { timeZone: "Asia/Baghdad" })
+  );
+
+  const year = baghdadDate.getFullYear();
+  const month = String(baghdadDate.getMonth() + 1).padStart(2, "0");
+  const day = String(baghdadDate.getDate()).padStart(2, "0");
+
+  input.value = `${year}-${month}-${day}`;
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
