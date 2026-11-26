@@ -9538,12 +9538,21 @@ async function initializePurchaseInvoiceNumber() {
   try {
     const result = await getNextPurchaseInvoiceSequence();
 
+    window.currentPurchaseInvoiceNumberData = {
+      reservation_id: result.reservation_id,
+      device_id: result.device_id,
+      invoice_year: result.invoice_year,
+      invoice_sequence: result.invoice_sequence
+    };
+
     const sequence = String(result.invoice_sequence).padStart(6, "0");
 
     input.value = `PUR-${result.invoice_year}-${sequence}`;
     input.placeholder = "";
 
   } catch (error) {
+    window.currentPurchaseInvoiceNumberData = null;
+
     input.value = "";
     input.placeholder = "تعذر تخصيص رقم الفاتورة";
 
@@ -9553,7 +9562,6 @@ async function initializePurchaseInvoiceNumber() {
     throw error;
   }
 }
-
 function validatePurchaseInvoiceHeader() {
   const invoiceNumber = $("purchaseInvoiceNumber")?.value?.trim();
   const invoiceDate = $("purchaseInvoiceDate")?.value;
