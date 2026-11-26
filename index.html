@@ -9529,14 +9529,73 @@ return {
 };
 }
 
-async function initializePurchaseInvoiceNumber() {
+async function initializePurchaseInvoiceNumber(forceNew = false) {
   const input = document.getElementById("purchaseInvoiceNumber");
   if (!input) return;
+
+  const storageKey = "purchaseInvoiceDraftNumber_v1";
 
   input.value = "";
   input.placeholder = "جارٍ تخصيص الرقم...";
 
   try {
+    const store = window.OfflineStore;
+
+    if (!store) {
+      throw new Error("التخزين المحلي غير متاح.");
+    }
+
+    const currentYear = Number(
+      new Intl.DateTimeFormat("en", {
+        timeZone: "Asia/Baghdad",
+        year: "numeric"
+      }).format(new Date())
+    );
+
+    const deviceId = await store.getDeviceId();
+    const userId = currentUser?.id || null;
+
+    if (forceNew) {
+      localStorage.removeItem(storageKey);
+    } else {
+      let saved = null;
+
+      try {
+        saved = JSON.parse(
+          localStorage.getItem(storageKey) || "null"
+        );
+      } catch (e) {
+        saved = null;
+      }
+
+      if (
+        saved &&
+        saved.reservation_id &&
+        saved.device_id === deviceId &&
+        saved.invoice_year === currentYear &&
+        saved.user_id === userId &&
+        Number.isSafeInteger(saved.invoice_sequence) &&
+        saved.invoice_sequence > 0
+      ) {
+        window.currentPurchaseInvoiceNumberData = {
+          reservation_id: saved.reservation_id,
+          device_id: saved.device_id,
+          invoice_year: saved.invoice_year,
+          invoice_sequence: saved.invoice_sequence
+        };
+
+        const sequence = String(
+          saved.invoice_sequence
+        ).padStart(6, "0");
+
+        input.value =
+          `PUR-${saved.invoice_year}-${sequence}`;
+
+        input.placeholder = "";
+        return;
+      }
+    }
+
     const result = await getNextPurchaseInvoiceSequence();
 
     window.currentPurchaseInvoiceNumberData = {
@@ -9546,9 +9605,21 @@ async function initializePurchaseInvoiceNumber() {
       invoice_sequence: result.invoice_sequence
     };
 
-    const sequence = String(result.invoice_sequence).padStart(6, "0");
+    localStorage.setItem(
+      storageKey,
+      JSON.stringify({
+        ...window.currentPurchaseInvoiceNumberData,
+        user_id: userId
+      })
+    );
 
-    input.value = `PUR-${result.invoice_year}-${sequence}`;
+    const sequence = String(
+      result.invoice_sequence
+    ).padStart(6, "0");
+
+    input.value =
+      `PUR-${result.invoice_year}-${sequence}`;
+
     input.placeholder = "";
 
   } catch (error) {
@@ -9557,7 +9628,10 @@ async function initializePurchaseInvoiceNumber() {
     input.value = "";
     input.placeholder = "تعذر تخصيص رقم الفاتورة";
 
-    const status = document.getElementById("purchaseInvoiceStatus");
+    const status = document.getElementById(
+      "purchaseInvoiceStatus"
+    );
+
     if (status) status.textContent = error.message;
 
     throw error;
