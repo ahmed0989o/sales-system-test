@@ -9957,44 +9957,53 @@ if (window.viewingExistingPurchaseInvoice) {
     <td><button type="button" class="purchase-item-remove">حذف</button></td>
   `;
 
-  const select = row.querySelector(".purchase-item-product");
+  
+const searchInput = row.querySelector(".purchase-item-search");
+const searchResults = row.querySelector(".purchase-item-search-results");
+const productInput = row.querySelector(".purchase-item-product");
 
-  availableProducts.forEach(product => {
-    const option = document.createElement("option");
-    option.value = product.id;
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.trim().toLowerCase();
+  searchResults.replaceChildren();
+  productInput.value = "";
+
+  if (!query) return;
+
+  const matches = availableProducts.filter(product =>
+    String(product.name || "").toLowerCase().includes(query) ||
+    String(product.barcode || "").toLowerCase().includes(query)
+  ).slice(0, 15);
+
+  if (!matches.length) {
+    searchResults.textContent = "لا توجد مادة مطابقة";
+    return;
+  }
+
+  matches.forEach(product => {
+    const option = document.createElement("button");
+    option.type = "button";
     option.textContent = product.name;
-    select.appendChild(option);
+    option.style.cssText =
+      "display:block;width:100%;padding:8px;text-align:right;";
+
+    option.addEventListener("click", () => {
+      productInput.value = product.id;
+      searchInput.value = product.name;
+      searchResults.replaceChildren();
+
+      row.querySelector(".purchase-item-barcode").value =
+        product.barcode || "";
+
+      row.querySelector(".purchase-item-cost").value =
+        product.purchase_price ?? 0;
+
+      calculatePurchaseInvoiceTotals();
+    });
+
+    searchResults.appendChild(option);
   });
+});
 
-  select.addEventListener("change", () => {
-    const product = availableProducts.find(
-      item => String(item.id) === select.value
-    );
-
-    row.querySelector(".purchase-item-barcode").value =
-      product?.barcode || "";
-
-    row.querySelector(".purchase-item-cost").value =
-      product?.purchase_price ?? 0;
-
-    calculatePurchaseInvoiceTotals();
-  });
-
-  row.querySelectorAll("input").forEach(input => {
-    input.addEventListener("input", calculatePurchaseInvoiceTotals);
-  });
-
-  row.querySelector(".purchase-item-remove").addEventListener("click", () => {
-    row.remove();
-    updatePurchaseInvoiceRowNumbers();
-    calculatePurchaseInvoiceTotals();
-  });
-
-  tbody.appendChild(row);
-
-  updatePurchaseInvoiceRowNumbers();
-  calculatePurchaseInvoiceTotals();
-}
 function openQuickPurchaseEntry() {
   const products = getPurchaseInvoiceProducts();
 
