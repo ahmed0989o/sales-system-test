@@ -10006,9 +10006,11 @@ if (saveButton && !saveButton.dataset.bound) {
   saveButton.dataset.bound = "true";
 }
   if (addButton && !addButton.dataset.bound) {
-    addButton.addEventListener("click", addPurchaseInvoiceItem);
-    addButton.dataset.bound = "true";
-  }
+  addButton.addEventListener("click", addPurchaseInvoiceItem);
+  addButton.dataset.bound = "true";
+}
+
+calculatePurchaseInvoiceTotals();
 
   ["purchaseInvoiceDiscount", "purchaseInvoiceExpenses", "purchaseInvoicePaid"]
     .forEach(id => {
