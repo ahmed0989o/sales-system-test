@@ -9806,7 +9806,10 @@ function collectPurchaseInvoiceItems() {
 }
  async function savePurchaseInvoice() {
   if (window.purchaseInvoiceSaving) return;
-
+if (window.viewingExistingPurchaseInvoice) {
+  alert("هذه فاتورة مسترجعة للعرض فقط. اضغط فاتورة جديدة لإنشاء فاتورة أخرى.");
+  return;
+}
   window.purchaseInvoiceSaving = true;
   const status = $("purchaseInvoiceStatus");
 
