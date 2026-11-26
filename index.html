@@ -9483,6 +9483,36 @@ async function initializePurchaseInvoiceNumber() {
   }
 }
 
+function validatePurchaseInvoiceHeader() {
+  const invoiceNumber = $("purchaseInvoiceNumber")?.value?.trim();
+  const invoiceDate = $("purchaseInvoiceDate")?.value;
+  const supplierId = $("purchaseSupplier")?.value;
+
+  if (!invoiceNumber) {
+    throw new Error("رقم فاتورة المشتريات غير جاهز.");
+  }
+
+  if (!/^PUR-\d{4}-\d{6}$/.test(invoiceNumber)) {
+    throw new Error("صيغة رقم فاتورة المشتريات غير صحيحة.");
+  }
+
+  if (!invoiceDate || !/^\d{4}-\d{2}-\d{2}$/.test(invoiceDate)) {
+    throw new Error("يرجى تحديد تاريخ الفاتورة.");
+  }
+
+  if (!supplierId || !Number.isSafeInteger(Number(supplierId))) {
+    throw new Error("يرجى اختيار المورد.");
+  }
+
+  return {
+    invoice_number: invoiceNumber,
+    invoice_date: invoiceDate,
+    supplier_id: Number(supplierId),
+    supplier_invoice_number:
+      $("purchaseSupplierInvoiceNumber")?.value?.trim() || null
+  };
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
