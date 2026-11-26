@@ -9445,6 +9445,32 @@ async function getNextPurchaseInvoiceSequence() {
   };
 }
 
+async function initializePurchaseInvoiceNumber() {
+  const input = document.getElementById("purchaseInvoiceNumber");
+  if (!input) return;
+
+  input.value = "";
+  input.placeholder = "جارٍ تخصيص الرقم...";
+
+  try {
+    const result = await getNextPurchaseInvoiceSequence();
+
+    const sequence = String(result.invoice_sequence).padStart(6, "0");
+
+    input.value = `PUR-${result.invoice_year}-${sequence}`;
+    input.placeholder = "";
+
+  } catch (error) {
+    input.value = "";
+    input.placeholder = "تعذر تخصيص رقم الفاتورة";
+
+    const status = document.getElementById("purchaseInvoiceStatus");
+    if (status) status.textContent = error.message;
+
+    throw error;
+  }
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
