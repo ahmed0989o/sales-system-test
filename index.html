@@ -9606,6 +9606,55 @@ function updatePurchaseInvoiceRowNumbers() {
   });
 }
 
+function calculatePurchaseInvoiceTotals() {
+  const tbody = $("purchaseInvoiceItemsBody");
+  if (!tbody) return;
+
+  let subtotal = 0;
+  let totalDiscount = 0;
+
+  Array.from(tbody.rows).forEach(row => {
+    const quantity = Number(row.querySelector(".purchase-item-quantity").value);
+    const cost = Number(row.querySelector(".purchase-item-cost").value);
+    const discountPercent = Number(
+      row.querySelector(".purchase-item-discount-percent").value
+    );
+
+    const discountInput = row.querySelector(".purchase-item-discount");
+
+    const gross = quantity * cost;
+    const discount = gross * discountPercent / 100;
+    const lineTotal = Math.max(0, gross - discount);
+
+    discountInput.value = discount.toFixed(2);
+    row.querySelector(".purchase-item-total").value = lineTotal.toFixed(2);
+
+    subtotal += gross;
+    totalDiscount += discount;
+  });
+
+  const invoiceDiscount = Number($("purchaseInvoiceDiscount").value) || 0;
+  const expenses = Number($("purchaseInvoiceExpenses").value) || 0;
+  const paid = Number($("purchaseInvoicePaid").value) || 0;
+
+  const total = Math.max(
+    0,
+    subtotal - totalDiscount - invoiceDiscount + expenses
+  );
+
+  const remaining = Math.max(0, total - paid);
+
+  $("purchaseInvoiceSubtotal").value = subtotal.toFixed(2);
+  $("purchaseInvoiceDiscount").value =
+    (totalDiscount + invoiceDiscount).toFixed(2);
+  $("purchaseInvoiceTotal").value = total.toFixed(2);
+  $("purchaseInvoiceRemaining").value = remaining.toFixed(2);
+
+  $("purchaseInvoicePaymentStatus").value =
+    paid <= 0 ? "غير مسدد" :
+    remaining <= 0 ? "مسدد" : "تسديد جزئي";
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
