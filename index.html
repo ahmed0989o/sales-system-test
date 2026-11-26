@@ -9386,6 +9386,65 @@ function initializePurchaseInvoiceDate() {
   input.value = `${year}-${month}-${day}`;
 }
 
+async function getNextPurchaseInvoiceSequence() {
+  const store = window.OfflineStore;
+
+  if (!store) {
+    throw new Error("التخزين المحلي غير متاح.");
+  }
+
+  const currentYear = Number(
+    new Intl.DateTimeFormat("en", {
+      timeZone: "Asia/Baghdad",
+      year: "numeric"
+    }).format(new Date())
+  );
+
+  let reservation = await store.getPurchaseInvoiceNumberReservation();
+
+  if (
+    !reservation ||
+    reservation.invoice_year !== currentYear ||
+    !Number.isSafeInteger(reservation.next_number) ||
+    reservation.next_number > reservation.range_end
+  ) {
+    if (!navigator.onLine) {
+      throw new Error("لا يوجد حجز أرقام مشتريات صالح دون إنترنت.");
+    }
+
+    const deviceId = await store.getDeviceId();
+    const requestId =
+      await store.getOrCreatePurchaseInvoiceReservationRequestId();
+
+    const { data, error } = await db.rpc(
+      "reserve_purchase_invoice_number_block",
+      {
+        p_device_id: deviceId,
+        p_request_id: requestId
+      }
+    );
+
+    if (error) throw error;
+
+    reservation = Array.isArray(data) ? data[0] : data;
+
+    if (
+      !reservation ||
+      !reservation.reservation_id ||
+      reservation.invoice_year !== currentYear
+    ) {
+      throw new Error("لم يرجع الخادم حجز أرقام مشتريات صالحاً.");
+    }
+
+    await store.completePurchaseInvoiceNumberReservation(reservation);
+  }
+
+  return {
+    invoice_year: reservation.invoice_year,
+    invoice_sequence: await store.takeNextPurchaseInvoiceNumber()
+  };
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
