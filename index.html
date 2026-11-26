@@ -8210,17 +8210,15 @@ for (const operation of myPendingPurchaseInvoices) {
     console.error("خطأ مزامنة فاتورة المشتريات:", error);
   }
 }
-    if (syncedAny && currentUser) {
-      await Promise.all([
-        loadProducts(),
-        loadPurchases()
-      ]);
-    }
+   if (syncedAny && currentUser) {
+  await Promise.all([
+    loadProducts(),
+    loadPurchases()
+  ]);
 
-  } catch (error) {
-    console.error("Purchase sync:", error);
-  } finally {
-    purchaseSyncRunning = false;
+  const status = $("purchaseInvoiceStatus");
+  if (status) {
+    status.textContent = "تمت مزامنة فواتير المشتريات بنجاح.";
   }
 }
   
