@@ -10217,7 +10217,28 @@ if (!invoice) {
     return;
   }
 
-  console.log("تفاصيل فاتورة المشتريات:", data);
+  const invoiceData = data?.invoice;
+
+if (!invoiceData) {
+  alert("بيانات الفاتورة غير مكتملة.");
+  return;
+}
+
+$("purchaseInvoiceNumber").value = invoiceData.invoice_number || "";
+$("purchaseInvoiceDate").value =
+  invoiceData.invoice_date?.slice(0, 10) || "";
+
+$("purchaseSupplier").value = invoiceData.supplier_id || "";
+$("purchaseSupplierInvoiceNumber").value =
+  invoiceData.supplier_invoice_number || "";
+
+$("purchaseInvoicePaid").value =
+  invoiceData.paid_amount ?? 0;
+
+$("purchaseInvoiceNotes").value =
+  invoiceData.notes || "";
+
+console.log("تم تحميل بيانات رأس الفاتورة:", data);
 }
   function openPurchaseBarcode() {
   const barcode = prompt("أدخل باركود المادة:");
