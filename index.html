@@ -9994,7 +9994,12 @@ function calculatePurchaseInvoiceTotals() {
 
 function initializePurchaseInvoiceButtons() {
   const addButton = $("addPurchaseInvoiceItemButton");
+const saveButton = $("savePurchaseInvoiceButton");
 
+if (saveButton && !saveButton.dataset.bound) {
+  saveButton.addEventListener("click", savePurchaseInvoice);
+  saveButton.dataset.bound = "true";
+}
   if (addButton && !addButton.dataset.bound) {
     addButton.addEventListener("click", addPurchaseInvoiceItem);
     addButton.dataset.bound = "true";
