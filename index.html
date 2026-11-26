@@ -10275,6 +10275,12 @@ $("purchaseInvoiceItemsBody").replaceChildren();
 
 updatePurchaseInvoiceRowNumbers();
 calculatePurchaseInvoiceTotals();
+const invoiceExpenses = (data.expenses || []).reduce(
+  (sum, expense) => sum + Number(expense.amount || 0),
+  0
+);
+
+$("purchaseInvoiceExpenses").value = invoiceExpenses.toFixed(2);
 console.log("تم تحميل بيانات رأس الفاتورة:", data);
 }
   function openPurchaseBarcode() {
