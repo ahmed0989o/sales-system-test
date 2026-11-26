@@ -10163,13 +10163,28 @@ quickSearch.addEventListener("input", () => {
     if (tbody.children.length !== previousCount + 1) return;
 
     const row = tbody.lastElementChild;
-    const productSelect =
-      row.querySelector(".purchase-item-product");
 
-    productSelect.value = productId;
-    productSelect.dispatchEvent(
-      new Event("change", { bubbles: true })
-    );
+const selectedProduct = products.find(
+  product => String(product.id) === String(productId)
+);
+
+if (!selectedProduct) {
+  row.remove();
+  alert("تعذر العثور على المادة المحددة.");
+  return;
+}
+
+row.querySelector(".purchase-item-product").value =
+  selectedProduct.id;
+
+row.querySelector(".purchase-item-search").value =
+  selectedProduct.name;
+
+row.querySelector(".purchase-item-barcode").value =
+  selectedProduct.barcode || "";
+
+row.querySelector(".purchase-item-cost").value =
+  selectedProduct.purchase_price ?? 0;
 
     row.querySelector(".purchase-item-quantity").value = quantity;
     row.querySelector(".purchase-item-free").value = freeQuantity;
