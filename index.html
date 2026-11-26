@@ -10391,6 +10391,11 @@ $("savePurchaseInvoiceButton").disabled = false;
   $("addPurchaseInvoiceItemButton").disabled = false;
 $("quickPurchaseEntryButton").disabled = false;
 $("purchaseBarcodeButton").disabled = false;
+  $("purchaseInvoiceItemsBody")
+  .querySelectorAll("input, select, button")
+  .forEach(element => {
+    element.disabled = false;
+  });
   $("purchaseInvoiceItemsBody").replaceChildren();
 
   $("purchaseSupplier").value = "";
