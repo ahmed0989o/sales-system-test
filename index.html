@@ -9863,7 +9863,7 @@ if (window.viewingExistingPurchaseInvoice) {
     }
 
     try {
-      await initializePurchaseInvoiceNumber();
+      await initializePurchaseInvoiceNumber(true);
     } catch (error) {
       console.error("تعذر تخصيص رقم الفاتورة التالية:", error);
       if (status) {
