@@ -9790,7 +9790,7 @@ function collectPurchaseInvoiceItems() {
     ...header,
     items,
     paid_amount: paidAmount,
-    payment_method: paymentMethod,
+    payment_method: paidAmount > 0 ? paymentMethod : null,
     notes: $("purchaseInvoiceNotes")?.value?.trim() || null,
     expenses: expensesAmount > 0
       ? [{
