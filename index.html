@@ -10183,11 +10183,15 @@ calculatePurchaseInvoiceTotals();
   const invoiceNumber = prompt("أدخل رقم فاتورة المشتريات:");
   if (!invoiceNumber || !invoiceNumber.trim()) return;
 
-  const { data: invoices, error: searchError } = await db
-    .from("purchase_invoices")
-    .select("id, invoice_number")
-    .eq("invoice_number", invoiceNumber.trim())
-    .limit(1);
+  const { data: invoices, error: searchError } = await db.rpc(
+  "get_purchase_invoices",
+  {
+    p_from_date: null,
+    p_to_date: null,
+    p_supplier_id: null,
+    p_search: invoiceNumber.trim()
+  }
+);
 
   if (searchError) {
     alert("خطأ في البحث: " + searchError.message);
