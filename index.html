@@ -9932,10 +9932,18 @@ if (window.viewingExistingPurchaseInvoice) {
   row.innerHTML = `
     <td class="purchase-row-number"></td>
     <td>
-      <select class="purchase-item-product">
-        <option value="">اختر المادة</option>
-      </select>
-    </td>
+  <input
+    type="text"
+    class="purchase-item-search"
+    placeholder="ابحث عن المادة بالاسم أو الباركود"
+    autocomplete="off"
+  >
+  <div class="purchase-item-search-results"></div>
+  <input
+    type="hidden"
+    class="purchase-item-product"
+  >
+</td>
     <td><input class="purchase-item-barcode" readonly></td>
     <td><input class="purchase-item-unit" value="قطعة"></td>
     <td><input class="purchase-item-quantity" type="number" min="1" step="1" value="1"></td>
