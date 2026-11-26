@@ -10103,28 +10103,36 @@ function calculatePurchaseInvoiceTotals() {
   let totalDiscount = 0;
 
   Array.from(tbody.rows).forEach(row => {
-    const quantity = Number(row.querySelector(".purchase-item-quantity").value);
-    const cost = Number(row.querySelector(".purchase-item-cost").value);
-    const discountPercent = Number(
-      row.querySelector(".purchase-item-discount-percent").value
-    );
+    const quantity = Number(
+      row.querySelector(".purchase-item-quantity").value
+    ) || 0;
 
-    const discountInput = row.querySelector(".purchase-item-discount");
+    const cost = Number(
+      row.querySelector(".purchase-item-cost").value
+    ) || 0;
+
+    const discount = Number(
+      row.querySelector(".purchase-item-discount").value
+    ) || 0;
 
     const gross = quantity * cost;
-    const discount = gross * discountPercent / 100;
     const lineTotal = Math.max(0, gross - discount);
 
-    discountInput.value = discount.toFixed(2);
-    row.querySelector(".purchase-item-total").value = lineTotal.toFixed(2);
+    row.querySelector(".purchase-item-total").value =
+      lineTotal.toFixed(2);
 
     subtotal += gross;
     totalDiscount += discount;
   });
 
-  const invoiceDiscount = Number($("purchaseInvoiceDiscount").value) || 0;
-  const expenses = Number($("purchaseInvoiceExpenses").value) || 0;
-  const paid = Number($("purchaseInvoicePaid").value) || 0;
+  const invoiceDiscount =
+    Number($("purchaseInvoiceDiscount").value) || 0;
+
+  const expenses =
+    Number($("purchaseInvoiceExpenses").value) || 0;
+
+  const paid =
+    Number($("purchaseInvoicePaid").value) || 0;
 
   const total = Math.max(
     0,
@@ -10141,7 +10149,6 @@ function calculatePurchaseInvoiceTotals() {
     paid <= 0 ? "غير مسدد" :
     remaining <= 0 ? "مسدد" : "تسديد جزئي";
 }
-
 function initializePurchaseInvoiceButtons() {
 const addButton = $("addPurchaseInvoiceItemButton");
 const saveButton = $("savePurchaseInvoiceButton");
