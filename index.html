@@ -9600,7 +9600,11 @@ if (
   }
 
   return {
-    invoice_number: invoiceNumber,
+  reservation_id: numberData.reservation_id,
+  device_id: numberData.device_id,
+  invoice_year: numberData.invoice_year,
+  invoice_sequence: numberData.invoice_sequence,
+  invoice_number: invoiceNumber,
     invoice_date: invoiceDate,
     supplier_id: Number(supplierId),
     supplier_invoice_number:
