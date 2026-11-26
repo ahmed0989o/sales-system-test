@@ -9422,7 +9422,11 @@ async function openPurchases(restore = false) {
     return;
   }
 
+  if (!restore) {
   $("mainMenu").classList.remove("hidden");
+} else {
+  $("mainMenu").classList.add("hidden");
+}
   $("purchasePanel").classList.remove("hidden");
 
   localStorage.setItem("lastActiveSection", "purchasePanel");
