@@ -10282,6 +10282,10 @@ const invoiceExpenses = (data.expenses || []).reduce(
 
 $("purchaseInvoiceExpenses").value = invoiceExpenses.toFixed(2);
 console.log("تم تحميل بيانات رأس الفاتورة:", data);
+window.viewingExistingPurchaseInvoice = true;
+$("savePurchaseInvoiceButton").disabled = true;
+$("purchaseInvoiceStatus").textContent =
+  "فاتورة مسترجعة للعرض فقط";
 }
   function openPurchaseBarcode() {
   const barcode = prompt("أدخل باركود المادة:");
