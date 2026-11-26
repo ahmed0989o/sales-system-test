@@ -10365,6 +10365,15 @@ async function clearPurchaseInvoice() {
   const confirmed = confirm("هل تريد تفريغ بيانات الفاتورة الحالية؟");
   if (!confirmed) return;
 window.viewingExistingPurchaseInvoice = false;
+  $("purchaseInvoiceNumber").readOnly = false;
+$("purchaseInvoiceDate").readOnly = false;
+$("purchaseSupplier").disabled = false;
+$("purchaseSupplierInvoiceNumber").readOnly = false;
+$("purchaseInvoicePaid").readOnly = false;
+$("purchaseInvoiceDiscount").readOnly = false;
+$("purchaseInvoiceExpenses").readOnly = false;
+$("purchaseInvoicePaymentMethod").disabled = false;
+$("purchaseInvoiceNotes").readOnly = false;
 $("savePurchaseInvoiceButton").disabled = false;
   $("purchaseInvoiceItemsBody").replaceChildren();
 
