@@ -9672,6 +9672,28 @@ function initializePurchaseInvoiceButtons() {
     });
 }
 
+async function clearPurchaseInvoice() {
+  const confirmed = confirm("هل تريد تفريغ بيانات الفاتورة الحالية؟");
+  if (!confirmed) return;
+
+  $("purchaseInvoiceItemsBody").replaceChildren();
+
+  $("purchaseSupplier").value = "";
+  $("purchaseSupplierInvoiceNumber").value = "";
+  $("purchaseInvoiceDiscount").value = "0";
+  $("purchaseInvoiceExpenses").value = "0";
+  $("purchaseInvoicePaid").value = "0";
+  $("purchaseInvoiceNotes").value = "";
+  $("purchaseInvoicePaymentMethod").value = "";
+
+  initializePurchaseInvoiceDate();
+
+  updatePurchaseInvoiceRowNumbers();
+  calculatePurchaseInvoiceTotals();
+
+  await initializePurchaseInvoiceNumber();
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
