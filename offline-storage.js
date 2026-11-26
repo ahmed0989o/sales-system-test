@@ -1219,6 +1219,7 @@ window.OfflineStore = Object.freeze({
   getInvoiceReservationRequestId,
   getOrCreateInvoiceReservationRequestId,
   takeNextInvoiceNumber,
+  takeNextPurchaseInvoiceNumber,
   cacheRows,
   getCachedRows,
   saveCustomerBalances,
