@@ -10284,6 +10284,12 @@ const invoiceExpenses = (data.expenses || []).reduce(
 );
 
 $("purchaseInvoiceExpenses").value = invoiceExpenses.toFixed(2);
+    const firstPayment = (data.payments || []).find(
+  payment => payment.payment_method
+);
+
+$("purchaseInvoicePaymentMethod").value =
+  firstPayment?.payment_method || "";
 console.log("تم تحميل بيانات رأس الفاتورة:", data);
 window.viewingExistingPurchaseInvoice = true;
 $("savePurchaseInvoiceButton").disabled = true;
