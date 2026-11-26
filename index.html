@@ -10140,10 +10140,16 @@ function calculatePurchaseInvoiceTotals() {
 }
 
 function initializePurchaseInvoiceButtons() {
-  const addButton = $("addPurchaseInvoiceItemButton");
+const addButton = $("addPurchaseInvoiceItemButton");
 const saveButton = $("savePurchaseInvoiceButton");
 const quickButton = $("quickPurchaseEntryButton");
 const barcodeButton = $("purchaseBarcodeButton");
+const searchButton = $("purchaseInvoiceSearchButton");
+
+if (searchButton && !searchButton.dataset.bound) {
+  searchButton.addEventListener("click", searchPurchaseInvoice);
+  searchButton.dataset.bound = "true";
+}
 if (barcodeButton && !barcodeButton.dataset.bound) {
   barcodeButton.addEventListener("click", openPurchaseBarcode);
   barcodeButton.dataset.bound = "true";
