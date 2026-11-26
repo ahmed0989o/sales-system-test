@@ -9823,6 +9823,47 @@ function collectPurchaseInvoiceItems() {
       : []
   };
 }
+  async function savePurchaseInvoice() {
+  if (window.purchaseInvoiceSaving) return;
+
+  window.purchaseInvoiceSaving = true;
+
+  const status = $("purchaseInvoiceStatus");
+
+  try {
+    if (!currentUser) {
+      throw new Error("يرجى تسجيل الدخول أولاً.");
+    }
+
+    const payload = collectPurchaseInvoicePayload();
+
+    const operation = await OfflineStore.enqueueOperation({
+      type: "purchase.invoice.create",
+      payload,
+      userId: currentUser.id
+    });
+
+    if (status) {
+      status.textContent = "تم حفظ الفاتورة محلياً، جارٍ المزامنة...";
+    }
+
+    if (navigator.onLine) {
+      await syncPendingPurchases();
+    } else if (status) {
+      status.textContent = "تم حفظ الفاتورة محلياً، وستتم مزامنتها عند عودة الإنترنت.";
+    }
+
+    console.log("عملية فاتورة المشتريات:", operation.operation_id);
+
+  } catch (error) {
+    console.error("خطأ حفظ فاتورة المشتريات:", error);
+
+    if (status) status.textContent = error.message;
+
+  } finally {
+    window.purchaseInvoiceSaving = false;
+  }
+}
 function addPurchaseInvoiceItem() {
   const tbody = $("purchaseInvoiceItemsBody");
   if (!tbody) return;
