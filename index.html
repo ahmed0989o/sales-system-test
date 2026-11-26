@@ -10181,22 +10181,37 @@ calculatePurchaseInvoiceTotals();
 }
   async function searchPurchaseInvoice() {
   const invoiceNumber = prompt("أدخل رقم فاتورة المشتريات:");
-
   if (!invoiceNumber || !invoiceNumber.trim()) return;
 
-  const { data, error } = await db.rpc(
-    "get_purchase_invoice_details",
-    { p_invoice_number: invoiceNumber.trim() }
-  );
+  const { data: invoices, error: searchError } = await db
+    .from("purchase_invoices")
+    .select("id, invoice_number")
+    .eq("invoice_number", invoiceNumber.trim())
+    .limit(1);
 
-  if (error) {
-    alert("تعذر البحث عن الفاتورة: " + error.message);
+  if (searchError) {
+    alert("خطأ في البحث: " + searchError.message);
     return;
   }
 
-  console.log("نتيجة البحث عن فاتورة المشتريات:", data);
+  if (!invoices || !invoices.length) {
+    alert("الفاتورة غير موجودة.");
+    return;
+  }
+
+  const { data, error } = await db.rpc(
+    "get_purchase_invoice_details",
+    { p_invoice_id: invoices[0].id }
+  );
+
+  if (error) {
+    alert("تعذر تحميل الفاتورة: " + error.message);
+    return;
+  }
+
+  console.log("تفاصيل فاتورة المشتريات:", data);
 }
-function openPurchaseBarcode() {
+  function openPurchaseBarcode() {
   const barcode = prompt("أدخل باركود المادة:");
 
   if (!barcode || !barcode.trim()) return;
