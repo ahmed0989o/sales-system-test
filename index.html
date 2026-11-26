@@ -10323,7 +10323,8 @@ async function clearPurchaseInvoice() {
 }
   const confirmed = confirm("هل تريد تفريغ بيانات الفاتورة الحالية؟");
   if (!confirmed) return;
-
+window.viewingExistingPurchaseInvoice = false;
+$("savePurchaseInvoiceButton").disabled = false;
   $("purchaseInvoiceItemsBody").replaceChildren();
 
   $("purchaseSupplier").value = "";
