@@ -9513,6 +9513,18 @@ function validatePurchaseInvoiceHeader() {
   };
 }
 
+function getPurchaseInvoiceProducts() {
+  if (!Array.isArray(products)) {
+    throw new Error("قائمة المنتجات غير محمّلة.");
+  }
+
+  return products.filter(product =>
+    product &&
+    product.id != null &&
+    typeof product.name === "string"
+  );
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
