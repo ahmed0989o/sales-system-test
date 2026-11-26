@@ -10318,6 +10318,15 @@ window.viewingExistingPurchaseInvoice = true;
 $("savePurchaseInvoiceButton").disabled = true;
 $("purchaseInvoiceStatus").textContent =
   "فاتورة مسترجعة للعرض فقط";
+    $("purchaseInvoiceNumber").readOnly = true;
+$("purchaseInvoiceDate").readOnly = true;
+$("purchaseSupplier").disabled = true;
+$("purchaseSupplierInvoiceNumber").readOnly = true;
+$("purchaseInvoicePaid").readOnly = true;
+$("purchaseInvoiceDiscount").readOnly = true;
+$("purchaseInvoiceExpenses").readOnly = true;
+$("purchaseInvoicePaymentMethod").disabled = true;
+$("purchaseInvoiceNotes").readOnly = true;
 }
   function openPurchaseBarcode() {
   const barcode = prompt("أدخل باركود المادة:");
