@@ -8043,7 +8043,7 @@ async function syncPendingPurchases() {
 
   try {
     await OfflineStore.open();
-
+    await OfflineStore.recoverStaleSyncingOperations();
     const pendingOperations =
       await OfflineStore.listOperations("pending");
 
