@@ -4807,7 +4807,14 @@ async function showApp() {
 
   $("loginPanel").classList.add("hidden");
   $("appPanel").classList.remove("hidden");
+  const savedSection =
+  localStorage.getItem("lastActiveSection");
+
+if (savedSection === "purchasePanel") {
+  $("mainMenu").classList.add("hidden");
+} else {
   showMainMenu();
+}
     $("userInfo").textContent =
     "الحساب: " + (currentUser.email || "مستخدم") +
     (isOwner(currentUser) ? " — مسؤول" : "");
