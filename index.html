@@ -9802,11 +9802,10 @@ function collectPurchaseInvoiceItems() {
       : []
   };
 }
-  async function savePurchaseInvoice() {
+ async function savePurchaseInvoice() {
   if (window.purchaseInvoiceSaving) return;
 
   window.purchaseInvoiceSaving = true;
-
   const status = $("purchaseInvoiceStatus");
 
   try {
@@ -9823,20 +9822,19 @@ function collectPurchaseInvoiceItems() {
     });
 
     if (status) {
-      status.textContent = "تم حفظ الفاتورة محلياً، جارٍ المزامنة...";
+      status.textContent = navigator.onLine
+        ? "تم حفظ الفاتورة محلياً، جارٍ المزامنة..."
+        : "تم حفظ الفاتورة محلياً، وستتم مزامنتها عند عودة الإنترنت.";
     }
 
     if (navigator.onLine) {
       await syncPendingPurchases();
-    } else if (status) {
-      status.textContent = "تم حفظ الفاتورة محلياً، وستتم مزامنتها عند عودة الإنترنت.";
     }
 
     console.log("عملية فاتورة المشتريات:", operation.operation_id);
 
   } catch (error) {
     console.error("خطأ حفظ فاتورة المشتريات:", error);
-
     if (status) status.textContent = error.message;
 
   } finally {
