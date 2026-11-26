@@ -9707,6 +9707,59 @@ function collectPurchaseInvoiceItems() {
 
   return items;
 }
+  function distributePurchaseInvoiceDiscount(items) {
+  const invoiceDiscount = Number(
+    $("purchaseInvoiceDiscount")?.value || 0
+  );
+
+  if (!Number.isFinite(invoiceDiscount) || invoiceDiscount < 0) {
+    throw new Error("خصم الفاتورة غير صحيح.");
+  }
+
+  const availableAmounts = items.map(item =>
+    Math.round(
+      (item.quantity * item.unit_cost - item.discount_amount) * 100
+    )
+  );
+
+  const availableTotal = availableAmounts.reduce(
+    (sum, amount) => sum + amount,
+    0
+  );
+
+  const discountCents = Math.round(invoiceDiscount * 100);
+
+  if (discountCents > availableTotal) {
+    throw new Error("خصم الفاتورة أكبر من المبلغ المتاح للخصم.");
+  }
+
+  if (discountCents === 0) return items;
+
+  let remainingDiscount = discountCents;
+
+  items.forEach((item, index) => {
+    let share;
+
+    if (index === items.length - 1) {
+      share = remainingDiscount;
+    } else {
+      share = Math.round(
+        discountCents * availableAmounts[index] /
+        availableTotal
+      );
+
+      share = Math.min(share, remainingDiscount);
+    }
+
+    item.discount_amount = Number(
+      (item.discount_amount + share / 100).toFixed(2)
+    );
+
+    remainingDiscount -= share;
+  });
+
+  return items;
+}
 function addPurchaseInvoiceItem() {
   const tbody = $("purchaseInvoiceItemsBody");
   if (!tbody) return;
