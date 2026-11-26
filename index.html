@@ -10143,7 +10143,11 @@ function initializePurchaseInvoiceButtons() {
   const addButton = $("addPurchaseInvoiceItemButton");
 const saveButton = $("savePurchaseInvoiceButton");
 const quickButton = $("quickPurchaseEntryButton");
-
+const barcodeButton = $("purchaseBarcodeButton");
+if (barcodeButton && !barcodeButton.dataset.bound) {
+  barcodeButton.addEventListener("click", openPurchaseBarcode);
+  barcodeButton.dataset.bound = "true";
+}
 if (quickButton && !quickButton.dataset.bound) {
   quickButton.addEventListener("click", openQuickPurchaseEntry);
   quickButton.dataset.bound = "true";
