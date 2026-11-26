@@ -652,6 +652,48 @@ async function saveInvoiceReservationRequestId(requestId) {
     };
   });
 }
+  
+async function getOrCreatePurchaseInvoiceReservationRequestId() {
+  const database = await openDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction("meta", "readwrite");
+    const store = tx.objectStore("meta");
+
+    let requestId = null;
+
+    const request = store.get("purchase_invoice_reservation_request_id");
+
+    request.onsuccess = () => {
+      const existing = request.result?.value;
+
+      if (
+        typeof existing === "string" &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(existing)
+      ) {
+        requestId = existing;
+      } else {
+        requestId = makeId();
+
+        store.put({
+          key: "purchase_invoice_reservation_request_id",
+          value: requestId
+        });
+      }
+    };
+
+    tx.oncomplete = () => resolve(requestId);
+
+    tx.onerror = () => reject(
+      tx.error || new Error("تعذر إنشاء معرف طلب حجز المشتريات.")
+    );
+
+    tx.onabort = () => reject(
+      tx.error || new Error("تم إلغاء إنشاء معرف طلب حجز المشتريات.")
+    );
+  });
+}
+
   async function takeNextInvoiceNumber() {
   const db = await openDatabase();
 
