@@ -264,6 +264,73 @@ async function savePurchaseInvoiceNumberReservation(reservation) {
   return reservation;
 }
 
+async function completePurchaseInvoiceNumberReservation(reservation) {
+  if (
+    !reservation ||
+    typeof reservation.reservation_id !== "string" ||
+    !Number.isInteger(reservation.invoice_year) ||
+    !Number.isSafeInteger(reservation.range_start) ||
+    !Number.isSafeInteger(reservation.range_end) ||
+    reservation.range_start <= 0 ||
+    reservation.range_end < reservation.range_start
+  ) {
+    throw new Error("بيانات حجز أرقام فواتير المشتريات غير صحيحة.");
+  }
+
+  const database = await openDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction("meta", "readwrite");
+    const store = tx.objectStore("meta");
+    let localError = null;
+
+    const request = store.get("purchase_invoice_number_reservation");
+
+    request.onsuccess = () => {
+      const current = request.result?.value;
+
+      if (
+        current &&
+        current.reservation_id === reservation.reservation_id
+      ) {
+        store.delete("purchase_invoice_reservation_request_id");
+        return;
+      }
+
+      if (
+        current &&
+        current.invoice_year === reservation.invoice_year &&
+        Number.isSafeInteger(current.next_number) &&
+        current.next_number <= current.range_end
+      ) {
+        localError = new Error(
+          "لا يمكن استبدال حجز مشتريات يحتوي أرقاماً غير مستخدمة."
+        );
+        tx.abort();
+        return;
+      }
+
+      store.put({
+        key: "purchase_invoice_number_reservation",
+        value: {
+          ...reservation,
+          next_number: reservation.range_start
+        }
+      });
+
+      store.delete("purchase_invoice_reservation_request_id");
+    };
+
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => reject(
+      localError || tx.error || new Error("تعذر حفظ حجز المشتريات.")
+    );
+    tx.onabort = () => reject(
+      localError || tx.error || new Error("تم إلغاء حفظ الحجز.")
+    );
+  });
+}
+
 async function getInvoiceNumberReservation() {
   return await getMeta("invoice_number_reservation");
 }
