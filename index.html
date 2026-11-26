@@ -9819,17 +9819,46 @@ function collectPurchaseInvoiceItems() {
       userId: currentUser.id
     });
 
+    console.log("عملية فاتورة المشتريات:", operation.operation_id);
+
+    // تفريغ الحقول بعد ضمان الحفظ المحلي
+    $("purchaseInvoiceItemsBody").replaceChildren();
+    $("purchaseSupplier").value = "";
+    $("purchaseSupplierInvoiceNumber").value = "";
+    $("purchaseInvoiceDiscount").value = "0";
+    $("purchaseInvoiceExpenses").value = "0";
+    $("purchaseInvoicePaid").value = "0";
+    $("purchaseInvoiceNotes").value = "";
+    $("purchaseInvoicePaymentMethod").value = "";
+
+    initializePurchaseInvoiceDate();
+    updatePurchaseInvoiceRowNumbers();
+    calculatePurchaseInvoiceTotals();
+
     if (status) {
       status.textContent = navigator.onLine
         ? "تم حفظ الفاتورة محلياً، جارٍ المزامنة..."
         : "تم حفظ الفاتورة محلياً، وستتم مزامنتها عند عودة الإنترنت.";
     }
 
-    if (navigator.onLine) {
-      await syncPendingPurchases();
+    try {
+      await initializePurchaseInvoiceNumber();
+    } catch (error) {
+      console.error("تعذر تخصيص رقم الفاتورة التالية:", error);
+      if (status) {
+        status.textContent =
+          "تم حفظ الفاتورة محلياً، لكن تعذر تخصيص رقم الفاتورة التالية: " +
+          error.message;
+      }
     }
 
-    console.log("عملية فاتورة المشتريات:", operation.operation_id);
+    if (navigator.onLine) {
+      const synced = await syncPendingPurchases();
+
+      if (synced && status) {
+        status.textContent = "تم حفظ ومزامنة فاتورة المشتريات بنجاح.";
+      }
+    }
 
   } catch (error) {
     console.error("خطأ حفظ فاتورة المشتريات:", error);
@@ -9839,7 +9868,7 @@ function collectPurchaseInvoiceItems() {
     window.purchaseInvoiceSaving = false;
   }
 }
-function addPurchaseInvoiceItem() {
+  function addPurchaseInvoiceItem() {
   const tbody = $("purchaseInvoiceItemsBody");
   if (!tbody) return;
 
