@@ -9343,6 +9343,32 @@ if (!allowed) {
 localStorage.setItem("lastActiveSection", "purchasePanel");
   await loadPurchases();
 }
+  
+async function loadPurchaseInvoiceSuppliers() {
+  const select = document.getElementById("purchaseSupplier");
+  if (!select) return;
+
+  select.innerHTML = '<option value="">اختر المورد</option>';
+
+  try {
+    const { data, error } = await db.rpc("get_suppliers");
+
+    if (error) throw error;
+
+    (data || []).forEach(supplier => {
+      const option = document.createElement("option");
+      option.value = supplier.id;
+      option.textContent = supplier.name;
+      select.appendChild(option);
+    });
+
+  } catch (error) {
+    console.error("خطأ تحميل الموردين:", error);
+    const status = document.getElementById("purchaseInvoiceStatus");
+    if (status) status.textContent = "تعذر تحميل قائمة الموردين";
+  }
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
