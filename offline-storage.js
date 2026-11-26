@@ -1153,6 +1153,7 @@ window.OfflineStore = Object.freeze({
   getDeviceInfo,
   saveDeviceInfo,
   saveInvoiceNumberReservation,
+  savePurchaseInvoiceNumberReservation,
   completeInvoiceNumberReservation,
   completePurchaseInvoiceNumberReservation,
   getInvoiceNumberReservation,
