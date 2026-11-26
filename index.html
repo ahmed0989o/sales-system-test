@@ -9597,6 +9597,15 @@ function addPurchaseInvoiceItem() {
   calculatePurchaseInvoiceTotals();
 }
 
+function updatePurchaseInvoiceRowNumbers() {
+  const tbody = $("purchaseInvoiceItemsBody");
+  if (!tbody) return;
+
+  Array.from(tbody.rows).forEach((row, index) => {
+    row.querySelector(".purchase-row-number").textContent = index + 1;
+  });
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
