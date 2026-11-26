@@ -9414,7 +9414,7 @@ function openDailyReport() {
 }
   // فتح حركة الصندوق
  
-async function openPurchases() {
+async function openPurchases(restore = false) {
   const allowed = await checkPurchasePermission();
 
   if (!allowed) {
