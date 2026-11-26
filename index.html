@@ -9623,7 +9623,90 @@ function getPurchaseInvoiceProducts() {
     typeof product.name === "string"
   );
 }
+function collectPurchaseInvoiceItems() {
+  const rows = document.querySelectorAll(
+    "#purchaseInvoiceItemsBody tr"
+  );
 
+  const items = [];
+
+  rows.forEach((row, index) => {
+    const productId = Number(
+      row.querySelector(".purchase-item-product")?.value
+    );
+
+    const quantity = Number(
+      row.querySelector(".purchase-item-quantity")?.value
+    );
+
+    const freeQuantity = Number(
+      row.querySelector(".purchase-item-free")?.value || 0
+    );
+
+    const unitCost = Number(
+      row.querySelector(".purchase-item-cost")?.value
+    );
+
+    const discountPercent = Number(
+      row.querySelector(".purchase-item-discount-percent")?.value || 0
+    );
+
+    const discountAmount = Number(
+      row.querySelector(".purchase-item-discount")?.value || 0
+    );
+
+    if (!Number.isSafeInteger(productId) || productId <= 0) {
+      throw new Error(`يرجى اختيار المادة في السطر ${index + 1}.`);
+    }
+
+    if (!Number.isSafeInteger(quantity) || quantity <= 0) {
+      throw new Error(`كمية المادة في السطر ${index + 1} غير صحيحة.`);
+    }
+
+    if (!Number.isSafeInteger(freeQuantity) || freeQuantity < 0) {
+      throw new Error(`الكمية المجانية في السطر ${index + 1} غير صحيحة.`);
+    }
+
+    if (!Number.isFinite(unitCost) || unitCost < 0) {
+      throw new Error(`سعر الشراء في السطر ${index + 1} غير صحيح.`);
+    }
+
+    if (
+      !Number.isFinite(discountPercent) ||
+      discountPercent < 0 ||
+      discountPercent > 100
+    ) {
+      throw new Error(`نسبة الخصم في السطر ${index + 1} غير صحيحة.`);
+    }
+
+    if (!Number.isFinite(discountAmount) || discountAmount < 0) {
+      throw new Error(`مبلغ الخصم في السطر ${index + 1} غير صحيح.`);
+    }
+
+    items.push({
+      product_id: productId,
+      quantity,
+      free_quantity: freeQuantity,
+      unit_cost: unitCost,
+      discount_percent: discountPercent,
+      discount_amount: discountAmount,
+      unit_name:
+        row.querySelector(".purchase-item-unit")?.value?.trim() || null,
+      sale_price1: Number(
+        row.querySelector(".purchase-item-sale1")?.value || 0
+      ),
+      sale_price2: Number(
+        row.querySelector(".purchase-item-sale2")?.value || 0
+      )
+    });
+  });
+
+  if (!items.length) {
+    throw new Error("أضف مادة واحدة على الأقل إلى الفاتورة.");
+  }
+
+  return items;
+}
 function addPurchaseInvoiceItem() {
   const tbody = $("purchaseInvoiceItemsBody");
   if (!tbody) return;
