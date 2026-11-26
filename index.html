@@ -10237,7 +10237,44 @@ $("purchaseInvoicePaid").value =
 
 $("purchaseInvoiceNotes").value =
   invoiceData.notes || "";
+$("purchaseInvoiceItemsBody").replaceChildren();
 
+(data.items || []).forEach(item => {
+  addPurchaseInvoiceItem();
+
+  const row = $("purchaseInvoiceItemsBody").lastElementChild;
+
+  row.querySelector(".purchase-item-product").value =
+    item.product_id;
+
+  row.querySelector(".purchase-item-product").dispatchEvent(
+    new Event("change", { bubbles: true })
+  );
+
+  row.querySelector(".purchase-item-unit").value =
+    item.unit_name || "قطعة";
+
+  row.querySelector(".purchase-item-quantity").value =
+    item.quantity ?? 1;
+
+  row.querySelector(".purchase-item-free").value =
+    item.free_quantity ?? 0;
+
+  row.querySelector(".purchase-item-cost").value =
+    item.unit_cost ?? 0;
+
+  row.querySelector(".purchase-item-discount-percent").value =
+    item.discount_percent ?? 0;
+
+  row.querySelector(".purchase-item-sale1").value =
+    item.sale_price1 ?? 0;
+
+  row.querySelector(".purchase-item-sale2").value =
+    item.sale_price2 ?? 0;
+});
+
+updatePurchaseInvoiceRowNumbers();
+calculatePurchaseInvoiceTotals();
 console.log("تم تحميل بيانات رأس الفاتورة:", data);
 }
   function openPurchaseBarcode() {
