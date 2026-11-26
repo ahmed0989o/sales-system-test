@@ -338,6 +338,60 @@ async function getInvoiceNumberReservation() {
 async function getPurchaseInvoiceNumberReservation() {
   return await getMeta("purchase_invoice_number_reservation");
 }
+
+async function takeNextPurchaseInvoiceNumber() {
+  const database = await openDatabase();
+
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction("meta", "readwrite");
+    const store = tx.objectStore("meta");
+    const request = store.get("purchase_invoice_number_reservation");
+
+    let allocatedNumber = null;
+    let allocationError = null;
+
+    request.onsuccess = () => {
+      const reservation = request.result?.value;
+
+      if (
+        !reservation ||
+        !Number.isSafeInteger(reservation.next_number) ||
+        !Number.isSafeInteger(reservation.range_end) ||
+        reservation.next_number > reservation.range_end
+      ) {
+        allocationError = new Error("لا توجد أرقام مشتريات محجوزة.");
+        tx.abort();
+        return;
+      }
+
+      allocatedNumber = reservation.next_number;
+
+      store.put({
+        key: "purchase_invoice_number_reservation",
+        value: {
+          ...reservation,
+          next_number: allocatedNumber + 1
+        }
+      });
+    };
+
+    tx.oncomplete = () => {
+      if (allocationError) {
+        reject(allocationError);
+      } else {
+        resolve(allocatedNumber);
+      }
+    };
+
+    tx.onerror = () => {
+      reject(tx.error || allocationError || new Error("تعذر تخصيص رقم فاتورة المشتريات."));
+    };
+
+    tx.onabort = () => {
+      reject(tx.error || allocationError || new Error("تم إلغاء تخصيص رقم فاتورة المشتريات."));
+    };
+  });
+}
   
 async function saveInvoiceNumberDraft(userId, invoiceNumber) {
   if (!userId || typeof invoiceNumber !== "string" || !invoiceNumber.trim()) {
