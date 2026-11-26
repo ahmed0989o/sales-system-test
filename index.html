@@ -10275,9 +10275,7 @@ $("purchaseInvoiceItemsBody").replaceChildren();
   row.querySelector(".purchase-item-sale2").value =
     item.sale_price2 ?? 0;
 });
-
-updatePurchaseInvoiceRowNumbers();
-calculatePurchaseInvoiceTotals();
+    
 const invoiceExpenses = (data.expenses || []).reduce(
   (sum, expense) => sum + Number(expense.amount || 0),
   0
@@ -10290,6 +10288,8 @@ $("purchaseInvoiceExpenses").value = invoiceExpenses.toFixed(2);
 
 $("purchaseInvoicePaymentMethod").value =
   firstPayment?.payment_method || "";
+    updatePurchaseInvoiceRowNumbers();
+calculatePurchaseInvoiceTotals();
 console.log("تم تحميل بيانات رأس الفاتورة:", data);
 window.viewingExistingPurchaseInvoice = true;
 $("savePurchaseInvoiceButton").disabled = true;
