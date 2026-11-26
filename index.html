@@ -6065,7 +6065,7 @@ function searchProducts() {
 $("productSearch")?.addEventListener("input", searchProducts);
 
 function addProductToInvoice() {
-  const productId = $("product").value;
+  const productId = $("productSearch").dataset.selectedProductId;
   const quantity = Number($("quantity").value);
   const product = products.find(p => String(p.id) === String(productId));
 
@@ -6098,7 +6098,7 @@ function addProductToInvoice() {
 
   renderInvoiceItems();
 
-  $("product").value = "";
+  delete $("productSearch").dataset.selectedProductId;
   $("productSearch").value = "";
   $("quantity").value = "1";
   $("unitPrice").value = "";
