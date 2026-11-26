@@ -9315,8 +9315,11 @@ function showMainMenu() {
 
 // فتح قائمة المبيعات
 function openSalesMenu() {
+  localStorage.setItem("lastActiveSection", "salesMenu");
+
   $("mainMenu").classList.add("hidden");
   $("salesMenu").classList.remove("hidden");
+  $("appUserToolbar").classList.remove("hidden");
 }
 
 // العودة من قائمة المبيعات
