@@ -10961,6 +10961,86 @@ function toggleSystemFullscreen() {
   }
 }
 
+/* واجهة فاتورة المشتريات الجديدة */
+#newPurchaseInvoice {
+  direction: rtl;
+  text-align: right;
+  background: #fff;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #d5d5d5;
+  border-radius: 6px;
+}
+
+#newPurchaseInvoice h3 {
+  margin: 0 0 15px;
+  font-size: 20px;
+}
+
+#newPurchaseInvoice .purchase-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+#newPurchaseInvoice label {
+  display: block;
+  margin: 7px 0 5px;
+  font-weight: 600;
+}
+
+#newPurchaseInvoice input,
+#newPurchaseInvoice select,
+#newPurchaseInvoice textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#newPurchaseInvoice .purchase-invoice-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+#newPurchaseInvoice .tablewrap {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+#newPurchaseInvoice table {
+  width: 100%;
+  min-width: 1250px;
+  border-collapse: collapse;
+}
+
+#newPurchaseInvoice th,
+#newPurchaseInvoice td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+#newPurchaseInvoice th {
+  background: #f1f1f1;
+}
+
+#newPurchaseInvoice textarea {
+  min-height: 65px;
+  resize: vertical;
+}
+
+@media (max-width: 800px) {
+  #newPurchaseInvoice .purchase-fields-grid {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}
+
 </style>
 
 <div id="appCustomizeMenu">
