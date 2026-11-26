@@ -9580,7 +9580,17 @@ function validatePurchaseInvoiceHeader() {
   if (!/^PUR-\d{4}-\d{6}$/.test(invoiceNumber)) {
     throw new Error("صيغة رقم فاتورة المشتريات غير صحيحة.");
   }
+const numberData = window.currentPurchaseInvoiceNumberData;
 
+if (
+  !numberData ||
+  !numberData.reservation_id ||
+  !numberData.device_id ||
+  numberData.invoice_year !== Number(invoiceNumber.slice(4, 8)) ||
+  numberData.invoice_sequence !== Number(invoiceNumber.slice(9, 15))
+) {
+  throw new Error("بيانات حجز رقم الفاتورة غير مكتملة أو غير متطابقة.");
+}
   if (!invoiceDate || !/^\d{4}-\d{2}-\d{2}$/.test(invoiceDate)) {
     throw new Error("يرجى تحديد تاريخ الفاتورة.");
   }
