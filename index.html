@@ -8031,9 +8031,9 @@ try {
 let paymentSyncRunning = false;
 let purchaseSyncRunning = false;
 async function syncPendingPurchases() {
-  if (purchaseSyncRunning) return;
-  if (!navigator.onLine) return;
-  if (!currentUser || !db || !window.OfflineStore) return;
+  if (purchaseSyncRunning) return false;
+  if (!navigator.onLine) return false;
+  if (!currentUser || !db || !window.OfflineStore) return false;
 
   purchaseSyncRunning = true;
 
@@ -8046,7 +8046,7 @@ async function syncPendingPurchases() {
     const pendingOperations =
       await OfflineStore.listOperations("pending");
 
-    // المشتريات القديمة
+    // مزامنة المشتريات القديمة
     const myPendingPurchases = pendingOperations.filter(
       operation =>
         operation.type === "purchase.create" &&
@@ -8072,7 +8072,6 @@ async function syncPendingPurchases() {
 
         if (response.error) {
           const message = response.error.message || "";
-
           const permanentError =
             /غير مصرح|صلاحية|الحساب غير نشط|بيانات المشتريات غير صحيحة|المنتج غير موجود/i
               .test(message);
@@ -8088,7 +8087,6 @@ async function syncPendingPurchases() {
               message
             );
           }
-
           continue;
         }
 
@@ -8104,12 +8102,11 @@ async function syncPendingPurchases() {
           claimedOperation.operation_id,
           error.message
         );
-
         console.error("خطأ مزامنة المشتريات:", error);
       }
     }
 
-    // فواتير المشتريات الجديدة
+    // مزامنة فواتير المشتريات الجديدة
     const myPendingPurchaseInvoices = pendingOperations.filter(
       operation =>
         operation.type === "purchase.invoice.create" &&
@@ -8135,7 +8132,6 @@ async function syncPendingPurchases() {
 
         if (error) {
           const message = error.message || "";
-
           const permanentError =
             /غير مصرح|صلاحية|الحساب غير نشط|المورد غير موجود|بيانات الفاتورة غير صحيحة/i
               .test(message);
@@ -8174,7 +8170,6 @@ async function syncPendingPurchases() {
           claimedOperation.operation_id,
           error.message
         );
-
         console.error("خطأ مزامنة فاتورة المشتريات:", error);
       }
     }
@@ -8195,9 +8190,12 @@ async function syncPendingPurchases() {
 
   } catch (error) {
     console.error("Purchase sync:", error);
+
   } finally {
     purchaseSyncRunning = false;
   }
+
+  return purchaseInvoiceSyncedAny;
 }
   
 async function syncPendingCustomerPayments() {
