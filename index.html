@@ -10086,14 +10086,44 @@ function openQuickPurchaseEntry() {
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
 
-  const select = panel.querySelector("#quickPurchaseProduct");
+  
+const select = panel.querySelector("#quickPurchaseProduct");
+const quickSearch = panel.querySelector("#quickPurchaseProductSearch");
+const quickResults = panel.querySelector("#quickPurchaseProductResults");
 
-  products.forEach(product => {
-    const option = document.createElement("option");
-    option.value = product.id;
-    option.textContent = product.name;
-    select.appendChild(option);
+quickSearch.addEventListener("input", () => {
+  const query = quickSearch.value.trim().toLowerCase();
+  quickResults.replaceChildren();
+  select.value = "";
+
+  if (!query) return;
+
+  const matches = products.filter(product =>
+    String(product.name || "").toLowerCase().includes(query) ||
+    String(product.barcode || "").toLowerCase().includes(query)
+  ).slice(0, 15);
+
+  if (!matches.length) {
+    quickResults.textContent = "لا توجد مادة مطابقة";
+    return;
+  }
+
+  matches.forEach(product => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = product.name;
+    button.style.cssText =
+      "display:block;width:100%;padding:9px;text-align:right;";
+
+    button.addEventListener("click", () => {
+      select.value = product.id;
+      quickSearch.value = product.name;
+      quickResults.replaceChildren();
+    });
+
+    quickResults.appendChild(button);
   });
+});
 
   panel.querySelector("#quickPurchaseClose").onclick = () => {
     overlay.remove();
