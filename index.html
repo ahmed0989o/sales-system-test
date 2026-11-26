@@ -9653,6 +9653,25 @@ function calculatePurchaseInvoiceTotals() {
     remaining <= 0 ? "مسدد" : "تسديد جزئي";
 }
 
+function initializePurchaseInvoiceButtons() {
+  const addButton = $("addPurchaseInvoiceItemButton");
+
+  if (addButton && !addButton.dataset.bound) {
+    addButton.addEventListener("click", addPurchaseInvoiceItem);
+    addButton.dataset.bound = "true";
+  }
+
+  ["purchaseInvoiceDiscount", "purchaseInvoiceExpenses", "purchaseInvoicePaid"]
+    .forEach(id => {
+      const input = $(id);
+
+      if (input && !input.dataset.bound) {
+        input.addEventListener("input", calculatePurchaseInvoiceTotals);
+        input.dataset.bound = "true";
+      }
+    });
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
