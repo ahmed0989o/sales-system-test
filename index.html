@@ -5586,6 +5586,47 @@ setInterval(() => {
     reportCurrentDevice();
   }
 }, 30000);
+  
+function setupPurchaseProductSearch() {
+  const search = $("productSearch");
+  const results = $("productSearchResults");
+
+  if (!search || !results) return;
+
+  search.addEventListener("input", function () {
+    const query = search.value.trim().toLowerCase();
+    results.replaceChildren();
+
+    if (query.length < 1) return;
+
+    const matches = products.filter(p =>
+      String(p.name || "").toLowerCase().includes(query) ||
+      String(p.barcode || "").toLowerCase().includes(query)
+    ).slice(0, 20);
+
+    if (!matches.length) {
+      results.textContent = "لا توجد منتجات مطابقة";
+      return;
+    }
+
+    matches.forEach(p => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = `${p.name} — المتبقي: ${p.quantity}`;
+
+      button.addEventListener("click", function () {
+        search.dataset.selectedProductId = p.id;
+        search.value = p.name;
+        results.replaceChildren();
+      });
+
+      results.appendChild(button);
+    });
+  });
+}
+
+setupPurchaseProductSearch();
+
 async function loadCustomers() {
   const selectedCustomerId = $("customerSelect").value;
   let loadedFromCache = false;
