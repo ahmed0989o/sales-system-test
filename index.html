@@ -9760,6 +9760,69 @@ function collectPurchaseInvoiceItems() {
 
   return items;
 }
+  function collectPurchaseInvoicePayload() {
+  const header = validatePurchaseInvoiceHeader();
+
+  let items = collectPurchaseInvoiceItems();
+  items = distributePurchaseInvoiceDiscount(items);
+
+  const paidAmount = Number(
+    $("purchaseInvoicePaid")?.value || 0
+  );
+
+  const expensesAmount = Number(
+    $("purchaseInvoiceExpenses")?.value || 0
+  );
+
+  const paymentMethod =
+    $("purchaseInvoicePaymentMethod")?.value || null;
+
+  if (!Number.isFinite(paidAmount) || paidAmount < 0) {
+    throw new Error("مبلغ المدفوع غير صحيح.");
+  }
+
+  if (!Number.isFinite(expensesAmount) || expensesAmount < 0) {
+    throw new Error("مصاريف الفاتورة غير صحيحة.");
+  }
+
+  if (paidAmount > 0 && !paymentMethod) {
+    throw new Error("يرجى اختيار طريقة الدفع.");
+  }
+
+  const subtotal = items.reduce(
+    (sum, item) => sum + item.quantity * item.unit_cost,
+    0
+  );
+
+  const discountTotal = items.reduce(
+    (sum, item) => sum + item.discount_amount,
+    0
+  );
+
+  const total = Math.max(
+    0,
+    Number((subtotal - discountTotal + expensesAmount).toFixed(2))
+  );
+
+  if (paidAmount > total) {
+    throw new Error("المبلغ المدفوع أكبر من إجمالي الفاتورة.");
+  }
+
+  return {
+    ...header,
+    items,
+    paid_amount: paidAmount,
+    payment_method: paymentMethod,
+    notes: $("purchaseInvoiceNotes")?.value?.trim() || null,
+    expenses: expensesAmount > 0
+      ? [{
+          expense_name: "مصاريف الفاتورة",
+          amount: expensesAmount,
+          notes: null
+        }]
+      : []
+  };
+}
 function addPurchaseInvoiceItem() {
   const tbody = $("purchaseInvoiceItemsBody");
   if (!tbody) return;
