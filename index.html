@@ -10319,6 +10319,11 @@ $("savePurchaseInvoiceButton").disabled = true;
     $("addPurchaseInvoiceItemButton").disabled = true;
 $("quickPurchaseEntryButton").disabled = true;
 $("purchaseBarcodeButton").disabled = true;
+    $("purchaseInvoiceItemsBody")
+  .querySelectorAll(".remove-purchase-item")
+  .forEach(button => {
+    button.disabled = true;
+  });
 $("purchaseInvoiceStatus").textContent =
   "فاتورة مسترجعة للعرض فقط";
     $("purchaseInvoiceNumber").readOnly = true;
