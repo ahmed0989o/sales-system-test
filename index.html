@@ -9996,6 +9996,10 @@ if (saveButton && !saveButton.dataset.bound) {
 }
 
 async function clearPurchaseInvoice() {
+  if (window.purchaseInvoiceSaving) {
+  alert("انتظر حتى تنتهي عملية حفظ الفاتورة.");
+  return;
+}
   const confirmed = confirm("هل تريد تفريغ بيانات الفاتورة الحالية؟");
   if (!confirmed) return;
 
