@@ -4812,7 +4812,9 @@ async function showApp() {
 
 if (savedSection === "purchasePanel") {
   $("mainMenu").classList.add("hidden");
+  $("appUserToolbar").classList.add("hidden");
 } else {
+  $("appUserToolbar").classList.remove("hidden");
   showMainMenu();
 }
     $("userInfo").textContent =
