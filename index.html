@@ -9525,6 +9525,78 @@ function getPurchaseInvoiceProducts() {
   );
 }
 
+function addPurchaseInvoiceItem() {
+  const tbody = $("purchaseInvoiceItemsBody");
+  if (!tbody) return;
+
+  const availableProducts = getPurchaseInvoiceProducts();
+
+  if (!availableProducts.length) {
+    alert("لا توجد مواد محمّلة. حدّث قائمة المنتجات أولاً.");
+    return;
+  }
+
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
+    <td class="purchase-row-number"></td>
+    <td>
+      <select class="purchase-item-product">
+        <option value="">اختر المادة</option>
+      </select>
+    </td>
+    <td><input class="purchase-item-barcode" readonly></td>
+    <td><input class="purchase-item-unit" value="قطعة"></td>
+    <td><input class="purchase-item-quantity" type="number" min="1" step="1" value="1"></td>
+    <td><input class="purchase-item-free" type="number" min="0" step="1" value="0"></td>
+    <td><input class="purchase-item-cost" type="number" min="0" step="0.01" value="0"></td>
+    <td><input class="purchase-item-discount-percent" type="number" min="0" max="100" step="0.001" value="0"></td>
+    <td><input class="purchase-item-discount" type="number" min="0" step="0.01" value="0"></td>
+    <td><input class="purchase-item-sale1" type="number" min="0" step="0.01" value="0"></td>
+    <td><input class="purchase-item-sale2" type="number" min="0" step="0.01" value="0"></td>
+    <td><input class="purchase-item-total" type="number" readonly value="0"></td>
+    <td><button type="button" class="purchase-item-remove">حذف</button></td>
+  `;
+
+  const select = row.querySelector(".purchase-item-product");
+
+  availableProducts.forEach(product => {
+    const option = document.createElement("option");
+    option.value = product.id;
+    option.textContent = product.name;
+    select.appendChild(option);
+  });
+
+  select.addEventListener("change", () => {
+    const product = availableProducts.find(
+      item => String(item.id) === select.value
+    );
+
+    row.querySelector(".purchase-item-barcode").value =
+      product?.barcode || "";
+
+    row.querySelector(".purchase-item-cost").value =
+      product?.purchase_price ?? 0;
+
+    calculatePurchaseInvoiceTotals();
+  });
+
+  row.querySelectorAll("input").forEach(input => {
+    input.addEventListener("input", calculatePurchaseInvoiceTotals);
+  });
+
+  row.querySelector(".purchase-item-remove").addEventListener("click", () => {
+    row.remove();
+    updatePurchaseInvoiceRowNumbers();
+    calculatePurchaseInvoiceTotals();
+  });
+
+  tbody.appendChild(row);
+
+  updatePurchaseInvoiceRowNumbers();
+  calculatePurchaseInvoiceTotals();
+}
+
 function openCashbox() {
   if (!isOwner(currentUser)) return;
 
