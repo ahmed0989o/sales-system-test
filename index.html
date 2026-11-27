@@ -5022,8 +5022,21 @@ async function restoreAppLayoutState(canManagePurchases) {
     ) return;
 
     el.classList.toggle("hidden", saved.hidden === true);
-    el.style.display = saved.display || "";
-    el.style.zIndex = saved.zIndex || "";
+el.style.display = saved.display || "";
+el.style.zIndex = saved.zIndex || "";
+
+// استعادة حالة التكبير للنوافذ العائمة
+if (saved.maximized === true) {
+  el.dataset.oldTop = saved.oldTop || "";
+  el.dataset.oldLeft = saved.oldLeft || "";
+  el.dataset.oldWidth = saved.oldWidth || "";
+  el.dataset.oldHeight = saved.oldHeight || "";
+  el.dataset.oldRight = saved.oldRight || "";
+
+  el.classList.add("maximized");
+} else {
+  el.classList.remove("maximized");
+}
 
     if (el.tagName === "DIALOG" && saved.open === true) {
       el.classList.remove("hidden");
