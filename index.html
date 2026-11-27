@@ -5245,7 +5245,7 @@ async function showApp() {
     // استعادة حالة الواجهة المحفوظة
     // =====================================
 
-    if (savedLayout) {
+    if (savedLayout && savedLayout.visibility?.mainMenu?.hidden === false) {
 
       // تهيئة نافذة المشتريات قبل استعادة ظهورها
       const savedPurchase =
