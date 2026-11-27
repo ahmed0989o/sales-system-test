@@ -9960,6 +9960,7 @@ function openDailyReport() {
 }
   // فتح حركة الصندوق
  
+
 async function openPurchases(restore = false) {
   const allowed = await checkPurchasePermission();
 
@@ -9968,19 +9969,23 @@ async function openPurchases(restore = false) {
     return;
   }
 
-  if (!restore) {
-  $("mainMenu").classList.remove("hidden");
-  $("appUserToolbar").classList.remove("hidden");
-} else {
+  // إخفاء القائمة الرئيسية وقائمة المبيعات
   $("mainMenu").classList.add("hidden");
+  $("salesMenu").classList.add("hidden");
+
+  // إبقاء شريط المستخدم ظاهراً
   $("appUserToolbar").classList.remove("hidden");
-}
+
+  // إظهار نافذة المشتريات
   $("purchasePanel").classList.remove("hidden");
 
+  // تسجيل القسم الحالي
   localStorage.setItem("lastActiveSection", "purchasePanel");
 
+  // تحميل بيانات المشتريات
   await loadPurchases();
   await loadPurchaseInvoiceSuppliers();
+
   initializePurchaseInvoiceButtons();
   initializePurchaseInvoiceDate();
 
@@ -9989,8 +9994,10 @@ async function openPurchases(restore = false) {
   } catch (error) {
     console.error("تعذر تهيئة رقم فاتورة المشتريات:", error);
   }
-}
 
+  // حفظ حالة الواجهة بعد اكتمال الفتح
+  saveAppLayoutState();
+}
   
 async function loadPurchaseInvoiceSuppliers() {
   const select = document.getElementById("purchaseSupplier");
