@@ -11307,10 +11307,13 @@ floatingWindowIds.forEach(id => {
 
   // مراقبة تغيير حجم النافذة وحفظ الحجم تلقائياً
   const resizeObserver = new ResizeObserver(function () {
-    if (!win.classList.contains("hidden")) {
-      saveWindowState(win);
-    }
-  });
+  if (
+    !win.classList.contains("hidden") &&
+    !win.classList.contains("maximized")
+  ) {
+    saveWindowState(win);
+  }
+});
 
   resizeObserver.observe(win);
 });
