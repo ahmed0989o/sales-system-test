@@ -5269,6 +5269,14 @@ if (
       // استعادة النوافذ والصفحات الفرعية
       await restoreAppLayoutState(canManagePurchases);
 
+if (
+  !savedLayout.visibility?.salesMenu ||
+  savedLayout.visibility.salesMenu.hidden === true
+) {
+  showMainMenu();
+  $("appUserToolbar").classList.remove("hidden");
+}
+
       // استعادة تجهيز فاتورة البيع إذا كانت ظاهرة
       const salesPanelState =
         savedLayout.visibility?.salesPanel;
