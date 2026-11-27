@@ -10883,6 +10883,69 @@ function closeSupplierModal() {
   const modal = document.getElementById("supplierModal");
   if (modal?.open) modal.close();
 }
+  async function saveSupplier() {
+  const button = $("saveSupplierButton");
+  const status = $("supplierModalStatus");
+
+  const name = $("supplierName").value.trim();
+  const phone = $("supplierPhone").value.trim();
+  const address = $("supplierAddress").value.trim();
+  const notes = $("supplierNotes").value.trim();
+  const openingBalance = Number(
+    $("supplierOpeningBalance").value || 0
+  );
+
+  if (!name) {
+    status.textContent = "يرجى إدخال اسم المورد";
+    $("supplierName").focus();
+    return;
+  }
+
+  if (!Number.isFinite(openingBalance) || openingBalance < 0) {
+    status.textContent = "الرصيد الافتتاحي غير صحيح";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "جارٍ حفظ المورد...";
+
+  try {
+    const { data, error } = await db.rpc("create_supplier", {
+      p_name: name,
+      p_phone: phone || null,
+      p_address: address || null,
+      p_notes: notes || null,
+      p_opening_balance: openingBalance
+    });
+
+    if (error) throw error;
+
+    if (data == null) {
+      throw new Error("لم يتم استلام رقم المورد الجديد");
+    }
+
+    await loadPurchaseInvoiceSuppliers();
+
+    const select = $("purchaseSupplier");
+    select.value = String(data);
+
+    if (select.value !== String(data)) {
+      throw new Error("تم الحفظ لكن تعذر تحديد المورد في القائمة");
+    }
+
+    $("purchaseInvoiceStatus").textContent =
+      "تمت إضافة المورد واختياره بنجاح";
+
+    closeSupplierModal();
+
+  } catch (error) {
+    console.error("خطأ حفظ المورد:", error);
+    status.textContent =
+      error.message || "تعذر حفظ المورد";
+  } finally {
+    button.disabled = false;
+  }
+}
 function initializePurchaseInvoiceButtons() {
 const addButton = $("addPurchaseInvoiceItemButton");
 const saveButton = $("savePurchaseInvoiceButton");
