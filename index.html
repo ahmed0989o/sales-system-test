@@ -11370,6 +11370,7 @@ win.style.top = newTop + "px";
   });
 });
   // تكبير النافذة واستعادة حجمها السابق
+
 function toggleMaximizeSection(sectionId) {
   const win = document.getElementById(sectionId);
   if (!win) return;
@@ -11394,10 +11395,11 @@ function toggleMaximizeSection(sectionId) {
     win.dataset.oldRight = win.style.right || "auto";
 
     win.classList.add("maximized");
-
-    saveWindowState(win);
   }
+
+  saveAppLayoutState();
 }
+  
   // إعادة ضبط نافذة واحدة
 function resetSingleWindow(sectionId) {
   const win = document.getElementById(sectionId);
