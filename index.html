@@ -4933,7 +4933,8 @@ if (
 ) {
   await openPurchases(true);
 } else if (lastActiveSection === "salesMenu") {
-  openSalesMenu();
+  $("mainMenu").classList.add("hidden");
+  $("salesMenu").classList.remove("hidden");
 }
     if (isOwner(currentUser)) await loadCashbox();
 if (isOwner(currentUser)) {
