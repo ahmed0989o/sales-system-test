@@ -10959,7 +10959,8 @@ function editSupplier(supplier) {
 
   $("supplierName").focus();
 }
-  async function saveSupplier() {
+  
+async function saveSupplier() {
   const button = $("saveSupplierButton");
   const status = $("supplierModalStatus");
 
@@ -10983,34 +10984,64 @@ function editSupplier(supplier) {
   }
 
   button.disabled = true;
-  status.textContent = "جارٍ حفظ المورد...";
+  status.textContent = editingSupplierId !== null
+    ? "جارٍ تحديث بيانات المورد..."
+    : "جارٍ حفظ المورد...";
 
   try {
-    const { data, error } = await db.rpc("create_supplier", {
-      p_name: name,
-      p_phone: phone || null,
-      p_address: address || null,
-      p_notes: notes || null,
-      p_opening_balance: openingBalance
-    });
+    let supplierId;
+    const isEditing = editingSupplierId !== null;
 
-    if (error) throw error;
+    if (isEditing) {
+      const { error } = await db.rpc("update_supplier", {
+        p_supplier_id: editingSupplierId,
+        p_name: name,
+        p_phone: phone || null,
+        p_address: address || null,
+        p_notes: notes || null,
+        p_opening_balance: openingBalance,
+        p_is_active: editingSupplierActive
+      });
 
-    if (data == null) {
-      throw new Error("لم يتم استلام رقم المورد الجديد");
+      if (error) throw error;
+
+      supplierId = editingSupplierId;
+
+    } else {
+      const { data, error } = await db.rpc("create_supplier", {
+        p_name: name,
+        p_phone: phone || null,
+        p_address: address || null,
+        p_notes: notes || null,
+        p_opening_balance: openingBalance
+      });
+
+      if (error) throw error;
+
+      if (data == null) {
+        throw new Error("لم يتم استلام رقم المورد الجديد");
+      }
+
+      supplierId = data;
     }
 
     await loadPurchaseInvoiceSuppliers();
+    await loadSupplierManagementList();
 
     const select = $("purchaseSupplier");
-    select.value = String(data);
 
-    if (select.value !== String(data)) {
-      throw new Error("تم الحفظ لكن تعذر تحديد المورد في القائمة");
+    if (editingSupplierActive || !isEditing) {
+      select.value = String(supplierId);
     }
 
-    $("purchaseInvoiceStatus").textContent =
-      "تمت إضافة المورد واختياره بنجاح";
+    $("purchaseInvoiceStatus").textContent = isEditing
+      ? "تم تحديث بيانات المورد بنجاح"
+      : "تمت إضافة المورد واختياره بنجاح";
+
+    editingSupplierId = null;
+    editingSupplierActive = true;
+
+    button.textContent = "💾 حفظ المورد";
 
     closeSupplierModal();
 
