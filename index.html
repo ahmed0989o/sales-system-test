@@ -4932,9 +4932,16 @@ if (
   canManagePurchases === true
 ) {
   await openPurchases(true);
+
 } else if (lastActiveSection === "salesMenu") {
   $("mainMenu").classList.add("hidden");
   $("salesMenu").classList.remove("hidden");
+
+} else if (lastActiveSection === "salesInvoice") {
+  $("mainMenu").classList.add("hidden");
+  $("salesMenu").classList.add("hidden");
+
+  openSalesInvoice();
 }
     if (isOwner(currentUser)) await loadCashbox();
 if (isOwner(currentUser)) {
