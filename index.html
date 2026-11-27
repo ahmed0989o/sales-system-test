@@ -1632,11 +1632,22 @@ font-size:16px;
     </div>
 
     <div>
-      <label>المورد</label>
-      <select id="purchaseSupplier">
-        <option value="">اختر المورد</option>
-      </select>
-    </div>
+  <label>المورد</label>
+
+  <div style="display:flex; gap:8px; align-items:center;">
+    <select id="purchaseSupplier" style="flex:1; min-width:0;">
+      <option value="">اختر المورد</option>
+    </select>
+
+    <button
+      type="button"
+      id="openSupplierModalButton"
+      class="secondary"
+      style="white-space:nowrap;">
+      ＋ مورد جديد
+    </button>
+  </div>
+</div>
 
     <div>
       <label>رقم فاتورة المورد</label>
