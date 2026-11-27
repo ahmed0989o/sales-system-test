@@ -10913,22 +10913,29 @@ if (!window.viewingExistingPurchaseInvoice) {
     paid <= 0 ? "غير مسدد" :
     remaining <= 0 ? "مسدد" : "تسديد جزئي";
 }
-  function openSupplierModal() {
-  const modal = document.getElementById("supplierModal");
+  
+function openSupplierModal() {
+  const modal = $("supplierModal");
   if (!modal) return;
 
-  document.getElementById("supplierName").value = "";
-  document.getElementById("supplierPhone").value = "";
-  document.getElementById("supplierAddress").value = "";
-  document.getElementById("supplierNotes").value = "";
-  document.getElementById("supplierOpeningBalance").value = "0";
-  document.getElementById("supplierModalStatus").textContent = "";
+  // إلغاء وضع التعديل والعودة إلى إضافة مورد جديد
+  editingSupplierId = null;
+  editingSupplierActive = true;
+
+  $("supplierName").value = "";
+  $("supplierPhone").value = "";
+  $("supplierAddress").value = "";
+  $("supplierNotes").value = "";
+  $("supplierOpeningBalance").value = "0";
+
+  $("supplierModalStatus").textContent = "";
+  $("saveSupplierButton").textContent = "💾 حفظ المورد";
 
   modal.showModal();
 
-loadSupplierManagementList();
+  loadSupplierManagementList();
 
-document.getElementById("supplierName").focus();
+  $("supplierName").focus();
 }
 
 function closeSupplierModal() {
