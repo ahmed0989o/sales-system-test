@@ -11167,6 +11167,43 @@ async function loadSupplierManagementList() {
       error.message || "تعذر تحميل قائمة الموردين";
   }
 }
+  
+async function toggleSupplierStatus(supplier) {
+  const newStatus = !supplier.is_active;
+
+  const action = newStatus ? "تفعيل" : "تعطيل";
+
+  if (!confirm(`هل تريد ${action} المورد "${supplier.name}"؟`)) {
+    return;
+  }
+
+  try {
+    const { error } = await db.rpc("update_supplier", {
+      p_supplier_id: supplier.id,
+      p_name: supplier.name,
+      p_phone: supplier.phone || null,
+      p_address: supplier.address || null,
+      p_notes: supplier.notes || null,
+      p_opening_balance: Number(supplier.opening_balance || 0),
+      p_is_active: newStatus
+    });
+
+    if (error) throw error;
+
+    await loadSupplierManagementList();
+    await loadPurchaseInvoiceSuppliers();
+
+    $("purchaseInvoiceStatus").textContent =
+      `تم ${action} المورد "${supplier.name}" بنجاح`;
+
+  } catch (error) {
+    console.error(`خطأ ${action} المورد:`, error);
+
+    $("supplierListStatus").textContent =
+      error.message || `تعذر ${action} المورد`;
+  }
+}
+
 function initializePurchaseInvoiceButtons() {
 const addButton = $("addPurchaseInvoiceItemButton");
 const saveButton = $("savePurchaseInvoiceButton");
