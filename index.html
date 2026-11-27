@@ -4891,13 +4891,15 @@ function saveAppLayoutState() {
 }
 
 function scheduleAppLayoutSave() {
+  if (appLoading) return;
+
   clearTimeout(appLayoutSaveTimer);
 
   appLayoutSaveTimer = setTimeout(() => {
+    if (appLoading) return;
     saveAppLayoutState();
   }, 250);
 }
-
 function startAppLayoutPersistence() {
   if (appLayoutObserver) return;
 
