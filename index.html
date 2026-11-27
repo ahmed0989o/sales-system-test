@@ -1860,7 +1860,23 @@ font-size:16px;
   #supplierModal::backdrop {
     background: rgba(0, 0, 0, 0.55);
   }
+#supplierModal.supplier-modal-maximized {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  border-radius: 0;
+  box-sizing: border-box;
+}
 
+#supplierModal.supplier-modal-maximized .supplier-modal-toolbar {
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 2;
+}
   #supplierModal input,
   #supplierModal textarea {
     width: 100%;
