@@ -8045,10 +8045,12 @@ if (!navigator.onLine) {
     const rows = data || [];
 
     if (!rows.length) {
-      $("purchaseDetails").textContent = "لا توجد سجلات مشتريات.";
-      setMessage("purchaseStatus", "");
-      return;
-    }
+  $("purchaseDetails").textContent = "لا توجد سجلات مشتريات.";
+  if ($("purchaseStatus")) {
+    setMessage("purchaseStatus", "");
+  }
+  return;
+}
 
     const table = document.createElement("table");
     const thead = document.createElement("thead");
