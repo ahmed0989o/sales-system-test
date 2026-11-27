@@ -10863,6 +10863,26 @@ if (!window.viewingExistingPurchaseInvoice) {
     paid <= 0 ? "غير مسدد" :
     remaining <= 0 ? "مسدد" : "تسديد جزئي";
 }
+  function openSupplierModal() {
+  const modal = document.getElementById("supplierModal");
+  if (!modal) return;
+
+  document.getElementById("supplierName").value = "";
+  document.getElementById("supplierPhone").value = "";
+  document.getElementById("supplierAddress").value = "";
+  document.getElementById("supplierNotes").value = "";
+  document.getElementById("supplierOpeningBalance").value = "0";
+  document.getElementById("supplierModalStatus").textContent = "";
+
+  modal.showModal();
+
+  document.getElementById("supplierName").focus();
+}
+
+function closeSupplierModal() {
+  const modal = document.getElementById("supplierModal");
+  if (modal?.open) modal.close();
+}
 function initializePurchaseInvoiceButtons() {
 const addButton = $("addPurchaseInvoiceItemButton");
 const saveButton = $("savePurchaseInvoiceButton");
