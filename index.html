@@ -4801,6 +4801,128 @@ async function prepareNextInvoiceNumber() {
 
   return cachedPermission?.allowed === true;
 }
+  
+// ========================================
+// حفظ واستعادة حالة واجهة النظام بالكامل
+// ========================================
+
+const APP_LAYOUT_STORAGE_KEY = "salesSystemAppLayout";
+
+let appLayoutObserver = null;
+let appLayoutSaveTimer = null;
+
+function getAppLayoutElements() {
+  return [
+    ...document.querySelectorAll(
+      '#appPanel [id$="Panel"], #appPanel [id$="Section"], #appPanel dialog'
+    ),
+    document.getElementById("mainMenu"),
+    document.getElementById("salesMenu"),
+    document.getElementById("appUserToolbar"),
+    document.getElementById("salesInvoiceForm"),
+    document.getElementById("dailyReportControls"),
+    document.getElementById("dailyReportPrint")
+  ].filter((el, index, arr) =>
+    el && el.id && arr.indexOf(el) === index
+  );
+}
+
+function saveAppLayoutState() {
+  try {
+    const elements = getAppLayoutElements();
+
+    const visibility = {};
+
+    elements.forEach(el => {
+      visibility[el.id] = {
+        hidden: el.classList.contains("hidden"),
+        display: el.style.display || "",
+        open: el.tagName === "DIALOG" ? el.open : false,
+        zIndex: el.style.zIndex || ""
+      };
+    });
+
+    const minimized = [
+      ...document.querySelectorAll(
+        '#minimizedSections button[id^="restore-"]'
+      )
+    ].map(button => ({
+      id: button.id,
+      text: button.textContent
+    }));
+
+    const state = {
+      version: 1,
+      visibility,
+      minimized,
+      savedAt: Date.now()
+    };
+
+    localStorage.setItem(
+      APP_LAYOUT_STORAGE_KEY,
+      JSON.stringify(state)
+    );
+
+  } catch (error) {
+    console.error("تعذر حفظ حالة واجهة النظام:", error);
+  }
+}
+
+function scheduleAppLayoutSave() {
+  clearTimeout(appLayoutSaveTimer);
+
+  appLayoutSaveTimer = setTimeout(() => {
+    saveAppLayoutState();
+  }, 250);
+}
+
+function startAppLayoutPersistence() {
+  if (appLayoutObserver) return;
+
+  appLayoutObserver = new MutationObserver(() => {
+    scheduleAppLayoutSave();
+  });
+
+  getAppLayoutElements().forEach(el => {
+    appLayoutObserver.observe(el, {
+      attributes: true,
+      attributeFilter: ["class", "style", "open"]
+    });
+  });
+}
+
+function stopAppLayoutPersistence() {
+  if (appLayoutObserver) {
+    appLayoutObserver.disconnect();
+    appLayoutObserver = null;
+  }
+
+  clearTimeout(appLayoutSaveTimer);
+}
+
+function getSavedAppLayoutState() {
+  try {
+    const raw = localStorage.getItem(APP_LAYOUT_STORAGE_KEY);
+    if (!raw) return null;
+
+    const state = JSON.parse(raw);
+
+    if (
+      !state ||
+      state.version !== 1 ||
+      !state.visibility
+    ) {
+      return null;
+    }
+
+    return state;
+
+  } catch (error) {
+    console.error("تعذر قراءة حالة واجهة النظام:", error);
+    return null;
+  }
+}
+
 async function showApp() {
   if (!currentUser || appLoading) return;
   appLoading = true;
