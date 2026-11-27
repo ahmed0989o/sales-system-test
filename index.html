@@ -7888,7 +7888,7 @@ const purchaseMessage = (message) => {
   }
 };
   if (!currentUser) {
-  return setMessage("purchaseStatus", "يجب تسجيل الدخول أولاً.");
+  return purchaseMessage("يجب تسجيل الدخول أولاً.");
 }
 
 let allowed = false;
