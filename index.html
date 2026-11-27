@@ -1774,7 +1774,79 @@ font-size:16px;
 </div>
 </section>
 
+<!-- نافذة إضافة مورد جديد -->
+<dialog id="supplierModal" dir="rtl">
 
+  <h3>＋ إضافة مورد جديد</h3>
+
+  <div style="display:grid; gap:12px; min-width:300px;">
+
+    <div>
+      <label for="supplierName">اسم المورد *</label>
+      <input id="supplierName" type="text" required placeholder="اسم المورد">
+    </div>
+
+    <div>
+      <label for="supplierPhone">رقم الهاتف</label>
+      <input id="supplierPhone" type="text" placeholder="رقم الهاتف">
+    </div>
+
+    <div>
+      <label for="supplierAddress">العنوان</label>
+      <input id="supplierAddress" type="text" placeholder="العنوان">
+    </div>
+
+    <div>
+      <label for="supplierNotes">ملاحظات</label>
+      <textarea id="supplierNotes" rows="3"></textarea>
+    </div>
+
+    <div>
+      <label for="supplierOpeningBalance">الرصيد الافتتاحي</label>
+      <input
+        id="supplierOpeningBalance"
+        type="number"
+        min="0"
+        step="0.001"
+        value="0">
+    </div>
+
+    <div id="supplierModalStatus" class="status"></div>
+
+    <div style="display:flex; gap:8px;">
+      <button type="button" id="saveSupplierButton">
+        💾 حفظ المورد
+      </button>
+
+      <button type="button" id="closeSupplierModalButton" class="secondary">
+        إلغاء
+      </button>
+    </div>
+
+  </div>
+</dialog>
+
+<style>
+  #supplierModal {
+    width: min(450px, calc(100% - 32px));
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 22px;
+  }
+
+  #supplierModal::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  #supplierModal input,
+  #supplierModal textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 5px;
+  }
+</style>
 <section id="ownerPanel" class="hidden">
 <section id="cashboxPanel">
   <div class="section-window-controls">
