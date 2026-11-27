@@ -7933,10 +7933,7 @@ try {
    purchaseMessage("تم حفظ عملية الشراء محلياً، جارٍ تجهيز المزامنة...");
 } catch (error) {
   console.error("Local purchase save:", error);
-  setMessage(
-    "purchaseStatus",
-    "تعذر حفظ عملية الشراء محلياً: " + error.message
-  );
+    purchaseMessage("تعذر حفظ عملية الشراء محلياً: " + error.message);
   button.disabled = false;
   return;
 }
