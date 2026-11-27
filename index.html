@@ -8029,7 +8029,9 @@ if (!allowed) {
 if (!navigator.onLine) {
   $("purchaseDetails").textContent =
     "أنت تعمل دون إنترنت. سجل المشتريات السابق غير متاح حالياً.";
+  if ($("purchaseStatus")) {
   setMessage("purchaseStatus", "يمكنك تجهيز مشتريات جديدة للحفظ المحلي.");
+}
   return;
 }
   if ($("purchaseStatus")) {
