@@ -1777,7 +1777,28 @@ font-size:16px;
 <!-- نافذة إضافة مورد جديد -->
 <dialog id="supplierModal" dir="rtl">
 
-  <h3>＋ إضافة مورد جديد</h3>
+  <div class="supplier-modal-toolbar"
+     style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:18px;">
+
+  <h3 style="margin:0;">إدارة الموردين</h3>
+
+  <div style="display:flex; gap:6px;">
+    <button
+      type="button"
+      id="maximizeSupplierModalButton"
+      title="تكبير واستعادة">
+      □
+    </button>
+
+    <button
+      type="button"
+      id="closeSupplierModalTopButton"
+      title="إغلاق">
+      ×
+    </button>
+  </div>
+
+</div>
 
   <div style="display:grid; gap:12px; min-width:300px;">
 
