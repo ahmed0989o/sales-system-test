@@ -10998,7 +10998,8 @@ function closeSupplierModal() {
     button.disabled = false;
   }
 }
-  async function loadSupplierManagementList() {
+  
+async function loadSupplierManagementList() {
   const container = $("supplierListContainer");
   const status = $("supplierListStatus");
 
@@ -11030,7 +11031,8 @@ function closeSupplierModal() {
       "الهاتف",
       "العنوان",
       "الرصيد الافتتاحي",
-      "الحالة"
+      "الحالة",
+      "الإجراءات"
     ];
 
     const thead = document.createElement("thead");
@@ -11067,6 +11069,34 @@ function closeSupplierModal() {
         td.style.borderBottom = "1px solid #ddd";
         tr.appendChild(td);
       });
+
+      const actionsCell = document.createElement("td");
+      actionsCell.style.padding = "10px";
+      actionsCell.style.borderBottom = "1px solid #ddd";
+
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.textContent = "✏️ تعديل";
+
+      editButton.addEventListener("click", () => {
+        editSupplier(supplier);
+      });
+
+      actionsCell.appendChild(editButton);
+
+      const toggleButton = document.createElement("button");
+      toggleButton.type = "button";
+      toggleButton.textContent = supplier.is_active
+        ? "تعطيل"
+        : "تفعيل";
+      toggleButton.style.marginRight = "6px";
+
+      toggleButton.addEventListener("click", () => {
+        toggleSupplierStatus(supplier);
+      });
+
+      actionsCell.appendChild(toggleButton);
+      tr.appendChild(actionsCell);
 
       tbody.appendChild(tr);
     });
