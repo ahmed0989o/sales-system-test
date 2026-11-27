@@ -5215,10 +5215,11 @@ if (floatingIds.includes(el.id)) {
   return true;
 }
 
+
 async function showApp() {
   if (!currentUser || appLoading) return;
-  appLoading = true;
 
+  appLoading = true;
   let layoutReady = false;
 
   try {
@@ -5233,17 +5234,9 @@ async function showApp() {
       el.classList.add("hidden");
     });
 
-    if (!savedLayout) {
-      showMainMenu();
-      $("appUserToolbar").classList.remove("hidden");
-    }
-
     $("userInfo").textContent =
       "الحساب: " + (currentUser.email || "مستخدم") +
       (isOwner(currentUser) ? " — مسؤول" : "");
-
-    console.log("Supabase authenticated user ID:", currentUser.id);
-    console.log("Supabase session:", await db.auth.getSession());
 
     setMessage(
       "loginStatus",
@@ -5257,6 +5250,7 @@ async function showApp() {
     $("returnsPanel").classList.add("hidden");
     $("reportDate").value = todayInBaghdad();
 
+    // التحقق من صلاحية مراقبة الأجهزة
     const devicesButton = $("devicesMonitorMenuButton");
 
     if (devicesButton) {
@@ -5272,12 +5266,74 @@ async function showApp() {
         canMonitorDevices = data === true;
       }
 
-      devicesButton.classList.toggle("hidden", !canMonitorDevices);
+      devicesButton.classList.toggle(
+        "hidden",
+        !canMonitorDevices
+      );
     }
+
+    // التحقق من صلاحية المشتريات قبل استعادة التخطيط
+    const canManagePurchases = await checkPurchasePermission();
+
+    // =====================================
+    // استعادة الواجهة مبكراً قبل تحميل البيانات
+    // =====================================
+
+    if (savedLayout) {
+      await restoreAppLayoutState(canManagePurchases);
+
+      const invoiceFormState =
+        savedLayout.visibility?.salesInvoiceForm;
+
+      if (
+        savedSection === "salesInvoice" &&
+        invoiceFormState &&
+        invoiceFormState.hidden === false
+      ) {
+        openSalesInvoice();
+      }
+
+      const savedPurchase =
+        savedLayout.visibility?.purchasePanel;
+
+      if (
+        savedPurchase &&
+        savedPurchase.hidden !== true &&
+        canManagePurchases === true
+      ) {
+        // ستُحمّل المشتريات لاحقاً
+      } else if (
+        savedSection === "salesMenu" &&
+        savedLayout.visibility?.salesMenu?.hidden === false
+      ) {
+        $("mainMenu").classList.add("hidden");
+        $("salesMenu").classList.remove("hidden");
+        $("appUserToolbar").classList.remove("hidden");
+      }
+
+    } else {
+      if (savedSection === "salesInvoice") {
+        openSalesInvoice();
+
+      } else if (savedSection === "salesMenu") {
+        $("mainMenu").classList.add("hidden");
+        $("salesMenu").classList.remove("hidden");
+        $("appUserToolbar").classList.remove("hidden");
+
+      } else {
+        showMainMenu();
+        $("appUserToolbar").classList.remove("hidden");
+      }
+    }
+
+    // =====================================
+    // تحميل بيانات النظام بعد إظهار الواجهة
+    // =====================================
 
     await OfflineStore.open();
 
-    const currentDeviceId = await OfflineStore.getDeviceId();
+    const currentDeviceId =
+      await OfflineStore.getDeviceId();
 
     $("userInfo").textContent +=
       " — معرّف الجهاز: " + currentDeviceId;
@@ -5303,7 +5359,9 @@ async function showApp() {
         const stats = await OfflineStore.countPending();
 
         if (!stats) {
-          throw new Error("تعذر قراءة إحصائيات العمليات المحلية");
+          throw new Error(
+            "تعذر قراءة إحصائيات العمليات المحلية"
+          );
         }
 
         const pending = Number(stats.pending || 0);
@@ -5317,21 +5375,28 @@ async function showApp() {
           syncing === 0 &&
           failed === 0
         ) {
-          const deviceId = await OfflineStore.getDeviceId();
+          const deviceId =
+            await OfflineStore.getDeviceId();
 
-          const { error } = await db.rpc("report_device_sync", {
-            p_device_id: deviceId
-          });
+          const { error } = await db.rpc(
+            "report_device_sync",
+            { p_device_id: deviceId }
+          );
 
           if (error) throw error;
 
           await reportCurrentDevice();
         }
+
       } catch (error) {
-        console.error("تعذر تسجيل اكتمال مزامنة الجهاز:", error);
+        console.error(
+          "تعذر تسجيل اكتمال مزامنة الجهاز:",
+          error
+        );
       }
     }, 1000);
 
+    // تحميل المنتجات والعملاء
     const dataLoadStart = performance.now();
 
     await Promise.all([
@@ -5345,14 +5410,13 @@ async function showApp() {
       "ms"
     );
 
-    const canManagePurchases = await checkPurchasePermission();
-
     $("purchasePanel").classList.add("hidden");
 
     if (canManagePurchases === true) {
       await loadPurchases();
     }
 
+    // تحميل بيانات المالك
     if (isOwner(currentUser)) {
       await loadCashbox();
 
@@ -5366,23 +5430,11 @@ async function showApp() {
 
     await loadDailyReport();
 
+    // =====================================
+    // استكمال فتح النوافذ التي تحتاج تحميل بيانات
+    // =====================================
+
     if (savedLayout) {
-      // استعادة الحالة المحفوظة دائماً، بغض النظر عن حالة القائمة الرئيسية
-      await restoreAppLayoutState(canManagePurchases);
-
-      // استعادة فاتورة البيع إذا كانت آخر صفحة محفوظة
-      const invoiceFormState =
-        savedLayout.visibility?.salesInvoiceForm;
-
-      if (
-        savedSection === "salesInvoice" &&
-        invoiceFormState &&
-        invoiceFormState.hidden === false
-      ) {
-        openSalesInvoice();
-      }
-
-      // استعادة المشتريات إذا كانت نافذتها محفوظة ظاهرة
       const savedPurchase =
         savedLayout.visibility?.purchasePanel;
 
@@ -5394,23 +5446,15 @@ async function showApp() {
         await openPurchases(true);
       }
 
-      // استعادة قائمة المبيعات إذا كانت آخر صفحة محفوظة
-      else if (
-        savedSection === "salesMenu" &&
-        savedLayout.visibility?.salesMenu?.hidden === false
-      ) {
-        $("mainMenu").classList.add("hidden");
-        $("salesMenu").classList.remove("hidden");
-        $("appUserToolbar").classList.remove("hidden");
-      }
-
-      const invoicesDialog = $("salesInvoicesSection");
+      const invoicesDialog =
+        $("salesInvoicesSection");
 
       if (invoicesDialog && invoicesDialog.open) {
         await viewSalesInvoices();
       }
 
-      const devicesPanel = $("devicesMonitorPanel");
+      const devicesPanel =
+        $("devicesMonitorPanel");
 
       if (
         devicesPanel &&
@@ -5420,31 +5464,22 @@ async function showApp() {
       }
 
     } else {
-      // لا توجد حالة محفوظة: استخدم آخر قسم معروف
       if (
         savedSection === "purchasePanel" &&
         canManagePurchases === true
       ) {
         await openPurchases(true);
-
-      } else if (savedSection === "salesMenu") {
-        $("mainMenu").classList.add("hidden");
-        $("salesMenu").classList.remove("hidden");
-        $("appUserToolbar").classList.remove("hidden");
-
-      } else if (savedSection === "salesInvoice") {
-        openSalesInvoice();
-
-      } else {
-        $("appUserToolbar").classList.remove("hidden");
-        showMainMenu();
       }
     }
 
     layoutReady = true;
 
     if (!window.__appLayoutPagehideBound) {
-      window.addEventListener("pagehide", saveAppLayoutState);
+      window.addEventListener(
+        "pagehide",
+        saveAppLayoutState
+      );
+
       window.__appLayoutPagehideBound = true;
     }
 
