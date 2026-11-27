@@ -11001,6 +11001,30 @@ if (closeSupplierButton && !closeSupplierButton.dataset.bound) {
   closeSupplierButton.addEventListener("click", closeSupplierModal);
   closeSupplierButton.dataset.bound = "true";
 }
+  const closeSupplierTopButton = $("closeSupplierModalTopButton");
+const maximizeSupplierButton = $("maximizeSupplierModalButton");
+
+if (closeSupplierTopButton && !closeSupplierTopButton.dataset.bound) {
+  closeSupplierTopButton.addEventListener("click", closeSupplierModal);
+  closeSupplierTopButton.dataset.bound = "true";
+}
+
+if (maximizeSupplierButton && !maximizeSupplierButton.dataset.bound) {
+  maximizeSupplierButton.addEventListener("click", () => {
+    const modal = $("supplierModal");
+
+    if (!modal) return;
+
+    const maximized = modal.classList.toggle("supplier-modal-maximized");
+
+    maximizeSupplierButton.textContent = maximized ? "❐" : "□";
+    maximizeSupplierButton.title = maximized
+      ? "استعادة الحجم"
+      : "تكبير النافذة";
+  });
+
+  maximizeSupplierButton.dataset.bound = "true";
+}
   const saveSupplierButton = $("saveSupplierButton");
 
 if (saveSupplierButton && !saveSupplierButton.dataset.bound) {
