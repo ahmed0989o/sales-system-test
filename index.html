@@ -8036,7 +8036,9 @@ if (!navigator.onLine) {
   setMessage("purchaseStatus", "يمكنك تجهيز مشتريات جديدة للحفظ المحلي.");
   return;
 }
+  if ($("purchaseStatus")) {
   setMessage("purchaseStatus", "جارٍ تحميل سجل المشتريات...");
+}
 
   try {
     const { data, error } = await db.rpc("get_stock_purchases");
