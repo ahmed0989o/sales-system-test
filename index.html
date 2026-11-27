@@ -5215,11 +5215,13 @@ if (floatingIds.includes(el.id)) {
   return true;
 }
 
+
 async function showApp() {
   if (!currentUser || appLoading) return;
 
   appLoading = true;
   let layoutReady = false;
+  let purchasesOpenedEarly = false;
 
   try {
     $("loginPanel").classList.add("hidden");
@@ -5271,11 +5273,11 @@ async function showApp() {
       );
     }
 
-    // التحقق من صلاحية المشتريات قبل استعادة التخطيط
+    // التحقق من صلاحية المشتريات
     const canManagePurchases = await checkPurchasePermission();
 
     // =====================================
-    // استعادة الواجهة مبكراً قبل تحميل البيانات
+    // استعادة الواجهة مبكراً
     // =====================================
 
     if (savedLayout) {
@@ -5284,23 +5286,26 @@ async function showApp() {
       const invoiceFormState =
         savedLayout.visibility?.salesInvoiceForm;
 
+      const savedPurchase =
+        savedLayout.visibility?.purchasePanel;
+
       if (
+        savedSection === "purchasePanel" &&
+        savedPurchase &&
+        savedPurchase.hidden === false &&
+        canManagePurchases === true
+      ) {
+        // فتح المشتريات فوراً بدلاً من انتظار بقية التحميل
+        await openPurchases(true);
+        purchasesOpenedEarly = true;
+
+      } else if (
         savedSection === "salesInvoice" &&
         invoiceFormState &&
         invoiceFormState.hidden === false
       ) {
         openSalesInvoice();
-      }
 
-      const savedPurchase =
-        savedLayout.visibility?.purchasePanel;
-
-      if (
-        savedPurchase &&
-        savedPurchase.hidden !== true &&
-        canManagePurchases === true
-      ) {
-        // ستُحمّل المشتريات لاحقاً
       } else if (
         savedSection === "salesMenu" &&
         savedLayout.visibility?.salesMenu?.hidden === false
@@ -5319,6 +5324,13 @@ async function showApp() {
         $("salesMenu").classList.remove("hidden");
         $("appUserToolbar").classList.remove("hidden");
 
+      } else if (
+        savedSection === "purchasePanel" &&
+        canManagePurchases === true
+      ) {
+        await openPurchases(true);
+        purchasesOpenedEarly = true;
+
       } else {
         showMainMenu();
         $("appUserToolbar").classList.remove("hidden");
@@ -5326,7 +5338,7 @@ async function showApp() {
     }
 
     // =====================================
-    // تحميل بيانات النظام بعد إظهار الواجهة
+    // تحميل بيانات النظام
     // =====================================
 
     await OfflineStore.open();
@@ -5409,9 +5421,15 @@ async function showApp() {
       "ms"
     );
 
-    $("purchasePanel").classList.add("hidden");
+    // لا نخفِ نافذة المشتريات إذا استُعيدت مبكراً
+    if (!purchasesOpenedEarly) {
+      $("purchasePanel").classList.add("hidden");
+    }
 
-    if (canManagePurchases === true) {
+    if (
+      canManagePurchases === true &&
+      !purchasesOpenedEarly
+    ) {
       await loadPurchases();
     }
 
@@ -5430,21 +5448,10 @@ async function showApp() {
     await loadDailyReport();
 
     // =====================================
-    // استكمال فتح النوافذ التي تحتاج تحميل بيانات
+    // استكمال فتح النوافذ الأخرى
     // =====================================
 
     if (savedLayout) {
-      const savedPurchase =
-        savedLayout.visibility?.purchasePanel;
-
-      if (
-        savedPurchase &&
-        savedPurchase.hidden !== true &&
-        canManagePurchases === true
-      ) {
-        await openPurchases(true);
-      }
-
       const invoicesDialog =
         $("salesInvoicesSection");
 
@@ -5460,14 +5467,6 @@ async function showApp() {
         !devicesPanel.classList.contains("hidden")
       ) {
         await loadDevicesMonitor();
-      }
-
-    } else {
-      if (
-        savedSection === "purchasePanel" &&
-        canManagePurchases === true
-      ) {
-        await openPurchases(true);
       }
     }
 
