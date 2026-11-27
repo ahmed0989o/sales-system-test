@@ -5104,7 +5104,14 @@ async function showApp() {
 
       el.classList.add("hidden");
     });
-
+   // إظهار القائمة الرئيسية فوراً دون انتظار تحميل البيانات
+if (
+  !savedLayout ||
+  savedLayout.visibility?.mainMenu?.hidden === false
+) {
+  showMainMenu();
+  $("appUserToolbar").classList.remove("hidden");
+}
     $("userInfo").textContent =
       "الحساب: " + (currentUser.email || "مستخدم") +
       (isOwner(currentUser) ? " — مسؤول" : "");
