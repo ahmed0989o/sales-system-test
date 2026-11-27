@@ -8089,7 +8089,9 @@ if (!navigator.onLine) {
 }
   } catch (error) {
     console.error("Load purchases:", error);
-    setMessage("purchaseStatus", "تعذر تحميل المشتريات: " + error.message);
+    if ($("purchaseStatus")) {
+  setMessage("purchaseStatus", "تعذر تحميل المشتريات: " + error.message);
+}
   }
 }
   
