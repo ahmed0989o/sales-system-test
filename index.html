@@ -10996,6 +10996,90 @@ function closeSupplierModal() {
     button.disabled = false;
   }
 }
+  async function loadSupplierManagementList() {
+  const container = $("supplierListContainer");
+  const status = $("supplierListStatus");
+
+  if (!container || !status) return;
+
+  container.innerHTML = "";
+  status.textContent = "جارٍ تحميل الموردين...";
+
+  try {
+    const { data, error } = await db.rpc("get_suppliers", {
+      p_include_inactive: true
+    });
+
+    if (error) throw error;
+
+    const suppliers = data || [];
+
+    if (!suppliers.length) {
+      status.textContent = "لا يوجد موردون مسجلون";
+      return;
+    }
+
+    const table = document.createElement("table");
+    table.style.width = "100%";
+    table.style.borderCollapse = "collapse";
+
+    const headers = [
+      "اسم المورد",
+      "الهاتف",
+      "العنوان",
+      "الرصيد الافتتاحي",
+      "الحالة"
+    ];
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    headers.forEach(title => {
+      const th = document.createElement("th");
+      th.textContent = title;
+      th.style.padding = "10px";
+      th.style.borderBottom = "1px solid #ccc";
+      headerRow.appendChild(th);
+    });
+
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+
+    suppliers.forEach(supplier => {
+      const tr = document.createElement("tr");
+
+      const values = [
+        supplier.name,
+        supplier.phone || "—",
+        supplier.address || "—",
+        String(supplier.opening_balance ?? 0),
+        supplier.is_active ? "نشط" : "معطّل"
+      ];
+
+      values.forEach(value => {
+        const td = document.createElement("td");
+        td.textContent = value;
+        td.style.padding = "10px";
+        td.style.borderBottom = "1px solid #ddd";
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    container.appendChild(table);
+
+    status.textContent = `عدد الموردين: ${suppliers.length}`;
+
+  } catch (error) {
+    console.error("خطأ تحميل قائمة الموردين:", error);
+    status.textContent =
+      error.message || "تعذر تحميل قائمة الموردين";
+  }
+}
 function initializePurchaseInvoiceButtons() {
 const addButton = $("addPurchaseInvoiceItemButton");
 const saveButton = $("savePurchaseInvoiceButton");
