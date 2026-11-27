@@ -4923,6 +4923,113 @@ function getSavedAppLayoutState() {
   }
 }
 
+// ========================================
+// استعادة حالة واجهة النظام
+// ========================================
+
+async function restoreAppLayoutState(canManagePurchases) {
+  const state = getSavedAppLayoutState();
+
+  if (!state) return false;
+
+  const isAdmin = isOwner(currentUser);
+
+  // التحقق من صلاحية مراقبة الأجهزة
+  let canMonitorDevices = isAdmin;
+
+  if (!isAdmin && navigator.onLine) {
+    try {
+      const { data, error } = await db.rpc("has_app_permission", {
+        p_permission_key: "devices.monitor"
+      });
+
+      canMonitorDevices = !error && data === true;
+    } catch (error) {
+      canMonitorDevices = false;
+    }
+  }
+
+  const ownerOnlyIds = [
+    "ownerPanel",
+    "cashboxPanel",
+    "rentPanel",
+    "rentPaymentsPanel",
+    "userManagementPanel",
+    "returnsPanel"
+  ];
+
+  const permissionRules = {
+    purchasePanel: canManagePurchases === true,
+    devicesMonitorPanel: canMonitorDevices === true
+  };
+
+  // إخفاء جميع النوافذ أولاً
+  getAppLayoutElements().forEach(el => {
+    if (el.tagName === "DIALOG" && el.open) {
+      el.close();
+    }
+
+    if (
+      el.id !== "mainMenu" &&
+      el.id !== "salesMenu" &&
+      el.id !== "appUserToolbar"
+    ) {
+      el.classList.add("hidden");
+    }
+  });
+
+  // إزالة أزرار النوافذ المصغرة القديمة
+  document.querySelectorAll(
+    '#minimizedSections button[id^="restore-"]'
+  ).forEach(button => button.remove());
+
+  // استعادة الظهور والموقع والترتيب
+  const elements = getAppLayoutElements();
+
+  elements.forEach(el => {
+    const saved = state.visibility[el.id];
+    if (!saved) return;
+
+    if (ownerOnlyIds.includes(el.id) && !isAdmin) return;
+
+    if (
+      Object.prototype.hasOwnProperty.call(permissionRules, el.id) &&
+      permissionRules[el.id] !== true
+    ) return;
+
+    el.classList.toggle("hidden", saved.hidden === true);
+    el.style.display = saved.display || "";
+    el.style.zIndex = saved.zIndex || "";
+
+    if (el.tagName === "DIALOG" && saved.open === true) {
+      el.classList.remove("hidden");
+
+      try {
+        if (!el.open) el.showModal();
+      } catch (error) {
+        console.error("تعذر استعادة النافذة الحوارية:", el.id, error);
+      }
+    }
+  });
+
+  // إعادة إنشاء أزرار النوافذ المصغرة
+  (state.minimized || []).forEach(item => {
+    if (!item || !item.id || !item.id.startsWith("restore-")) return;
+
+    const sectionId = item.id.slice("restore-".length);
+    const section = document.getElementById(sectionId);
+
+    if (!section) return;
+    if (ownerOnlyIds.includes(sectionId) && !isAdmin) return;
+
+    const title = String(item.text || "").replace(/^استعادة\s*/, "");
+
+    minimizeSection(sectionId, title || sectionId);
+  });
+
+  return true;
+}
+
 async function showApp() {
   if (!currentUser || appLoading) return;
   appLoading = true;
