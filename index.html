@@ -10935,6 +10935,7 @@ function closeSupplierModal() {
   const modal = document.getElementById("supplierModal");
   if (modal?.open) modal.close();
 }
+  let editingSupplierId = null;
   async function saveSupplier() {
   const button = $("saveSupplierButton");
   const status = $("supplierModalStatus");
