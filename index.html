@@ -9337,6 +9337,8 @@ function closeSalesMenu() {
 
 // فتح فاتورة البيع
 function openSalesInvoice() {
+  localStorage.setItem("lastActiveSection", "salesInvoice");
+
   $("mainMenu").classList.remove("hidden");
   $("salesInvoicesSection").classList.add("hidden");
   $("salesMenu").classList.add("hidden");
@@ -9351,13 +9353,17 @@ function openSalesInvoice() {
   }
 
   $("salesInvoiceForm").classList.remove("hidden");
+
   prepareNextInvoiceNumber();
+
   document.querySelectorAll(
     '#appCustomizeToolsLayer .appCustomizeToolWindow[data-tool-name="بحث عن زبون"][data-section-id="salesPanel"]'
   ).forEach(function (toolWindow) {
     toolWindow.style.display = "block";
   });
-}// فتح المرتجعات
+}
+  
+  // فتح المرتجعات
 function openSalesReturns() {
   if (!isOwner(currentUser)) return;
 
