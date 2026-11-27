@@ -5332,8 +5332,11 @@ async function showApp() {
   } catch (error) {
     console.error("Loading app:", error);
 
-  } finally {
+    } finally {
     appLoading = false;
+
+    startAppLayoutPersistence();
+    saveAppLayoutState();
   }
 }
 
