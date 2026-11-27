@@ -7930,10 +7930,7 @@ try {
     userId: currentUser.id
   });
 
-  setMessage(
-    "purchaseStatus",
-    "تم حفظ عملية الشراء محلياً، جارٍ تجهيز المزامنة..."
-  );
+   purchaseMessage("تم حفظ عملية الشراء محلياً، جارٍ تجهيز المزامنة...");
 } catch (error) {
   console.error("Local purchase save:", error);
   setMessage(
