@@ -4827,18 +4827,40 @@ function getAppLayoutElements() {
   );
 }
 
+
 function saveAppLayoutState() {
   try {
     const elements = getAppLayoutElements();
 
     const visibility = {};
 
+    const floatingIds = [
+      "salesPanel",
+      "returnsPanel",
+      "customerPaymentsPanel",
+      "purchasePanel",
+      "cashboxPanel",
+      "rentPanel",
+      "userManagementPanel"
+    ];
+
     elements.forEach(el => {
+      const isFloating = floatingIds.includes(el.id);
+
       visibility[el.id] = {
         hidden: el.classList.contains("hidden"),
         display: el.style.display || "",
         open: el.tagName === "DIALOG" ? el.open : false,
-        zIndex: el.style.zIndex || ""
+        zIndex: el.style.zIndex || "",
+
+        maximized: isFloating &&
+          el.classList.contains("maximized"),
+
+        oldTop: isFloating ? el.dataset.oldTop || "" : "",
+        oldLeft: isFloating ? el.dataset.oldLeft || "" : "",
+        oldWidth: isFloating ? el.dataset.oldWidth || "" : "",
+        oldHeight: isFloating ? el.dataset.oldHeight || "" : "",
+        oldRight: isFloating ? el.dataset.oldRight || "" : ""
       };
     });
 
