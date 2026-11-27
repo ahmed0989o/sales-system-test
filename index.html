@@ -5319,12 +5319,6 @@ async function showApp() {
       }
     }
 
-    // بدء مراقبة تغييرات الواجهة وحفظها تلقائياً
-    startAppLayoutPersistence();
-
-    // حفظ الحالة الأولية بعد اكتمال الاستعادة
-    saveAppLayoutState();
-
     // حفظ أخير عند مغادرة الصفحة أو تحديثها
     if (!window.__appLayoutPagehideBound) {
       window.addEventListener(
