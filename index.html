@@ -5025,17 +5025,29 @@ async function restoreAppLayoutState(canManagePurchases) {
 el.style.display = saved.display || "";
 el.style.zIndex = saved.zIndex || "";
 
-// استعادة حالة التكبير للنوافذ العائمة
-if (saved.maximized === true) {
-  el.dataset.oldTop = saved.oldTop || "";
-  el.dataset.oldLeft = saved.oldLeft || "";
-  el.dataset.oldWidth = saved.oldWidth || "";
-  el.dataset.oldHeight = saved.oldHeight || "";
-  el.dataset.oldRight = saved.oldRight || "";
+// استعادة حالة التكبير للنوافذ العائمة فقط
+const floatingIds = [
+  "salesPanel",
+  "returnsPanel",
+  "customerPaymentsPanel",
+  "purchasePanel",
+  "cashboxPanel",
+  "rentPanel",
+  "userManagementPanel"
+];
 
-  el.classList.add("maximized");
-} else {
-  el.classList.remove("maximized");
+if (floatingIds.includes(el.id)) {
+  if (saved.maximized === true) {
+    el.dataset.oldTop = saved.oldTop || "";
+    el.dataset.oldLeft = saved.oldLeft || "";
+    el.dataset.oldWidth = saved.oldWidth || "";
+    el.dataset.oldHeight = saved.oldHeight || "";
+    el.dataset.oldRight = saved.oldRight || "";
+
+    el.classList.add("maximized");
+  } else {
+    el.classList.remove("maximized");
+  }
 }
 
     if (el.tagName === "DIALOG" && saved.open === true) {
