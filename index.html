@@ -7897,10 +7897,7 @@ try {
   allowed = await checkPurchasePermission();
 } catch (error) {
   console.error("Purchase permission:", error);
-  return setMessage(
-    "purchaseStatus",
-    "تعذر التحقق من صلاحية المشتريات."
-  );
+  return purchaseMessage("تعذر التحقق من صلاحية المشتريات.");
 }
 
 if (!allowed) {
