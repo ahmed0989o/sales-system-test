@@ -8351,30 +8351,63 @@ async function saveRentChange() {
 }
 
 
+
 async function init() {
-  // إخفاء واجهة النظام عند فتح الصفحة
+  if (window.__salesSystemInitStarted) return;
+  window.__salesSystemInitStarted = true;
+
   $("appPanel").classList.add("hidden");
-
-  // إظهار شاشة تسجيل الدخول
   $("loginPanel").classList.remove("hidden");
-
   $("reportDate").value = todayInBaghdad();
 
-  if (!window.supabase || typeof window.supabase.createClient !== "function") {
+  if (
+    !window.supabase ||
+    typeof window.supabase.createClient !== "function"
+  ) {
+    window.__salesSystemInitStarted = false;
     showLogin("تعذر تحميل مكتبة Supabase. تحقق من الإنترنت وافتح الصفحة مجددًا.");
     return;
   }
 
-
   try {
-    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    db = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    let authReady = false;
+    let handledUserId = null;
 
     db.auth.onAuthStateChange((event, session) => {
+      if (event === "TOKEN_REFRESHED") return;
+
+      if (event === "INITIAL_SESSION") {
+        authReady = true;
+      }
+
       setTimeout(async () => {
+        if (!authReady) return;
+
         if (session?.user) {
-          currentUser = session.user;
+          const user = session.user;
+
+          if (
+            handledUserId === user.id &&
+            currentUser?.id === user.id &&
+            !appLoading
+          ) {
+            return;
+          }
+
+          if (appLoading) return;
+
+          handledUserId = user.id;
+          currentUser = user;
+
           await showApp();
+
         } else if (event === "SIGNED_OUT") {
+          handledUserId = null;
           currentUser = null;
           showLogin();
         }
@@ -8382,65 +8415,26 @@ async function init() {
     });
 
     const { data, error } = await db.auth.getSession();
+
     if (error) throw error;
 
     if (data.session?.user) {
       currentUser = data.session.user;
-      await showApp();
+
+      if (!handledUserId) {
+        handledUserId = currentUser.id;
+        await showApp();
+      }
     } else {
       showLogin();
     }
+
   } catch (error) {
     console.error("Initialization:", error);
+    window.__salesSystemInitStarted = false;
     showLogin("تعذر تشغيل النظام: " + error.message);
   }
 }
-window.addEventListener("online", async function () {
-  console.log("عاد الاتصال بالإنترنت؛ بدء تحديث البيانات والمزامنة.");
-
-  if (!currentUser || !db || !window.OfflineStore) return;
-
-  try {
-   await Promise.all([
-  syncPendingCustomerPayments(),
-  syncPendingSales(),
-  syncPendingPurchases()
-]);
-
-    await Promise.all([
-      loadProducts(),
-      loadCustomers()
-    ]);
-
-    console.log("تم تحديث المنتجات والزبائن والأرصدة.");
-  } catch (error) {
-    console.error("خطأ تحديث البيانات بعد عودة الإنترنت:", error);
-  }
-});
-
-setInterval(function () {
-  syncPendingSales();
-  syncPendingPurchases();
-  syncPendingCustomerPayments();
-}, 30000);
-window.addEventListener("error", function (event) {
-  const status = document.getElementById("loginStatus");
-  if (status) {
-    status.textContent = "خطأ JavaScript: " + event.message;
-  }
-});
-
-window.login = login;
-
-window.addEventListener("unhandledrejection", function (event) {
-  const status = document.getElementById("loginStatus");
-  if (status) {
-    status.textContent =
-      "خطأ أثناء التشغيل: " +
-      (event.reason?.message || String(event.reason));
-  }
-});
-let saleSyncRunning = false;
 
 async function syncPendingSales() {
   if (saleSyncRunning) return;
