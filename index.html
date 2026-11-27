@@ -7901,10 +7901,7 @@ try {
 }
 
 if (!allowed) {
-  return setMessage(
-    "purchaseStatus",
-    "غير مصرح لك بإدارة المشتريات."
-  );
+  return purchaseMessage("غير مصرح لك بإدارة المشتريات.");
 }
   const productId = $("purchaseProduct").value;
   const quantity = Number($("purchaseQuantity").value);
