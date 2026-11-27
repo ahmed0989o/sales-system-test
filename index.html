@@ -8020,7 +8020,9 @@ async function loadPurchases() {
 const allowed = await checkPurchasePermission();
 
 if (!allowed) {
-  setMessage("purchaseStatus", "غير مصرح لك بإدارة المشتريات.");
+  if ($("purchaseStatus")) {
+    setMessage("purchaseStatus", "غير مصرح لك بإدارة المشتريات.");
+  }
   return;
 }
 
