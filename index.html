@@ -4987,6 +4987,8 @@ async function restoreAppLayoutState(canManagePurchases) {
   const elements = getAppLayoutElements();
 
   elements.forEach(el => {
+    if (el.id === "saleDetailsPanel") return;
+
     const saved = state.visibility[el.id];
     if (!saved) return;
 
