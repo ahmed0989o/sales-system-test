@@ -10936,6 +10936,29 @@ function closeSupplierModal() {
   if (modal?.open) modal.close();
 }
   let editingSupplierId = null;
+  let editingSupplierActive = true;
+
+function editSupplier(supplier) {
+  editingSupplierId = supplier.id;
+  editingSupplierActive = supplier.is_active;
+
+  $("supplierName").value = supplier.name || "";
+  $("supplierPhone").value = supplier.phone || "";
+  $("supplierAddress").value = supplier.address || "";
+  $("supplierNotes").value = supplier.notes || "";
+  $("supplierOpeningBalance").value =
+    String(supplier.opening_balance ?? 0);
+
+  $("supplierModalStatus").textContent =
+    "أنت الآن تعدّل بيانات المورد: " + supplier.name;
+
+  $("saveSupplierButton").textContent = "💾 حفظ التعديلات";
+
+  const modal = $("supplierModal");
+  if (!modal.open) modal.showModal();
+
+  $("supplierName").focus();
+}
   async function saveSupplier() {
   const button = $("saveSupplierButton");
   const status = $("supplierModalStatus");
