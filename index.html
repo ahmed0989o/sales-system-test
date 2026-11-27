@@ -9873,7 +9873,9 @@ async function loadPurchaseInvoiceSuppliers() {
   select.innerHTML = '<option value="">اختر المورد</option>';
 
   try {
-    const { data, error } = await db.rpc("get_suppliers");
+    const { data, error } = await db.rpc("get_suppliers", {
+  p_include_inactive: false
+});
 
     if (error) throw error;
 
