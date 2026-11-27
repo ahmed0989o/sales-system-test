@@ -7908,8 +7908,8 @@ if (!allowed) {
 }
 
   if (!Number.isInteger(quantity) || quantity < 1) {
-    return setMessage("purchaseStatus", "أدخل كمية صحيحة.");
-  }
+  return purchaseMessage("أدخل كمية صحيحة.");
+}
 
   if (!Number.isFinite(unitCost) || unitCost < 0) {
     return setMessage("purchaseStatus", "أدخل تكلفة وحدة صحيحة.");
