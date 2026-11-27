@@ -5218,11 +5218,19 @@ if (
       }
     }, 1000);
 
-    // تحميل البيانات الأساسية
-    await Promise.all([
-      loadProducts(),
-      loadCustomers()
-    ]);
+   // تحميل البيانات الأساسية وقياس الزمن
+const dataLoadStart = performance.now();
+
+await Promise.all([
+  loadProducts(),
+  loadCustomers()
+]);
+
+console.log(
+  "زمن تحميل المنتجات والعملاء:",
+  Math.round(performance.now() - dataLoadStart),
+  "ms"
+);
 
     // التحقق من صلاحية المشتريات
     const canManagePurchases =
