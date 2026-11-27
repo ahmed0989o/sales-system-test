@@ -5215,36 +5215,29 @@ if (floatingIds.includes(el.id)) {
   return true;
 }
 
-
 async function showApp() {
   if (!currentUser || appLoading) return;
   appLoading = true;
 
+  let layoutReady = false;
+
   try {
-    // إظهار التطبيق وإخفاء شاشة الدخول
     $("loginPanel").classList.add("hidden");
     $("appPanel").classList.remove("hidden");
 
-    // قراءة حالة الواجهة المحفوظة قبل إظهار أي نافذة
     const savedLayout = getSavedAppLayoutState();
     const savedSection = localStorage.getItem("lastActiveSection");
 
-    // إخفاء جميع الواجهات أولاً لمنع ظهورها أثناء التحميل
     getAppLayoutElements().forEach(el => {
-      if (el.tagName === "DIALOG" && el.open) {
-        el.close();
-      }
-
+      if (el.tagName === "DIALOG" && el.open) el.close();
       el.classList.add("hidden");
     });
-   // إظهار القائمة الرئيسية فوراً دون انتظار تحميل البيانات
-if (
-  !savedLayout ||
-  savedLayout.visibility?.mainMenu?.hidden === false
-) {
-  showMainMenu();
-  $("appUserToolbar").classList.remove("hidden");
-}
+
+    if (!savedLayout) {
+      showMainMenu();
+      $("appUserToolbar").classList.remove("hidden");
+    }
+
     $("userInfo").textContent =
       "الحساب: " + (currentUser.email || "مستخدم") +
       (isOwner(currentUser) ? " — مسؤول" : "");
@@ -5264,7 +5257,6 @@ if (
     $("returnsPanel").classList.add("hidden");
     $("reportDate").value = todayInBaghdad();
 
-    // التحقق من صلاحية مراقبة الأجهزة
     const devicesButton = $("devicesMonitorMenuButton");
 
     if (devicesButton) {
@@ -5280,13 +5272,9 @@ if (
         canMonitorDevices = data === true;
       }
 
-      devicesButton.classList.toggle(
-        "hidden",
-        !canMonitorDevices
-      );
+      devicesButton.classList.toggle("hidden", !canMonitorDevices);
     }
 
-    // تهيئة التخزين المحلي والجهاز
     await OfflineStore.open();
 
     const currentDeviceId = await OfflineStore.getDeviceId();
@@ -5304,7 +5292,6 @@ if (
     await reportCurrentDevice();
     await OfflineStore.recoverSyncingOperations();
 
-    // المزامنة في الخلفية
     setTimeout(async () => {
       try {
         await Promise.all([
@@ -5316,9 +5303,7 @@ if (
         const stats = await OfflineStore.countPending();
 
         if (!stats) {
-          throw new Error(
-            "تعذر قراءة إحصائيات العمليات المحلية"
-          );
+          throw new Error("تعذر قراءة إحصائيات العمليات المحلية");
         }
 
         const pending = Number(stats.pending || 0);
@@ -5342,32 +5327,25 @@ if (
 
           await reportCurrentDevice();
         }
-
       } catch (error) {
-        console.error(
-          "تعذر تسجيل اكتمال مزامنة الجهاز:",
-          error
-        );
+        console.error("تعذر تسجيل اكتمال مزامنة الجهاز:", error);
       }
     }, 1000);
 
-   // تحميل البيانات الأساسية وقياس الزمن
-const dataLoadStart = performance.now();
+    const dataLoadStart = performance.now();
 
-await Promise.all([
-  loadProducts(),
-  loadCustomers()
-]);
+    await Promise.all([
+      loadProducts(),
+      loadCustomers()
+    ]);
 
-console.log(
-  "زمن تحميل المنتجات والعملاء:",
-  Math.round(performance.now() - dataLoadStart),
-  "ms"
-);
+    console.log(
+      "زمن تحميل المنتجات والعملاء:",
+      Math.round(performance.now() - dataLoadStart),
+      "ms"
+    );
 
-    // التحقق من صلاحية المشتريات
-    const canManagePurchases =
-      await checkPurchasePermission();
+    const canManagePurchases = await checkPurchasePermission();
 
     $("purchasePanel").classList.add("hidden");
 
@@ -5375,7 +5353,6 @@ console.log(
       await loadPurchases();
     }
 
-    // تحميل بيانات المالك
     if (isOwner(currentUser)) {
       await loadCashbox();
 
@@ -5389,13 +5366,23 @@ console.log(
 
     await loadDailyReport();
 
-    // =====================================
-    // استعادة حالة الواجهة المحفوظة
-    // =====================================
+    if (savedLayout) {
+      // استعادة الحالة المحفوظة دائماً، بغض النظر عن حالة القائمة الرئيسية
+      await restoreAppLayoutState(canManagePurchases);
 
-    if (savedLayout && savedLayout.visibility?.mainMenu?.hidden === false) {
+      // استعادة فاتورة البيع إذا كانت آخر صفحة محفوظة
+      const invoiceFormState =
+        savedLayout.visibility?.salesInvoiceForm;
 
-      // تهيئة نافذة المشتريات قبل استعادة ظهورها
+      if (
+        savedSection === "salesInvoice" &&
+        invoiceFormState &&
+        invoiceFormState.hidden === false
+      ) {
+        openSalesInvoice();
+      }
+
+      // استعادة المشتريات إذا كانت نافذتها محفوظة ظاهرة
       const savedPurchase =
         savedLayout.visibility?.purchasePanel;
 
@@ -5407,42 +5394,22 @@ console.log(
         await openPurchases(true);
       }
 
-      // استعادة النوافذ والصفحات الفرعية
-      await restoreAppLayoutState(canManagePurchases);
-
-if (
-  !savedLayout.visibility?.salesMenu ||
-  savedLayout.visibility.salesMenu.hidden === true
-) {
-  showMainMenu();
-  $("appUserToolbar").classList.remove("hidden");
-}
-
-      // استعادة تجهيز فاتورة البيع إذا كانت ظاهرة
-      const salesPanelState =
-        savedLayout.visibility?.salesPanel;
-
-      const invoiceFormState =
-        savedLayout.visibility?.salesInvoiceForm;
-
-      if (
-        salesPanelState &&
-        salesPanelState.hidden !== true &&
-        invoiceFormState &&
-        invoiceFormState.hidden !== true
+      // استعادة قائمة المبيعات إذا كانت آخر صفحة محفوظة
+      else if (
+        savedSection === "salesMenu" &&
+        savedLayout.visibility?.salesMenu?.hidden === false
       ) {
-        await prepareNextInvoiceNumber();
+        $("mainMenu").classList.add("hidden");
+        $("salesMenu").classList.remove("hidden");
+        $("appUserToolbar").classList.remove("hidden");
       }
 
-      // تحديث سجل المبيعات إذا كانت نافذته مفتوحة
-      const invoicesDialog =
-        $("salesInvoicesSection");
+      const invoicesDialog = $("salesInvoicesSection");
 
       if (invoicesDialog && invoicesDialog.open) {
         await viewSalesInvoices();
       }
 
-      // إعادة تحميل مراقبة الأجهزة إذا كانت نافذتها مفتوحة
       const devicesPanel = $("devicesMonitorPanel");
 
       if (
@@ -5453,8 +5420,7 @@ if (
       }
 
     } else {
-
-      // لا توجد حالة محفوظة: استخدام طريقة التشغيل القديمة
+      // لا توجد حالة محفوظة: استخدم آخر قسم معروف
       if (
         savedSection === "purchasePanel" &&
         canManagePurchases === true
@@ -5475,24 +5441,23 @@ if (
       }
     }
 
-    // حفظ أخير عند مغادرة الصفحة أو تحديثها
-    if (!window.__appLayoutPagehideBound) {
-      window.addEventListener(
-        "pagehide",
-        saveAppLayoutState
-      );
+    layoutReady = true;
 
+    if (!window.__appLayoutPagehideBound) {
+      window.addEventListener("pagehide", saveAppLayoutState);
       window.__appLayoutPagehideBound = true;
     }
 
   } catch (error) {
     console.error("Loading app:", error);
 
-    } finally {
+  } finally {
     appLoading = false;
 
-    startAppLayoutPersistence();
-    saveAppLayoutState();
+    if (layoutReady) {
+      startAppLayoutPersistence();
+      saveAppLayoutState();
+    }
   }
 }
 
