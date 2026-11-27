@@ -7903,13 +7903,9 @@ try {
 if (!allowed) {
   return purchaseMessage("غير مصرح لك بإدارة المشتريات.");
 }
-  const productId = $("purchaseProduct").value;
-  const quantity = Number($("purchaseQuantity").value);
-  const unitCost = Number($("purchaseUnitCost").value);
-
   if (!productId) {
-    return setMessage("purchaseStatus", "اختر المنتج.");
-  }
+  return purchaseMessage("اختر المنتج.");
+}
 
   if (!Number.isInteger(quantity) || quantity < 1) {
     return setMessage("purchaseStatus", "أدخل كمية صحيحة.");
