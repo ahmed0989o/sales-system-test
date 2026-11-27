@@ -10889,7 +10889,18 @@ const saveButton = $("savePurchaseInvoiceButton");
 const quickButton = $("quickPurchaseEntryButton");
 const barcodeButton = $("purchaseBarcodeButton");
 const searchButton = $("purchaseInvoiceSearchButton");
+const openSupplierButton = $("openSupplierModalButton");
+const closeSupplierButton = $("closeSupplierModalButton");
 
+if (openSupplierButton && !openSupplierButton.dataset.bound) {
+  openSupplierButton.addEventListener("click", openSupplierModal);
+  openSupplierButton.dataset.bound = "true";
+}
+
+if (closeSupplierButton && !closeSupplierButton.dataset.bound) {
+  closeSupplierButton.addEventListener("click", closeSupplierModal);
+  closeSupplierButton.dataset.bound = "true";
+}
 if (searchButton && !searchButton.dataset.bound) {
   searchButton.addEventListener("click", searchPurchaseInvoice);
   searchButton.dataset.bound = "true";
