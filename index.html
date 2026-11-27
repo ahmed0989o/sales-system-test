@@ -8084,7 +8084,9 @@ if (!navigator.onLine) {
 
     table.appendChild(tbody);
     $("purchaseDetails").replaceChildren(table);
-    setMessage("purchaseStatus", "تم تحميل سجل المشتريات.");
+    if ($("purchaseStatus")) {
+  setMessage("purchaseStatus", "تم تحميل سجل المشتريات.");
+}
   } catch (error) {
     console.error("Load purchases:", error);
     setMessage("purchaseStatus", "تعذر تحميل المشتريات: " + error.message);
