@@ -10964,6 +10964,12 @@ if (closeSupplierButton && !closeSupplierButton.dataset.bound) {
   closeSupplierButton.addEventListener("click", closeSupplierModal);
   closeSupplierButton.dataset.bound = "true";
 }
+  const saveSupplierButton = $("saveSupplierButton");
+
+if (saveSupplierButton && !saveSupplierButton.dataset.bound) {
+  saveSupplierButton.addEventListener("click", saveSupplier);
+  saveSupplierButton.dataset.bound = "true";
+}
 if (searchButton && !searchButton.dataset.bound) {
   searchButton.addEventListener("click", searchPurchaseInvoice);
   searchButton.dataset.bound = "true";
