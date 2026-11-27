@@ -4807,21 +4807,26 @@ async function showApp() {
 
   $("loginPanel").classList.add("hidden");
   $("appPanel").classList.remove("hidden");
-  const savedSection =
+ const savedSection =
   localStorage.getItem("lastActiveSection");
 
 if (savedSection === "purchasePanel") {
   $("mainMenu").classList.add("hidden");
   $("appUserToolbar").classList.add("hidden");
-} else if (savedSection === "salesMenu") {
+
+} else if (
+  savedSection === "salesMenu" ||
+  savedSection === "salesInvoice"
+) {
   $("mainMenu").classList.add("hidden");
   $("salesMenu").classList.add("hidden");
   $("appUserToolbar").classList.remove("hidden");
+
 } else {
   $("appUserToolbar").classList.remove("hidden");
   showMainMenu();
 }
-    $("userInfo").textContent =
+  $("userInfo").textContent =
     "الحساب: " + (currentUser.email || "مستخدم") +
     (isOwner(currentUser) ? " — مسؤول" : "");
 
