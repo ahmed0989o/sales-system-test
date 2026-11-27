@@ -7882,7 +7882,11 @@ async function savePurchase() {
   console.log("تم استدعاء savePurchase");
 
   const button = $("savePurchaseButton");
-
+const purchaseMessage = (message) => {
+  if ($("purchaseStatus")) {
+    setMessage("purchaseStatus", message);
+  }
+};
   if (!currentUser) {
   return setMessage("purchaseStatus", "يجب تسجيل الدخول أولاً.");
 }
