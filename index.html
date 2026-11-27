@@ -7942,10 +7942,7 @@ try {
   if (!navigator.onLine) {
   await loadProducts();
 
-    setMessage(
-      "purchaseStatus",
-      "تم حفظ المشتريات محلياً. ستتم مزامنتها عند عودة الإنترنت."
-    );
+        purchaseMessage("تم حفظ المشتريات محلياً. ستتم مزامنتها عند عودة الإنترنت.");
     $("purchaseProduct").value = "";
     $("purchaseQuantity").value = "1";
     $("purchaseUnitCost").value = "";
