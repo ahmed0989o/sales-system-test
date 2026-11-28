@@ -10164,19 +10164,29 @@ function selectPurchaseSupplier(supplierId) {
   );
 }
 
-
 function initializePurchaseSupplierSearch() {
   const input = $("purchaseSupplierSearch");
   const results = $("purchaseSupplierResults");
 
-  if (!input || !results || input.dataset.bound === "true") return;
+  if (!input || !results) return;
 
-  input.addEventListener("input", renderPurchaseSupplierResults);
+  if (input.dataset.bound === "true") return;
 
+  // عرض الموردين عند الضغط أو التركيز على الحقل
   input.addEventListener("focus", () => {
     renderPurchaseSupplierResults();
   });
 
+  input.addEventListener("click", () => {
+    renderPurchaseSupplierResults();
+  });
+
+  // تحديث النتائج أثناء الكتابة
+  input.addEventListener("input", () => {
+    renderPurchaseSupplierResults();
+  });
+
+  // إخفاء القائمة عند الضغط خارج الحقل والقائمة
   document.addEventListener("click", event => {
     if (
       !input.contains(event.target) &&
