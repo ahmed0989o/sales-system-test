@@ -10097,11 +10097,17 @@ function renderPurchaseSupplierResults() {
 
   results.replaceChildren();
 
+  // إخفاء القائمة إذا كان حقل البحث فارغاً
+  if (!query) {
+    results.style.display = "none";
+    return;
+  }
+
   // الموردون النشطون فقط
   const suppliers = (window.purchaseInvoiceSuppliers || [])
     .filter(supplier => supplier.is_active !== false);
 
-  // البحث في كامل الاسم، وليس بدايته فقط
+  // البحث في كامل الاسم
   const matches = suppliers.filter(supplier => {
     const name = String(supplier.name || "").toLocaleLowerCase("ar");
     return name.includes(query);
