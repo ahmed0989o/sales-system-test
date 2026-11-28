@@ -11124,6 +11124,7 @@ function editSupplier(supplier) {
 }
   
 
+
 async function saveSupplier() {
   const button = $("saveSupplierButton");
   const status = $("supplierModalStatus");
@@ -11192,9 +11193,24 @@ async function saveSupplier() {
     await loadSupplierManagementList();
 
     const select = $("purchaseSupplier");
+    const searchInput = $("purchaseSupplierSearch");
 
     if (editingSupplierActive || !isEditing) {
       select.value = String(supplierId);
+
+      const supplier = (window.purchaseInvoiceSuppliers || []).find(
+        item => String(item.id) === String(supplierId)
+      );
+
+      if (searchInput && supplier) {
+        searchInput.value = supplier.name;
+      }
+    }
+
+    const results = $("purchaseSupplierResults");
+
+    if (results) {
+      results.style.display = "none";
     }
 
     $("purchaseInvoiceStatus").textContent = isEditing
@@ -11210,8 +11226,10 @@ async function saveSupplier() {
 
   } catch (error) {
     console.error("خطأ حفظ المورد:", error);
+
     status.textContent =
       error.message || "تعذر حفظ المورد";
+
   } finally {
     button.disabled = false;
   }
