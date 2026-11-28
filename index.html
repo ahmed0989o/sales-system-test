@@ -1810,13 +1810,53 @@ font-size:16px;
 </div>
   
 <!-- زر فتح سجل المشتريات أسفل الفاتورة -->
-<button
-  type="button"
-  class="secondary"
-  style="width:100%; margin-top:15px;"
-  onclick="document.getElementById('purchaseHistoryModal').showModal()">
-  📋 سجل المشتريات
-</button>
+
+<div class="purchase-invoice-toolbar" style="display:flex; flex-direction:column; gap:10px;">
+
+  <!-- المجموعة الأولى: الحفظ وسجل المشتريات -->
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button type="button" id="savePurchaseInvoiceButton">
+      💾 حفظ الفاتورة
+    </button>
+
+    <button
+      type="button"
+      class="secondary"
+      onclick="document.getElementById('purchaseHistoryModal').showModal()">
+      📋 سجل المشتريات
+    </button>
+  </div>
+
+  <!-- الأزرار الإضافية -->
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button type="button" id="addPurchaseInvoiceItemButton">
+      إضافة مادة
+    </button>
+
+    <button type="button" id="quickPurchaseEntryButton">
+      إدخال سريع
+    </button>
+
+    <button type="button" id="purchaseBarcodeButton">
+      باركود
+    </button>
+  </div>
+
+  <!-- المجموعة الثانية: فاتورة جديدة والبحث -->
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button
+      type="button"
+      id="newPurchaseInvoiceButton"
+      onclick="clearPurchaseInvoice()">
+      فاتورة جديدة
+    </button>
+
+    <button type="button" id="purchaseInvoiceSearchButton">
+      بحث
+    </button>
+  </div>
+
+</div>
 
 <!-- نافذة سجل المشتريات -->
 <dialog id="purchaseHistoryModal" dir="rtl">
