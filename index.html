@@ -9999,22 +9999,19 @@ async function openPurchases(restore = false) {
     return;
   }
 
-  // إخفاء القائمة الرئيسية وقائمة المبيعات
   $("mainMenu").classList.add("hidden");
   $("salesMenu").classList.add("hidden");
 
-  // إبقاء شريط المستخدم ظاهراً
   $("appUserToolbar").classList.remove("hidden");
-
-  // إظهار نافذة المشتريات
   $("purchasePanel").classList.remove("hidden");
 
-  // تسجيل القسم الحالي
   localStorage.setItem("lastActiveSection", "purchasePanel");
 
-  // تحميل بيانات المشتريات
   await loadPurchases();
   await loadPurchaseInvoiceSuppliers();
+
+  // تفعيل البحث الكتابي عن المورد
+  initializePurchaseSupplierSearch();
 
   initializePurchaseInvoiceButtons();
   initializePurchaseInvoiceDate();
@@ -10025,10 +10022,8 @@ async function openPurchases(restore = false) {
     console.error("تعذر تهيئة رقم فاتورة المشتريات:", error);
   }
 
-  // حفظ حالة الواجهة بعد اكتمال الفتح
   saveAppLayoutState();
-}
-  
+}  
 async function loadPurchaseInvoiceSuppliers() {
   const select = document.getElementById("purchaseSupplier");
   const searchInput = document.getElementById("purchaseSupplierSearch");
