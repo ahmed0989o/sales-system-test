@@ -1703,10 +1703,22 @@ font-size:16px;
 
   <hr>
 
-  <div class="purchase-invoice-toolbar">
+ <div class="purchase-invoice-toolbar" style="display:flex; flex-direction:column; gap:10px;">
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
     <button type="button" id="savePurchaseInvoiceButton">
-  💾 حفظ الفاتورة
-</button>
+      💾 حفظ الفاتورة
+    </button>
+
+    <button
+      type="button"
+      class="secondary"
+      onclick="document.getElementById('purchaseHistoryModal').showModal()">
+      📋 سجل المشتريات
+    </button>
+  </div>
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
     <button type="button" id="addPurchaseInvoiceItemButton">
       إضافة مادة
     </button>
@@ -1714,14 +1726,18 @@ font-size:16px;
     <button type="button" id="quickPurchaseEntryButton">
       إدخال سريع
     </button>
-<button
-  type="button"
-  id="newPurchaseInvoiceButton"
-  onclick="clearPurchaseInvoice()">
-  فاتورة جديدة
-</button>
+
     <button type="button" id="purchaseBarcodeButton">
       باركود
+    </button>
+  </div>
+
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button
+      type="button"
+      id="newPurchaseInvoiceButton"
+      onclick="clearPurchaseInvoice()">
+      فاتورة جديدة
     </button>
 
     <button type="button" id="purchaseInvoiceSearchButton">
@@ -1729,6 +1745,7 @@ font-size:16px;
     </button>
   </div>
 
+</div>
   <div class="tablewrap">
     <table id="purchaseInvoiceItemsTable">
       <thead>
