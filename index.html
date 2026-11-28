@@ -11936,17 +11936,35 @@ const syncStatusLabel =
             <div>العمليات المعلقة: ${device.pending_operations ?? 0}</div>
             <div class="device-sync-status device-sync-${device.sync_status || "unknown"}">حالة المزامنة: ${syncStatusLabel}</div>
                         <div>آخر ظهور: ${
-              device.last_seen_at
-                ? new Date(device.last_seen_at).toLocaleString("en-GB")
-                : "لم يتصل بعد"
-            }</div>
+  device.last_seen_at
+    ? new Date(device.last_seen_at).toLocaleString("en-GB", {
+        timeZone: "Asia/Baghdad",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      })
+    : "لم يتصل بعد"
+}</div>
 
-            <div>آخر مزامنة: ${
-              device.last_sync_at
-                ? new Date(device.last_sync_at).toLocaleString("en-GB")
-                : "لم تتم المزامنة بعد"
-            }</div>
-          </div>
+<div>آخر مزامنة: ${
+  device.last_sync_at
+    ? new Date(device.last_sync_at).toLocaleString("en-GB", {
+        timeZone: "Asia/Baghdad",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+      })
+    : "لم تتم المزامنة بعد"
+}</div>
+</div>
 
           <div class="device-card-id">
             ${device.device_id}
