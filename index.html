@@ -5247,6 +5247,7 @@ if (floatingIds.includes(el.id)) {
 }
 
 
+
 async function showApp() {
   if (!currentUser || appLoading) return;
 
@@ -5317,16 +5318,11 @@ async function showApp() {
       const invoiceFormState =
         savedLayout.visibility?.salesInvoiceForm;
 
-      const savedPurchase =
-        savedLayout.visibility?.purchasePanel;
-
       if (
         savedSection === "purchasePanel" &&
-        savedPurchase &&
-        savedPurchase.hidden === false &&
         canManagePurchases === true
       ) {
-        // فتح المشتريات فوراً بدلاً من انتظار بقية التحميل
+        // فتح المشتريات فوراً حسب آخر قسم محفوظ
         await openPurchases(true);
         purchasesOpenedEarly = true;
 
