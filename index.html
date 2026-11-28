@@ -3884,7 +3884,16 @@ function escapeDebtHtml(value) {
   info.innerHTML = `
     <h3>فاتورة رقم ${sale.invoice_number || sale.id}</h3>
     <p>الزبون: ${sale.customer_name || "—"}</p>
-    <p>التاريخ: ${new Date(sale.created_at).toLocaleString("en-GB")}</p>
+    <p>التاريخ: ${new Date(sale.created_at).toLocaleString("en-GB", {
+  timeZone: "Asia/Baghdad",
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true
+})}</p>
     <p>طريقة الدفع: ${sale.payment_method || "—"}</p>
     <p>إجمالي الفاتورة: ${money(sale.total_amount)} د.ع</p>
     <p>المبلغ الواصل: ${money(sale.amount_received)} د.ع</p>
