@@ -1632,21 +1632,52 @@ font-size:16px;
     </div>
 
     <div>
-  <label>المورد</label>
+  <label for="purchaseSupplierSearch">المورد</label>
 
   <div style="display:flex; gap:8px; align-items:center;">
-    <select id="purchaseSupplier" style="flex:1; min-width:0;">
-      <option value="">اختر المورد</option>
-    </select>
+    <div style="position:relative; flex:1; min-width:0;">
+
+      <input
+        id="purchaseSupplierSearch"
+        type="text"
+        placeholder="اكتب اسم المورد للبحث..."
+        autocomplete="off"
+        style="width:100%;"
+      >
+
+      <div
+        id="purchaseSupplierResults"
+        style="
+          display:none;
+          position:absolute;
+          top:100%;
+          right:0;
+          left:0;
+          z-index:10000;
+          background:var(--panel-bg, white);
+          border:1px solid #ccc;
+          border-radius:8px;
+          max-height:220px;
+          overflow-y:auto;
+          box-shadow:0 4px 12px rgba(0,0,0,.15);
+        "
+      ></div>
+
+    </div>
 
     <button
       type="button"
       id="openSupplierModalButton"
       class="secondary"
-      style="white-space:nowrap;">
+      style="white-space:nowrap;"
+    >
       ＋ مورد جديد
     </button>
   </div>
+
+  <select id="purchaseSupplier" style="display:none;">
+    <option value="">اختر المورد</option>
+  </select>
 </div>
 
     <div>
