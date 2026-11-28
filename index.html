@@ -11443,19 +11443,20 @@ calculatePurchaseInvoiceTotals();
       }
     });
 }
-  async function searchPurchaseInvoice() {
+  
+async function searchPurchaseInvoice() {
   const invoiceNumber = prompt("أدخل رقم فاتورة المشتريات:");
   if (!invoiceNumber || !invoiceNumber.trim()) return;
 
   const { data: invoices, error: searchError } = await db.rpc(
-  "get_purchase_invoices",
-  {
-    p_from_date: null,
-    p_to_date: null,
-    p_supplier_id: null,
-    p_search: invoiceNumber.trim()
-  }
-);
+    "get_purchase_invoices",
+    {
+      p_from_date: null,
+      p_to_date: null,
+      p_supplier_id: null,
+      p_search: invoiceNumber.trim()
+    }
+  );
 
   if (searchError) {
     alert("خطأ في البحث: " + searchError.message);
@@ -11463,17 +11464,17 @@ calculatePurchaseInvoiceTotals();
   }
 
   const invoice = invoices?.find(
-  item => item.invoice_number === invoiceNumber.trim()
-);
+    item => item.invoice_number === invoiceNumber.trim()
+  );
 
-if (!invoice) {
-  alert("لم يتم العثور على رقم الفاتورة المطابق.");
-  return;
-}
+  if (!invoice) {
+    alert("لم يتم العثور على رقم الفاتورة المطابق.");
+    return;
+  }
 
   const { data, error } = await db.rpc(
     "get_purchase_invoice_details",
-    { p_invoice_id: invoices[0].id }
+    { p_invoice_id: invoice.id }
   );
 
   if (error) {
@@ -11483,108 +11484,144 @@ if (!invoice) {
 
   const invoiceData = data?.invoice;
 
-if (!invoiceData) {
-  alert("بيانات الفاتورة غير مكتملة.");
-  return;
-}
+  if (!invoiceData) {
+    alert("بيانات الفاتورة غير مكتملة.");
+    return;
+  }
 
-$("purchaseInvoiceNumber").value = invoiceData.invoice_number || "";
-$("purchaseInvoiceDate").value =
-  invoiceData.invoice_date?.slice(0, 10) || "";
+  $("purchaseInvoiceNumber").value =
+    invoiceData.invoice_number || "";
 
-$("purchaseSupplier").value = invoiceData.supplier_id || "";
-$("purchaseSupplierInvoiceNumber").value =
-  invoiceData.supplier_invoice_number || "";
+  $("purchaseInvoiceDate").value =
+    invoiceData.invoice_date?.slice(0, 10) || "";
 
-$("purchaseInvoicePaid").value =
-  invoiceData.paid_amount ?? 0;
+  $("purchaseSupplier").value =
+    invoiceData.supplier_id || "";
 
-$("purchaseInvoiceNotes").value =
-  invoiceData.notes || "";
-$("purchaseInvoiceItemsBody").replaceChildren();
-window.viewingExistingPurchaseInvoice = true;
-(data.items || []).forEach(item => {
-  addPurchaseInvoiceItem();
+  // إظهار اسم المورد في حقل البحث
+  const supplierSearch = $("purchaseSupplierSearch");
 
-  const row = $("purchaseInvoiceItemsBody").lastElementChild;
+  if (supplierSearch) {
+    const supplier = (window.purchaseInvoiceSuppliers || []).find(
+      item => String(item.id) === String(invoiceData.supplier_id)
+    );
 
-  row.querySelector(".purchase-item-product").value =
-    item.product_id;
+    supplierSearch.value = supplier?.name || "";
+    supplierSearch.disabled = true;
+  }
 
-  row.querySelector(".purchase-item-product").dispatchEvent(
-    new Event("change", { bubbles: true })
+  const supplierResults = $("purchaseSupplierResults");
+
+  if (supplierResults) {
+    supplierResults.style.display = "none";
+  }
+
+  $("purchaseSupplierInvoiceNumber").value =
+    invoiceData.supplier_invoice_number || "";
+
+  $("purchaseInvoicePaid").value =
+    invoiceData.paid_amount ?? 0;
+
+  $("purchaseInvoiceNotes").value =
+    invoiceData.notes || "";
+
+  $("purchaseInvoiceItemsBody").replaceChildren();
+
+  window.viewingExistingPurchaseInvoice = true;
+
+  (data.items || []).forEach(item => {
+    addPurchaseInvoiceItem();
+
+    const row = $("purchaseInvoiceItemsBody").lastElementChild;
+
+    row.querySelector(".purchase-item-product").value =
+      item.product_id;
+
+    row.querySelector(".purchase-item-product").dispatchEvent(
+      new Event("change", { bubbles: true })
+    );
+
+    row.querySelector(".purchase-item-unit").value =
+      item.unit_name || "قطعة";
+
+    row.querySelector(".purchase-item-quantity").value =
+      item.quantity ?? 1;
+
+    row.querySelector(".purchase-item-free").value =
+      item.free_quantity ?? 0;
+
+    row.querySelector(".purchase-item-cost").value =
+      item.unit_cost ?? 0;
+
+    row.querySelector(".purchase-item-discount-percent").value =
+      item.discount_percent ?? 0;
+
+    row.querySelector(".purchase-item-discount").value =
+      Number(item.discount_amount || 0).toFixed(2);
+
+    row.querySelector(".purchase-item-sale1").value =
+      item.sale_price1 ?? 0;
+
+    row.querySelector(".purchase-item-sale2").value =
+      item.sale_price2 ?? 0;
+  });
+
+  const invoiceExpenses = (data.expenses || []).reduce(
+    (sum, expense) => sum + Number(expense.amount || 0),
+    0
   );
 
-  row.querySelector(".purchase-item-unit").value =
-    item.unit_name || "قطعة";
+  $("purchaseInvoiceExpenses").value =
+    invoiceExpenses.toFixed(2);
 
-  row.querySelector(".purchase-item-quantity").value =
-    item.quantity ?? 1;
+  const storedDiscount = (data.items || []).reduce(
+    (sum, item) => sum + Number(item.discount_amount || 0),
+    0
+  );
 
-  row.querySelector(".purchase-item-free").value =
-    item.free_quantity ?? 0;
+  $("purchaseInvoiceDiscount").value = "0";
 
-  row.querySelector(".purchase-item-cost").value =
-    item.unit_cost ?? 0;
+  const firstPayment = (data.payments || []).find(
+    payment => payment.payment_method
+  );
 
-  row.querySelector(".purchase-item-discount-percent").value =
-    item.discount_percent ?? 0;
-row.querySelector(".purchase-item-discount").value =
-  Number(item.discount_amount || 0).toFixed(2);
-  row.querySelector(".purchase-item-sale1").value =
-    item.sale_price1 ?? 0;
+  $("purchaseInvoicePaymentMethod").value =
+    firstPayment?.payment_method || "";
 
-  row.querySelector(".purchase-item-sale2").value =
-    item.sale_price2 ?? 0;
-});
-    
-const invoiceExpenses = (data.expenses || []).reduce(
-  (sum, expense) => sum + Number(expense.amount || 0),
-  0
-);
+  $("purchaseInvoiceItemsBody")
+    .querySelectorAll("input, select, button")
+    .forEach(element => {
+      element.disabled = true;
+    });
 
-$("purchaseInvoiceExpenses").value = invoiceExpenses.toFixed(2);
-    const storedDiscount = (data.items || []).reduce(
-  (sum, item) => sum + Number(item.discount_amount || 0),
-  0
-);
+  updatePurchaseInvoiceRowNumbers();
+  calculatePurchaseInvoiceTotals();
 
-$("purchaseInvoiceDiscount").value = "0";
-    const firstPayment = (data.payments || []).find(
-  payment => payment.payment_method
-);
+  console.log("تم تحميل بيانات رأس الفاتورة:", data);
 
-$("purchaseInvoicePaymentMethod").value =
-  firstPayment?.payment_method || "";
-    $("purchaseInvoiceItemsBody")
-  .querySelectorAll("input, select, button")
-  .forEach(element => {
-    element.disabled = true;
-  });
-    updatePurchaseInvoiceRowNumbers();
-calculatePurchaseInvoiceTotals();
-console.log("تم تحميل بيانات رأس الفاتورة:", data);
+  $("savePurchaseInvoiceButton").disabled = true;
+  $("addPurchaseInvoiceItemButton").disabled = true;
+  $("quickPurchaseEntryButton").disabled = true;
+  $("purchaseBarcodeButton").disabled = true;
 
-$("savePurchaseInvoiceButton").disabled = true;
-    $("addPurchaseInvoiceItemButton").disabled = true;
-$("quickPurchaseEntryButton").disabled = true;
-$("purchaseBarcodeButton").disabled = true;
-    $("purchaseInvoiceItemsBody")
-  .querySelectorAll(".remove-purchase-item")
-  .forEach(button => {
-    button.disabled = true;
-  });
-$("purchaseInvoiceStatus").textContent =
-  "فاتورة مسترجعة للعرض فقط";
-    $("purchaseInvoiceNumber").readOnly = true;
-$("purchaseInvoiceDate").readOnly = true;
-$("purchaseSupplier").disabled = true;
-$("purchaseSupplierInvoiceNumber").readOnly = true;
-$("purchaseInvoicePaid").readOnly = true;
-$("purchaseInvoiceDiscount").readOnly = true;
-$("purchaseInvoiceExpenses").readOnly = true;
-$("purchaseInvoicePaymentMethod").disabled = true;
-$("purchaseInvoiceNotes").readOnly = true;
+  $("purchaseInvoiceItemsBody")
+    .querySelectorAll(".remove-purchase-item")
+    .forEach(button => {
+      button.disabled = true;
+    });
+
+  $("purchaseInvoiceStatus").textContent =
+    "فاتورة مسترجعة للعرض فقط";
+
+  $("purchaseInvoiceNumber").readOnly = true;
+  $("purchaseInvoiceDate").readOnly = true;
+  $("purchaseSupplier").disabled = true;
+  $("purchaseSupplierInvoiceNumber").readOnly = true;
+  $("purchaseInvoicePaid").readOnly = true;
+  $("purchaseInvoiceDiscount").readOnly = true;
+  $("purchaseInvoiceExpenses").readOnly = true;
+  $("purchaseInvoicePaymentMethod").disabled = true;
+  $("purchaseInvoiceNotes").readOnly = true;
 }
   function openPurchaseBarcode() {
   const barcode = prompt("أدخل باركود المادة:");
