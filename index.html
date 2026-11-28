@@ -3178,7 +3178,7 @@ const userNames = new Map(
 
       rows += `
         <tr>
-  <td>${new Date(movement.date).toLocaleDateString("ar-IQ")}</td>
+  <td>${new Date(movement.date).toLocaleDateString("en-GB")}</td>
   <td>${movement.description}</td>
   <td>${movement.debit ? money(movement.debit) : "—"}</td>
   <td>${movement.credit ? money(movement.credit) : "—"}</td>
@@ -3876,7 +3876,7 @@ function escapeDebtHtml(value) {
   info.innerHTML = `
     <h3>فاتورة رقم ${sale.invoice_number || sale.id}</h3>
     <p>الزبون: ${sale.customer_name || "—"}</p>
-    <p>التاريخ: ${new Date(sale.created_at).toLocaleString("ar-IQ")}</p>
+    <p>التاريخ: ${new Date(sale.created_at).toLocaleString("en-GB")}</p>
     <p>طريقة الدفع: ${sale.payment_method || "—"}</p>
     <p>إجمالي الفاتورة: ${money(sale.total_amount)} د.ع</p>
     <p>المبلغ الواصل: ${money(sale.amount_received)} د.ع</p>
@@ -5803,7 +5803,7 @@ if (result.storage) {
 // وقت الفحص
 addStorageCard(
   "وقت الفحص",
-  new Date(result.checkedAt).toLocaleString("ar-IQ")
+  new Date(result.checkedAt).toLocaleString("en-GB")
 );
 
 box.appendChild(grid);
@@ -5988,7 +5988,7 @@ const employeeNames = new Map(
             typeLabels[operation.type] || operation.type || "غير معروف",
             reference,
             operation.created_at
-              ? new Date(operation.created_at).toLocaleString("ar-IQ", {
+              ? new Date(operation.created_at).toLocaleString("en-GB", {
                   timeZone: "Asia/Baghdad"
                 })
               : "غير متوفر",
@@ -6019,7 +6019,7 @@ const employeeNames = new Map(
           employeeNames.get(operation.user_id) || "حساب غير معروف",
           statusLabels[operation.status] || operation.status || "غير معروف",
           operation.created_at
-            ? new Date(operation.created_at).toLocaleString("ar-IQ", {
+            ? new Date(operation.created_at).toLocaleString("en-GB", {
                 timeZone: "Asia/Baghdad"
               })
             : "غير متوفر"
@@ -7320,7 +7320,7 @@ $("cashCustomerButton").textContent = "💵 زبون نقدي";
 
     const date = document.createElement("p");
     date.textContent = "وقت التعليق: " +
-      new Date(draft.savedAt).toLocaleString("ar-IQ");
+      new Date(draft.savedAt).toLocaleString("en-GB");
     card.appendChild(date);
 
     const items = document.createElement("p");
@@ -7682,7 +7682,7 @@ async function viewSaleDetails(saleId, invoiceNumber) {
 
     const invoiceDate = new Date(
       sale.created_at || Date.now()
-    ).toLocaleString("ar-IQ");
+    ).toLocaleString("en-GB");
 
     const total = Number(
       sale.total_amount ?? sale.total ??
@@ -9754,7 +9754,7 @@ function printInvoice(existingWindow = null) {
 
   const invoiceDate = new Date(
     invoice.createdAt || Date.now()
-  ).toLocaleString("ar-IQ");
+  ).toLocaleString("en-GB");
 
   const itemsHtml = (invoice.items || []).map((item, index) => `
     <tr>
@@ -11929,13 +11929,13 @@ const syncStatusLabel =
             <div class="device-sync-status device-sync-${device.sync_status || "unknown"}">حالة المزامنة: ${syncStatusLabel}</div>
                         <div>آخر ظهور: ${
               device.last_seen_at
-                ? new Date(device.last_seen_at).toLocaleString("ar-IQ")
+                ? new Date(device.last_seen_at).toLocaleString("en-GB")
                 : "لم يتصل بعد"
             }</div>
 
             <div>آخر مزامنة: ${
               device.last_sync_at
-                ? new Date(device.last_sync_at).toLocaleString("ar-IQ")
+                ? new Date(device.last_sync_at).toLocaleString("en-GB")
                 : "لم تتم المزامنة بعد"
             }</div>
           </div>
