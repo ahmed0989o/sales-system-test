@@ -10080,6 +10080,113 @@ async function loadPurchaseInvoiceSuppliers() {
     }
   }
 }
+  function renderPurchaseSupplierResults() {
+  const input = $("purchaseSupplierSearch");
+  const results = $("purchaseSupplierResults");
+
+  if (!input || !results) return;
+
+  const query = input.value.trim().toLowerCase();
+
+  results.replaceChildren();
+
+  if (!query) {
+    results.style.display = "none";
+    return;
+  }
+
+  const suppliers = window.purchaseInvoiceSuppliers || [];
+
+  const matches = suppliers.filter(supplier =>
+    String(supplier.name || "").toLowerCase().includes(query)
+  );
+
+  if (!matches.length) {
+    const empty = document.createElement("div");
+    empty.textContent = "لا توجد نتائج مطابقة";
+    empty.style.padding = "10px";
+    empty.style.color = "#888";
+
+    results.appendChild(empty);
+    results.style.display = "block";
+    return;
+  }
+
+  matches.forEach(supplier => {
+    const item = document.createElement("button");
+
+    item.type = "button";
+    item.textContent = supplier.name;
+
+    item.style.cssText = `
+      display:block;
+      width:100%;
+      padding:10px;
+      border:0;
+      border-bottom:1px solid #eee;
+      background:transparent;
+      text-align:right;
+      cursor:pointer;
+    `;
+
+    item.addEventListener("click", () => {
+      selectPurchaseSupplier(supplier.id);
+    });
+
+    results.appendChild(item);
+  });
+
+  results.style.display = "block";
+}
+
+function selectPurchaseSupplier(supplierId) {
+  const select = $("purchaseSupplier");
+  const input = $("purchaseSupplierSearch");
+  const results = $("purchaseSupplierResults");
+
+  if (!select || !input) return;
+
+  const supplier = (window.purchaseInvoiceSuppliers || []).find(
+    item => String(item.id) === String(supplierId)
+  );
+
+  if (!supplier) return;
+
+  select.value = String(supplier.id);
+  input.value = supplier.name;
+
+  results.style.display = "none";
+
+  select.dispatchEvent(
+    new Event("change", { bubbles: true })
+  );
+}
+
+function initializePurchaseSupplierSearch() {
+  const input = $("purchaseSupplierSearch");
+  const results = $("purchaseSupplierResults");
+
+  if (!input || !results || input.dataset.bound === "true") return;
+
+  input.addEventListener("input", renderPurchaseSupplierResults);
+
+  input.addEventListener("focus", () => {
+    if (input.value.trim()) {
+      renderPurchaseSupplierResults();
+    }
+  });
+
+  document.addEventListener("click", event => {
+    if (
+      !input.contains(event.target) &&
+      !results.contains(event.target)
+    ) {
+      results.style.display = "none";
+    }
+  });
+
+  input.dataset.bound = "true";
+}
 function initializePurchaseInvoiceDate() {
   const input = document.getElementById("purchaseInvoiceDate");
   if (!input) return;
