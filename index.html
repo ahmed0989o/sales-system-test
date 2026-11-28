@@ -1808,16 +1808,106 @@ font-size:16px;
   <div id="purchaseInvoiceStatus" class="status"></div>
 
 </div>
+  
+<!-- زر فتح سجل المشتريات أسفل الفاتورة -->
+<button
+  type="button"
+  class="secondary"
+  style="width:100%; margin-top:15px;"
+  onclick="document.getElementById('purchaseHistoryModal').showModal()">
+  📋 سجل المشتريات
+</button>
 
-    <div class="purchase-history-card">
-  <h3>سجل المشتريات</h3>
+<!-- نافذة سجل المشتريات -->
+<dialog id="purchaseHistoryModal" dir="rtl">
 
-  <button type="button" class="secondary" onclick="loadPurchases()">
+  <div class="purchase-history-toolbar">
+    <h3>📋 سجل المشتريات</h3>
+
+    <div class="purchase-history-controls">
+      <button
+        type="button"
+        title="تكبير واستعادة"
+        onclick="document.getElementById('purchaseHistoryModal').classList.toggle('purchase-history-maximized')">
+        □
+      </button>
+
+      <button
+        type="button"
+        title="إغلاق"
+        onclick="document.getElementById('purchaseHistoryModal').close()">
+        ×
+      </button>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="secondary"
+    onclick="loadPurchases()">
     تحديث سجل المشتريات
   </button>
 
   <div id="purchaseDetails" class="tablewrap"></div>
-</div>
+
+</dialog>
+
+<style>
+  #purchaseHistoryModal {
+    width: min(1100px, calc(100% - 32px));
+    max-width: none;
+    max-height: 85vh;
+    overflow: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+
+  #purchaseHistoryModal::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .purchase-history-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: -20px;
+    background: inherit;
+    padding: 8px 0 14px;
+    z-index: 2;
+  }
+
+  .purchase-history-toolbar h3 {
+    margin: 0;
+  }
+
+  .purchase-history-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .purchase-history-controls button {
+    width: 42px;
+    padding: 6px;
+    margin: 0;
+    font-size: 20px;
+  }
+
+  #purchaseHistoryModal.purchase-history-maximized {
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    border-radius: 0;
+    box-sizing: border-box;
+  }
+</style>
+
 </section>
 
 <!-- نافذة إضافة مورد جديد -->
