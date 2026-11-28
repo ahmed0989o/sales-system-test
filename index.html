@@ -11652,32 +11652,53 @@ async function searchPurchaseInvoice() {
 
   calculatePurchaseInvoiceTotals();
 }
+
 async function clearPurchaseInvoice() {
   if (window.purchaseInvoiceSaving) {
-  alert("انتظر حتى تنتهي عملية حفظ الفاتورة.");
-  return;
-}
+    alert("انتظر حتى تنتهي عملية حفظ الفاتورة.");
+    return;
+  }
+
   const confirmed = confirm("هل تريد تفريغ بيانات الفاتورة الحالية؟");
   if (!confirmed) return;
-window.viewingExistingPurchaseInvoice = false;
+
+  window.viewingExistingPurchaseInvoice = false;
+
   $("purchaseInvoiceNumber").readOnly = false;
-$("purchaseInvoiceDate").readOnly = false;
-$("purchaseSupplier").disabled = false;
-$("purchaseSupplierInvoiceNumber").readOnly = false;
-$("purchaseInvoicePaid").readOnly = false;
-$("purchaseInvoiceDiscount").readOnly = false;
-$("purchaseInvoiceExpenses").readOnly = false;
-$("purchaseInvoicePaymentMethod").disabled = false;
-$("purchaseInvoiceNotes").readOnly = false;
-$("savePurchaseInvoiceButton").disabled = false;
+  $("purchaseInvoiceDate").readOnly = false;
+  $("purchaseSupplier").disabled = false;
+  $("purchaseSupplierInvoiceNumber").readOnly = false;
+  $("purchaseInvoicePaid").readOnly = false;
+  $("purchaseInvoiceDiscount").readOnly = false;
+  $("purchaseInvoiceExpenses").readOnly = false;
+  $("purchaseInvoicePaymentMethod").disabled = false;
+  $("purchaseInvoiceNotes").readOnly = false;
+
+  // إعادة تفعيل البحث عن المورد
+  const supplierSearch = $("purchaseSupplierSearch");
+  const supplierResults = $("purchaseSupplierResults");
+
+  if (supplierSearch) {
+    supplierSearch.disabled = false;
+    supplierSearch.value = "";
+  }
+
+  if (supplierResults) {
+    supplierResults.replaceChildren();
+    supplierResults.style.display = "none";
+  }
+
+  $("savePurchaseInvoiceButton").disabled = false;
   $("addPurchaseInvoiceItemButton").disabled = false;
-$("quickPurchaseEntryButton").disabled = false;
-$("purchaseBarcodeButton").disabled = false;
+  $("quickPurchaseEntryButton").disabled = false;
+  $("purchaseBarcodeButton").disabled = false;
+
   $("purchaseInvoiceItemsBody")
-  .querySelectorAll("input, select, button")
-  .forEach(element => {
-    element.disabled = false;
-  });
+    .querySelectorAll("input, select, button")
+    .forEach(element => {
+      element.disabled = false;
+    });
+
   $("purchaseInvoiceItemsBody").replaceChildren();
 
   $("purchaseSupplier").value = "";
