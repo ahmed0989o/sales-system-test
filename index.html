@@ -9093,8 +9093,15 @@ $("cashboxBalance").textContent = money(summary.balance);
 
       [
         new Date(m.movement_date).toLocaleString("en-GB", {
-          timeZone: "Asia/Baghdad"
-        }),
+  timeZone: "Asia/Baghdad",
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true
+}),
         typeLabels[m.movement_type] || m.movement_type,
         m.description || "—",
         (isExpense ? "−" : "+") + money(m.amount)
