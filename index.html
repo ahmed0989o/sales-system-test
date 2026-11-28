@@ -1796,7 +1796,32 @@ font-size:16px;
   <textarea id="purchaseInvoiceNotes"></textarea>
 
   <div id="purchaseInvoiceStatus" class="status"></div>
+<div class="purchase-invoice-bottom-toolbar"
+     style="display:flex; gap:8px; flex-wrap:wrap; margin-top:15px;">
 
+  <button type="button" id="savePurchaseInvoiceButton">
+    💾 حفظ الفاتورة
+  </button>
+
+  <button
+    type="button"
+    class="secondary"
+    onclick="document.getElementById('purchaseHistoryModal').showModal()">
+    📋 سجل المشتريات
+  </button>
+
+  <button
+    type="button"
+    id="newPurchaseInvoiceButton"
+    onclick="clearPurchaseInvoice()">
+    فاتورة جديدة
+  </button>
+
+  <button type="button" id="purchaseInvoiceSearchButton">
+    بحث
+  </button>
+
+</div>
 </div>
 
 <!-- نافذة سجل المشتريات -->
