@@ -10966,6 +10966,7 @@ function editSupplier(supplier) {
   $("supplierName").focus();
 }
   
+
 async function saveSupplier() {
   const button = $("saveSupplierButton");
   const status = $("supplierModalStatus");
@@ -11005,8 +11006,7 @@ async function saveSupplier() {
         p_phone: phone || null,
         p_address: address || null,
         p_notes: notes || null,
-        p_opening_balance: openingBalance,
-        p_is_active: editingSupplierActive
+        p_opening_balance: openingBalance
       });
 
       if (error) throw error;
