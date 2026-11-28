@@ -10106,8 +10106,11 @@ function renderPurchaseSupplierResults() {
   if (!matches.length) {
     const empty = document.createElement("div");
     empty.textContent = "لا توجد نتائج مطابقة";
-    empty.style.padding = "10px";
-    empty.style.color = "#888";
+    empty.style.cssText = `
+      padding: 10px;
+      color: #555;
+      background: #fff;
+    `;
 
     results.appendChild(empty);
     results.style.display = "block";
@@ -10121,15 +10124,24 @@ function renderPurchaseSupplierResults() {
     item.textContent = supplier.name;
 
     item.style.cssText = `
-      display:block;
-      width:100%;
-      padding:10px;
-      border:0;
-      border-bottom:1px solid #eee;
-      background:transparent;
-      text-align:right;
-      cursor:pointer;
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border: 0;
+      border-bottom: 1px solid #eee;
+      background: #fff;
+      color: #222;
+      text-align: right;
+      cursor: pointer;
     `;
+
+    item.addEventListener("mouseenter", () => {
+      item.style.background = "#f0f0f0";
+    });
+
+    item.addEventListener("mouseleave", () => {
+      item.style.background = "#fff";
+    });
 
     item.addEventListener("click", () => {
       selectPurchaseSupplier(supplier.id);
