@@ -10031,31 +10031,55 @@ async function openPurchases(restore = false) {
   
 async function loadPurchaseInvoiceSuppliers() {
   const select = document.getElementById("purchaseSupplier");
+  const searchInput = document.getElementById("purchaseSupplierSearch");
+
   if (!select) return;
 
-  select.innerHTML = '<option value="">البحث عن المورد</option>';
+  const previousValue = select.value;
+
+  select.innerHTML = '<option value="">اختر المورد</option>';
 
   try {
     const { data, error } = await db.rpc("get_suppliers", {
-  p_include_inactive: false
-});
+      p_include_inactive: false
+    });
 
     if (error) throw error;
 
-    (data || []).forEach(supplier => {
+    window.purchaseInvoiceSuppliers = data || [];
+
+    window.purchaseInvoiceSuppliers.forEach(supplier => {
       const option = document.createElement("option");
-      option.value = supplier.id;
+
+      option.value = String(supplier.id);
       option.textContent = supplier.name;
+
       select.appendChild(option);
     });
 
+    if (
+      previousValue &&
+      window.purchaseInvoiceSuppliers.some(
+        supplier => String(supplier.id) === String(previousValue)
+      )
+    ) {
+      select.value = previousValue;
+    }
+
+    if (searchInput && !select.value) {
+      searchInput.value = "";
+    }
+
   } catch (error) {
     console.error("خطأ تحميل الموردين:", error);
+
     const status = document.getElementById("purchaseInvoiceStatus");
-    if (status) status.textContent = "تعذر تحميل قائمة الموردين";
+
+    if (status) {
+      status.textContent = "تعذر تحميل قائمة الموردين";
+    }
   }
 }
-
 function initializePurchaseInvoiceDate() {
   const input = document.getElementById("purchaseInvoiceDate");
   if (!input) return;
