@@ -10086,7 +10086,8 @@ async function loadPurchaseInvoiceSuppliers() {
     }
   }
 }
-  function renderPurchaseSupplierResults() {
+  
+function renderPurchaseSupplierResults() {
   const input = $("purchaseSupplierSearch");
   const results = $("purchaseSupplierResults");
 
@@ -10095,11 +10096,6 @@ async function loadPurchaseInvoiceSuppliers() {
   const query = input.value.trim().toLowerCase();
 
   results.replaceChildren();
-
-  if (!query) {
-    results.style.display = "none";
-    return;
-  }
 
   const suppliers = window.purchaseInvoiceSuppliers || [];
 
