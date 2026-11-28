@@ -10093,23 +10093,29 @@ function renderPurchaseSupplierResults() {
 
   if (!input || !results) return;
 
-  const query = input.value.trim().toLowerCase();
+  const query = input.value.trim().toLocaleLowerCase("ar");
 
   results.replaceChildren();
 
-  const suppliers = window.purchaseInvoiceSuppliers || [];
+  // الموردون النشطون فقط
+  const suppliers = (window.purchaseInvoiceSuppliers || [])
+    .filter(supplier => supplier.is_active !== false);
 
-  const matches = suppliers.filter(supplier =>
-    String(supplier.name || "").toLowerCase().includes(query)
-  );
+  // البحث في كامل الاسم، وليس بدايته فقط
+  const matches = suppliers.filter(supplier => {
+    const name = String(supplier.name || "").toLocaleLowerCase("ar");
+    return name.includes(query);
+  });
 
   if (!matches.length) {
     const empty = document.createElement("div");
+
     empty.textContent = "لا توجد نتائج مطابقة";
     empty.style.cssText = `
       padding: 10px;
       color: #555;
       background: #fff;
+      text-align: right;
     `;
 
     results.appendChild(empty);
