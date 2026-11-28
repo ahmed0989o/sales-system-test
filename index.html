@@ -10164,6 +10164,7 @@ function selectPurchaseSupplier(supplierId) {
   );
 }
 
+
 function initializePurchaseSupplierSearch() {
   const input = $("purchaseSupplierSearch");
   const results = $("purchaseSupplierResults");
@@ -10173,9 +10174,7 @@ function initializePurchaseSupplierSearch() {
   input.addEventListener("input", renderPurchaseSupplierResults);
 
   input.addEventListener("focus", () => {
-    if (input.value.trim()) {
-      renderPurchaseSupplierResults();
-    }
+    renderPurchaseSupplierResults();
   });
 
   document.addEventListener("click", event => {
